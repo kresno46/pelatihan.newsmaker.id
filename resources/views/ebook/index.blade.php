@@ -55,7 +55,7 @@
     </div>
 
     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mt-6 gap-2">
-        @if ($ebooks->total() > 10)
+        @if ($ebooks->total() > 8)
         <div class="w-full">
             {{ $ebooks->appends(['search' => request('search')])->links() }}
         </div>

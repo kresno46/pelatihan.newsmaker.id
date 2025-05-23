@@ -37,7 +37,7 @@
             {{-- Deskripsi --}}
             <div class="w-full">
                 <label for="deskripsi" class="block font-medium text-gray-900 dark:text-gray-100">Deskripsi Buku</label>
-                <textarea name="deskripsi" id="deskripsi" rows="4"
+                <textarea name="deskripsi" id="deskripsi" rows="10"
                     class="w-full border rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('deskripsi') border-red-500 dark:border-red-400 @enderror">{{ old('deskripsi') }}</textarea>
                 @error('deskripsi')
                 <p class="text-red-600 dark:text-red-400 text-sm mt-1">{{ $message }}</p>

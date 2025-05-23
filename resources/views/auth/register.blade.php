@@ -32,7 +32,6 @@
                     shadow-sm
                     focus:border-indigo-500 dark:focus:border-indigo-400
                     focus:ring-indigo-500 dark:focus:ring-indigo-400">
-                <option value="" disabled selected>Pilih jenis identitas</option>
                 <option value="KTP" {{ old('type_id')=='KTP' ? 'selected' : '' }}>KTP</option>
                 <option value="SIM" {{ old('type_id')=='SIM' ? 'selected' : '' }}>SIM</option>
                 <option value="Paspor" {{ old('type_id')=='Paspor' ? 'selected' : '' }}>Paspor</option>

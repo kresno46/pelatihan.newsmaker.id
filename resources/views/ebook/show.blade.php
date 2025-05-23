@@ -3,11 +3,11 @@
 @section('namePage', 'eBook')
 
 @section('content')
-<div class="bg-white p-6 rounded-lg shadow-md">
+<div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
     {{-- Tombol Kembali --}}
     <div class="mb-4">
         <a href="{{ route('ebook.index') }}"
-            class="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition">
+            class="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-100 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition">
             <i class="fa-solid fa-arrow-left mr-2"></i> Kembali
         </a>
     </div>
@@ -22,10 +22,12 @@
         {{-- Detail --}}
         <div class="flex-1 flex flex-col justify-between space-y-4">
             <div>
-                <h1 class="text-2xl font-bold mb-2 text-center md:text-left">{{ $ebook->judul }}</h1>
-                <p class="text-gray-700 whitespace-pre-line text-justify mb-3">{{ $ebook->deskripsi }}</p>
+                <h1 class="text-2xl font-bold mb-2 text-center md:text-left text-gray-900 dark:text-white">{{
+                    $ebook->judul }}</h1>
+                <p class="text-gray-700 dark:text-gray-300 whitespace-pre-line text-justify mb-3">{{ $ebook->deskripsi
+                    }}</p>
 
-                <div class="text-sm text-gray-800 space-y-1">
+                <div class="text-sm text-gray-800 dark:text-gray-200 space-y-1">
                     <p><strong>Penulis:</strong> {{ $ebook->penulis }}</p>
                     <p><strong>Tahun Terbit:</strong> {{ $ebook->tahun_terbit }}</p>
                 </div>
@@ -61,16 +63,17 @@
                     {{-- Modal Konfirmasi Hapus --}}
                     <div x-show="showModal" x-cloak
                         class="fixed inset-0 flex items-center justify-center z-50 bg-black/50 px-5">
-                        <div @click.away="showModal = false" class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+                        <div @click.away="showModal = false"
+                            class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-md text-gray-800 dark:text-gray-200">
                             <h2 class="text-lg font-semibold mb-4">Konfirmasi Penghapusan</h2>
-                            <p class="text-gray-700 mb-6">
+                            <p class="text-gray-700 dark:text-gray-300 mb-6">
                                 Apakah Anda yakin ingin menghapus e-Book
                                 <strong>{{ $ebook->judul }}</strong>?
                             </p>
 
                             <div class="flex justify-end gap-4">
                                 <button @click="showModal = false"
-                                    class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400">
+                                    class="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-white rounded hover:bg-gray-400 dark:hover:bg-gray-500">
                                     Batal
                                 </button>
 
