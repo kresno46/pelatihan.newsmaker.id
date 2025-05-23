@@ -18,6 +18,8 @@ return new class extends Migration
             $table->enum('type_id', ['KTP', 'SIM', 'Paspor', 'KITAS']);
             $table->string('no_id', 17)->unique();
             $table->string('no_tlp', 20)->unique();
+            $table->enum('role', ['Admin', 'Trainer (Internal)', 'Trainer (Eksternal)'])->default('Trainer (Eksternal)');
+
             $table->timestamp('email_verified_at')->nullable();
             $table->text('password');
             $table->rememberToken();

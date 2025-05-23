@@ -3,55 +3,85 @@
 @section('namePage', 'Daftar')
 
 @section('content')
-<form method="POST" action="{{ route('register') }}" class="w-full space-y-5">
+<form method="POST" action="{{ route('register') }}" class="w-full space-y-5 text-gray-900 dark:text-gray-100">
     @csrf
 
     <!-- Nama -->
     <div>
-        <x-input-label for="name" :value="__('Nama')" />
-        <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required
-            autofocus autocomplete="name" />
-        <x-input-error :messages="$errors->get('name')" class="mt-2" />
+        <x-input-label for="name" :value="__('Nama')" class="dark:text-gray-200" />
+        <x-text-input id="name" class="block mt-1 w-full
+            border border-gray-300 dark:border-gray-600
+            bg-white dark:bg-gray-800
+            text-gray-900 dark:text-gray-100
+            placeholder-gray-400 dark:placeholder-gray-500
+            focus:border-indigo-500 dark:focus:border-indigo-400
+            focus:ring-indigo-500 dark:focus:ring-indigo-400
+            rounded-md shadow-sm" type="text" name="name" :value="old('name')" required autofocus
+            autocomplete="name" />
+        <x-input-error :messages="$errors->get('name')" class="mt-2 dark:text-red-400" />
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <!-- Jenis Identitas -->
         <div>
-            <x-input-label for="type_id" :value="__('Jenis Identitas')" />
-            <select name="type_id" id="type_id" required class="block mt-1 w-full rounded-md border-gray-300 shadow-sm">
+            <x-input-label for="type_id" :value="__('Jenis Identitas')" class="dark:text-gray-200" />
+            <select name="type_id" id="type_id" required class="block mt-1 w-full rounded-md
+                    border border-gray-300 dark:border-gray-600
+                    bg-white dark:bg-gray-800
+                    text-gray-900 dark:text-gray-100
+                    shadow-sm
+                    focus:border-indigo-500 dark:focus:border-indigo-400
+                    focus:ring-indigo-500 dark:focus:ring-indigo-400">
                 <option value="" disabled selected>Pilih jenis identitas</option>
                 <option value="KTP" {{ old('type_id')=='KTP' ? 'selected' : '' }}>KTP</option>
                 <option value="SIM" {{ old('type_id')=='SIM' ? 'selected' : '' }}>SIM</option>
                 <option value="Paspor" {{ old('type_id')=='Paspor' ? 'selected' : '' }}>Paspor</option>
                 <option value="KITAS" {{ old('type_id')=='KITAS' ? 'selected' : '' }}>KITAS</option>
             </select>
-            <x-input-error :messages="$errors->get('type_id')" class="mt-2" />
+            <x-input-error :messages="$errors->get('type_id')" class="mt-2 dark:text-red-400" />
         </div>
 
         <!-- Nomor Identitas -->
         <div>
-            <x-input-label for="no_id" :value="__('Nomor Identitas')" />
-            <x-text-input id="no_id" class="block mt-1 w-full" type="text" name="no_id" :value="old('no_id')" required
-                maxlength="17" />
-            <x-input-error :messages="$errors->get('no_id')" class="mt-2" />
+            <x-input-label for="no_id" :value="__('Nomor Identitas')" class="dark:text-gray-200" />
+            <x-text-input id="no_id" class="block mt-1 w-full
+                border border-gray-300 dark:border-gray-600
+                bg-white dark:bg-gray-800
+                text-gray-900 dark:text-gray-100
+                placeholder-gray-400 dark:placeholder-gray-500
+                focus:border-indigo-500 dark:focus:border-indigo-400
+                focus:ring-indigo-500 dark:focus:ring-indigo-400
+                rounded-md shadow-sm" type="text" name="no_id" :value="old('no_id')" required maxlength="17" />
+            <x-input-error :messages="$errors->get('no_id')" class="mt-2 dark:text-red-400" />
         </div>
     </div>
 
     <!-- Alamat Email -->
     <div>
-        <x-input-label for="email" :value="__('Email')" />
-        <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required
-            autocomplete="username" />
-        <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        <x-input-label for="email" :value="__('Email')" class="dark:text-gray-200" />
+        <x-text-input id="email" class="block mt-1 w-full
+            border border-gray-300 dark:border-gray-600
+            bg-white dark:bg-gray-800
+            text-gray-900 dark:text-gray-100
+            placeholder-gray-400 dark:placeholder-gray-500
+            focus:border-indigo-500 dark:focus:border-indigo-400
+            focus:ring-indigo-500 dark:focus:ring-indigo-400
+            rounded-md shadow-sm" type="email" name="email" :value="old('email')" required autocomplete="username" />
+        <x-input-error :messages="$errors->get('email')" class="mt-2 dark:text-red-400" />
     </div>
 
     <!-- Nomor Telepon -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <!-- Kode Negara -->
         <div>
-            <x-input-label for="country_code" :value="__('Kode Negara')" />
-            <select id="country_code" name="country_code" required
-                class="block mt-1 w-full rounded-md border-gray-300 shadow-sm">
+            <x-input-label for="country_code" :value="__('Kode Negara')" class="dark:text-gray-200" />
+            <select id="country_code" name="country_code" required class="block mt-1 w-full rounded-md
+                    border border-gray-300 dark:border-gray-600
+                    bg-white dark:bg-gray-800
+                    text-gray-900 dark:text-gray-100
+                    shadow-sm
+                    focus:border-indigo-500 dark:focus:border-indigo-400
+                    focus:ring-indigo-500 dark:focus:ring-indigo-400">
                 <option value="+62" {{ old('country_code')=='+62' ? 'selected' : '' }}>+62 - Indonesia</option>
                 <option value="+60" {{ old('country_code')=='+60' ? 'selected' : '' }}>+60 - Malaysia</option>
                 <option value="+65" {{ old('country_code')=='+65' ? 'selected' : '' }}>+65 - Singapore</option>
@@ -70,32 +100,51 @@
                 <option value="+971" {{ old('country_code')=='+971' ? 'selected' : '' }}>+971 - United Arab Emirates
                 </option>
             </select>
-            <x-input-error :messages="$errors->get('country_code')" class="mt-2" />
+            <x-input-error :messages="$errors->get('country_code')" class="mt-2 dark:text-red-400" />
         </div>
 
         <!-- No Handphone -->
         <div>
-            <x-input-label for="no_tlp" :value="__('No Handphone')" />
-            <x-text-input id="no_tlp" class="block mt-1 w-full" type="text" name="no_tlp" :value="old('no_tlp')"
-                required placeholder="81234567890" />
-            <x-input-error :messages="$errors->get('no_tlp')" class="mt-2" />
+            <x-input-label for="no_tlp" :value="__('No Handphone')" class="dark:text-gray-200" />
+            <x-text-input id="no_tlp" class="block mt-1 w-full
+                border border-gray-300 dark:border-gray-600
+                bg-white dark:bg-gray-800
+                text-gray-900 dark:text-gray-100
+                placeholder-gray-400 dark:placeholder-gray-500
+                focus:border-indigo-500 dark:focus:border-indigo-400
+                focus:ring-indigo-500 dark:focus:ring-indigo-400
+                rounded-md shadow-sm" type="text" name="no_tlp" :value="old('no_tlp')" required
+                placeholder="81234567890" />
+            <x-input-error :messages="$errors->get('no_tlp')" class="mt-2 dark:text-red-400" />
         </div>
     </div>
 
     <!-- Kata Sandi -->
     <div>
-        <x-input-label for="password" :value="__('Kata Sandi')" />
-        <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required
-            autocomplete="new-password" />
-        <x-input-error :messages="$errors->get('password')" class="mt-2" />
+        <x-input-label for="password" :value="__('Kata Sandi')" class="dark:text-gray-200" />
+        <x-text-input id="password" class="block mt-1 w-full
+            border border-gray-300 dark:border-gray-600
+            bg-white dark:bg-gray-800
+            text-gray-900 dark:text-gray-100
+            placeholder-gray-400 dark:placeholder-gray-500
+            focus:border-indigo-500 dark:focus:border-indigo-400
+            focus:ring-indigo-500 dark:focus:ring-indigo-400
+            rounded-md shadow-sm" type="password" name="password" required autocomplete="new-password" />
+        <x-input-error :messages="$errors->get('password')" class="mt-2 dark:text-red-400" />
     </div>
 
     <!-- Konfirmasi Kata Sandi -->
     <div>
-        <x-input-label for="password_confirmation" :value="__('Konfirmasi Kata Sandi')" />
-        <x-text-input id="password_confirmation" class="block mt-1 w-full" type="password" name="password_confirmation"
-            required autocomplete="new-password" />
-        <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+        <x-input-label for="password_confirmation" :value="__('Konfirmasi Kata Sandi')" class="dark:text-gray-200" />
+        <x-text-input id="password_confirmation" class="block mt-1 w-full
+            border border-gray-300 dark:border-gray-600
+            bg-white dark:bg-gray-800
+            text-gray-900 dark:text-gray-100
+            placeholder-gray-400 dark:placeholder-gray-500
+            focus:border-indigo-500 dark:focus:border-indigo-400
+            focus:ring-indigo-500 dark:focus:ring-indigo-400
+            rounded-md shadow-sm" type="password" name="password_confirmation" required autocomplete="new-password" />
+        <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2 dark:text-red-400" />
     </div>
 
     <!-- Tombol Daftar -->

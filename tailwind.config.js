@@ -12,6 +12,10 @@ export default {
 
     theme: {
         extend: {
+            zIndex: {
+                "-10": "-10",
+                "-20": "-20", // jika perlu nilai lain
+            },
             fontFamily: {
                 sans: ["Figtree", ...defaultTheme.fontFamily.sans],
             },

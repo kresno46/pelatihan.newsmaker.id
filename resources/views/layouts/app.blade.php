@@ -6,7 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>@yield('namePage') - Newsmaker23 Edukasi</title>
+
+    {{-- Icon --}}
+    <link rel="icon" type="image/png" href="{{asset('Icon/favicon-96x96.png')}}" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="{{asset('Icon/favicon.svg')}}" />
+    <link rel="shortcut icon" href="{{asset('Icon/favicon.ico')}}" />
+    <link rel="apple-touch-icon" sizes="180x180" href="{{asset('Icon/apple-touch-icon.png')}}" />
+    <meta name="apple-mobile-web-app-title" content="NM23" />
+    <link rel="manifest" href="{{asset('Icon/site.webmanifest')}}" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -14,52 +22,323 @@
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-        const toggle = document.getElementById('darkModeToggle');
-        if (toggle) {
-            toggle.addEventListener('click', function () {
-                const html = document.querySelector('html');
-                const isDark = html.classList.contains('dark');
-
-                if (isDark) {
-                    html.classList.remove('dark');
-                    html.style.colorScheme = 'light';
-                    localStorage.setItem('dark-mode', 'false');
-                } else {
-                    html.classList.add('dark');
-                    html.style.colorScheme = 'dark';
-                    localStorage.setItem('dark-mode', 'true');
-                }
-            });
-        }
-
-        // Saat halaman dimuat, set dark mode berdasarkan localStorage
-        if (localStorage.getItem('dark-mode') === 'true') {
-            document.querySelector('html').classList.add('dark');
-            document.querySelector('html').style.colorScheme = 'dark';
-        } else {
-            document.querySelector('html').classList.remove('dark');
-            document.querySelector('html').style.colorScheme = 'light';
-        }
-    });
-    </script>
 </head>
 
 <body class="font-sans antialiased">
-    <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
-        <!-- Tombol Dark Mode -->
-        <button id="darkModeToggle"
-            class="m-4 px-4 py-2 bg-gray-300 dark:bg-gray-700 text-black dark:text-white rounded">
-            Toggle Dark Mode
-        </button>
+    <div class="min-h-screen bg-gray-100 dark:bg-gray-900 flex">
 
-        <!-- Page Content -->
-        <main>
-            @yield('content')
-        </main>
+        <!-- Sidebar -->
+        <aside
+            class="bg-white dark:bg-gray-800 w-64 hidden md:block flex-shrink-0 shadow-lg border-r border-gray-200 dark:border-gray-700">
+            <div class="h-full p-4 space-y-6">
+                <!-- Logo -->
+                <div class="w-full flex justify-center">
+                    <a href="{{ route('dashboard') }}">
+                        <img src="{{ asset('assets/NewsMaker-23-logo.png') }}" alt="NewsMaker 23"
+                            class="block dark:hidden h-20" />
+                        <img src="{{ asset('assets/NewsMaker-23-logo-white.png') }}" alt="NewsMaker 23"
+                            class="hidden dark:block h-20" />
+                    </a>
+                </div>
+
+                <hr class="border-gray-300 dark:border-gray-700">
+
+                <!-- Navigation - Main Menu -->
+                <nav>
+                    <ul class="flex flex-col space-y-2">
+                        <li class="text-sm text-gray-500 uppercase tracking-wide">Menu</li>
+                        <li>
+                            <a href="{{ route('dashboard') }}" class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('dashboard') 
+                            ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold' 
+                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                <i class="fas fa-home"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+
+                <hr class="border-gray-300 dark:border-gray-700">
+
+                <!-- Navigation - Edukasi -->
+                <nav>
+                    <ul class="flex flex-col space-y-2">
+                        <li class="text-sm text-gray-500 uppercase tracking-wide">Edukasi</li>
+                        <li>
+                            <a href="{{ route('ebook.index') }}" class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('ebook.*') 
+                            ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold' 
+                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                <i class="fa-solid fa-book"></i>
+                                <span>eBook</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+
+                <hr class="border-gray-300 dark:border-gray-700">
+
+                <!-- Navigation - Manajemen -->
+                <nav>
+                    <ul class="flex flex-col space-y-2">
+                        <li class="text-sm text-gray-500 uppercase tracking-wide">Manajemen</li>
+                        <li>
+                            <a href="" class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('user.*') 
+                            ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold' 
+                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                <i class="fa-solid fa-user"></i>
+                                <span>User</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Content Area -->
+        <div class="flex-1 flex flex-col">
+            <!-- Navbar -->
+            <header class="sticky top-0 bg-white dark:bg-gray-800 shadow px-4 py-4 flex items-center justify-between">
+                <div class="flex items-center justify-center gap-2">
+                    <!-- Mobile sidebar toggle -->
+                    <button id="mobileMenuButton" class="md:hidden text-gray-700 dark:text-white focus:outline-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+
+                    <h1 class="hidden md:block text-lg font-semibold text-gray-800 dark:text-white">NewsMaker23</h1>
+                </div>
+
+                <div class="flex items-center space-x-4 relative">
+                    <!-- Search Bar -->
+                    <div class="relative">
+                        <input type="text" placeholder="Search..."
+                            class="px-3 py-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring focus:ring-blue-300 w-48 md:w-64" />
+                        <span class="absolute right-3 top-2.5 text-gray-400">
+                            <i class="fas fa-search"></i>
+                        </span>
+                    </div>
+
+                    <!-- Profile Dropdown -->
+                    <div class="relative">
+                        <button id="profileButton" class="flex items-center space-x-2 focus:outline-none">
+                            <div
+                                class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold">
+                                {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                            </div>
+                            <span class="text-gray-800 dark:text-white font-medium hidden md:inline">
+                                {{ Auth::user()->name }}
+                            </span>
+                            <svg class="w-4 h-4 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor"
+                                stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <!-- Dropdown Menu -->
+                        <div id="profileDropdown"
+                            class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 shadow-md rounded-md overflow-hidden z-40">
+
+                            <a href="#"
+                                class="block px-4 py-2 text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600">
+                                Profile
+                            </a>
+
+                            <a href="#"
+                                class="block px-4 py-2 text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600">
+                                Settings
+                            </a>
+
+                            <!-- Theme Dropdown -->
+                            <div class="px-4 py-2 text-gray-800 dark:text-white">
+                                <label for="themeSelect" class="block mb-1 font-semibold">Select Theme</label>
+                                <select id="themeSelect"
+                                    class="w-full rounded bg-gray-200 dark:bg-gray-600 text-gray-900 dark:text-white p-1">
+                                    <option value="light">Light</option>
+                                    <option value="dark">Dark</option>
+                                    <option value="auto">Auto</option>
+                                </select>
+                            </div>
+
+                            <hr class="border-gray-200 dark:border-gray-600" />
+
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit"
+                                    class="w-full text-left px-4 py-2 text-white bg-red-600 hover:bg-red-700">
+                                    Logout
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Mobile Sidebar -->
+            <div id="mobileSidebar"
+                class="fixed inset-y-0 left-0 z-40 w-64 transform -translate-x-full bg-white dark:bg-gray-800 transition-transform duration-300 shadow-xl md:hidden">
+                <div class="p-4">
+                    <!-- Close Button -->
+                    <div class="flex items-center mb-4 gap-3">
+                        <button id="closeMobileSidebar"
+                            class="bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 hover:bg-gray-300  text-gray-700 dark:text-white py-2 px-3 rounded-lg text-sm border-2 border-gray-300 dark:border-gray-700 transition-all">
+                            ✕
+                        </button>
+                        <h2 class="text-lg font-semibold text-gray-800 dark:text-white">NewsMaker23</h2>
+                    </div>
+
+                    <hr class="border-gray-300 dark:border-gray-700 mb-4">
+
+                    <!-- Main Menu -->
+                    <nav class="mb-4">
+                        <ul class="space-y-2">
+                            <li class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Menu</li>
+                            <li>
+                                <a href="{{ route('dashboard') }}"
+                                    @class([ 'flex items-center space-x-4 px-3 py-2 rounded transition duration-200'
+                                    , 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'=>
+                                    request()->routeIs('dashboard'),
+                                    'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' =>
+                                    !request()->routeIs('dashboard')
+                                    ])>
+                                    <i class="fas fa-home"></i>
+                                    <span>Dashboard</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+
+                    <hr class="border-gray-300 dark:border-gray-700 mb-4">
+
+                    <!-- Edukasi Menu -->
+                    <nav class="mb-4">
+                        <ul class="space-y-2">
+                            <li class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Edukasi</li>
+                            <li>
+                                <a href="{{ route('ebook.index') }}"
+                                    @class([ 'flex items-center space-x-4 px-3 py-2 rounded transition duration-200'
+                                    , 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'=>
+                                    request()->routeIs('ebook.*'),
+                                    'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' =>
+                                    !request()->routeIs('ebook.*')
+                                    ])>
+                                    <i class="fa-solid fa-book"></i>
+                                    <span>eBook</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+
+                    <hr class="border-gray-300 dark:border-gray-700 mb-4">
+
+                    <!-- Manajemen Menu -->
+                    <nav>
+                        <ul class="space-y-2">
+                            <li class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Manajemen</li>
+                            <li>
+                                <a href="#"
+                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    <i class="fa-solid fa-user"></i>
+                                    <span>User</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Page Content -->
+            <main class="flex-1 p-6">
+                @if(session('success'))
+                <div
+                    class="mb-6 rounded-lg border-l-2 border-green-600 bg-green-100 dark:bg-green-900/50 p-4 text-green-800 dark:text-green-200">
+                    <div class="flex items-center space-x-2 font-semibold">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>{{ session('success') }}</span>
+                    </div>
+                </div>
+                @endif
+
+                @yield('content')
+            </main>
+        </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const html = document.documentElement;
+            const profileButton = document.getElementById('profileButton');
+            const profileDropdown = document.getElementById('profileDropdown');
+            const themeSelect = document.getElementById('themeSelect');
+
+            // Fungsi untuk apply theme
+            function applyTheme(theme) {
+                if (theme === 'dark') {
+                html.classList.add('dark');
+                html.style.colorScheme = 'dark';
+                } else if (theme === 'light') {
+                html.classList.remove('dark');
+                html.style.colorScheme = 'light';
+                } else if (theme === 'auto') {
+                // Sesuaikan dengan preferensi sistem
+                if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    html.classList.add('dark');
+                    html.style.colorScheme = 'dark';
+                } else {
+                    html.classList.remove('dark');
+                    html.style.colorScheme = 'light';
+                }
+                }
+                localStorage.setItem('theme', theme);
+            }
+
+            // Load theme dari localStorage atau default auto
+            const savedTheme = localStorage.getItem('theme') || 'auto';
+            applyTheme(savedTheme);
+
+            // Set dropdown ke theme yang sedang aktif
+            if (themeSelect) {
+                themeSelect.value = savedTheme;
+
+                themeSelect.addEventListener('change', (e) => {
+                applyTheme(e.target.value);
+                });
+            }
+
+            // Dropdown profil toggle
+            if (profileButton && profileDropdown) {
+                profileButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                profileDropdown.classList.toggle('hidden');
+                });
+
+                document.addEventListener('click', (e) => {
+                if (!profileDropdown.contains(e.target)) {
+                    profileDropdown.classList.add('hidden');
+                }
+                });
+            }
+
+            // Mobile sidebar toggle (optional)
+            const mobileMenuButton = document.getElementById('mobileMenuButton');
+            const mobileSidebar = document.getElementById('mobileSidebar');
+            const closeMobileSidebar = document.getElementById('closeMobileSidebar');
+
+            if (mobileMenuButton && mobileSidebar && closeMobileSidebar) {
+                mobileMenuButton.addEventListener('click', () => {
+                mobileSidebar.classList.remove('-translate-x-full');
+                });
+
+                closeMobileSidebar.addEventListener('click', () => {
+                mobileSidebar.classList.add('-translate-x-full');
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>
