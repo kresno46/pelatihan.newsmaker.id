@@ -6,14 +6,16 @@
 <div class="bg-white dark:bg-gray-800 p-3 rounded-2xl">
     <!-- Search Bar -->
     <div class="w-full flex items-center gap-2 mb-5">
-        <form action="" method="GET" class="flex items-center gap-2 flex-grow">
-            <input type="text" name="search" placeholder="Cari judul atau penulis eBook..."
+        <form action="{{ route('ebook.index') }}" method="GET" class="flex items-center gap-2 flex-grow">
+            <input type="text" name="search" value="{{ request('search') }}"
+                placeholder="Cari judul atau penulis eBook..."
                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800" />
-            <button type="submit"
-                class="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-600 transition cursor-pointer">
-                Cari
-            </button>
         </form>
+
+        <a href="{{ route('ebook.index') }}"
+            class="bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-600 transition cursor-pointer">
+            Reset
+        </a>
 
         <a href="{{ route('ebook.create') }}"
             class="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-600 transition cursor-pointer">
@@ -23,7 +25,7 @@
     </div>
 
     <!-- Grid Card -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
         @forelse ($ebooks as $item)
         <div
             class="flex flex-col gap-3 bg-gray-200 dark:bg-gray-700 p-4 rounded-xl group hover:text-blue-500 transition-all">
@@ -39,7 +41,7 @@
                 </a>
 
                 <a href="{{ route('ebook.show', $item->id) }}"
-                    class="text-sm font-medium text-gray-600 dark:text-gray-300 leading-snug line-clamp-1"
+                    class="text-sm font-medium text-gray-600 dark:text-gray-300 leading-snug"
                     title="{{ $item->penulis }} - {{ $item->tahun_terbit }}">
                     {{ $item->penulis }} - {{ $item->tahun_terbit }}
                 </a>
@@ -51,5 +53,23 @@
         </div>
         @endforelse
     </div>
+
+    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mt-6 gap-2">
+        @if ($ebooks->total() > 10)
+        <div class="w-full">
+            {{ $ebooks->appends(['search' => request('search')])->links() }}
+        </div>
+        @else
+        <div class="text-sm text-gray-600 dark:text-gray-300 p-2">
+            Showing
+            @if ($ebooks->total() > 0)
+            {{ $ebooks->firstItem() }} to {{ $ebooks->lastItem() }} of {{ $ebooks->total() }} results
+            @else
+            0 to 0 of 0 results
+            @endif
+        </div>
+        @endif
+    </div>
+
 </div>
 @endsection

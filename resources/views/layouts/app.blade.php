@@ -26,10 +26,9 @@
 
 <body class="font-sans antialiased">
     <div class="min-h-screen bg-gray-100 dark:bg-gray-900 flex">
-
         <!-- Sidebar -->
         <aside
-            class="bg-white dark:bg-gray-800 w-64 hidden md:block flex-shrink-0 shadow-lg border-r border-gray-200 dark:border-gray-700">
+            class="bg-white dark:bg-gray-800 w-64 hidden md:block sticky top-0 flex-shrink-0 shadow-lg border-r border-gray-200 dark:border-gray-700 h-screen overflow-auto">
             <div class="h-full p-4 space-y-6">
                 <!-- Logo -->
                 <div class="w-full flex justify-center">

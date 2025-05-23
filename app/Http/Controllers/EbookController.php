@@ -9,9 +9,19 @@ use Illuminate\Support\Facades\Storage;
 
 class EbookController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $ebooks = ebook::all();
+        $search = $request->input('search');
+
+        $ebooks = Ebook::query()
+            ->when($search, function ($query, $search) {
+                $query->where('judul', 'like', "%{$search}%")
+                    ->orWhere('penulis', 'like', "%{$search}%")
+                    ->orWhere('tahun_terbit', 'like', "%{$search}%");
+            })
+            ->latest()
+            ->paginate(8); // sesuaikan jumlah per halaman jika perlu
+
         return view('ebook.index', compact('ebooks'));
     }
 
