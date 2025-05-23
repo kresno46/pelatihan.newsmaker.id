@@ -24,10 +24,10 @@
   <h2 style="font-size: 22px; font-weight: bold; margin-top: 30px; margin-bottom: 10px;">Instalasi</h2>
   <ol style="margin-left: 20px; margin-bottom: 16px;">
     <li style="margin-bottom: 10px;">Clone repository ini:<br>
-      <code style="background-color: #f4f4f4; padding: 4px 6px; display: inline-block;">git clone https://github.com/username/repo.git</code>
+      <code style="background-color: #f4f4f4; padding: 4px 6px; display: inline-block;">git clone https://github.com/kresno46/NM_Edukasi.git</code>
     </li>
     <li style="margin-bottom: 10px;">Pindah ke direktori project:<br>
-      <code style="background-color: #f4f4f4; padding: 4px 6px; display: inline-block;">cd newsmaker23-edukasi</code>
+      <code style="background-color: #f4f4f4; padding: 4px 6px; display: inline-block;">cd NM_Edukasi</code>
     </li>
     <li style="margin-bottom: 10px;">Install dependency Laravel:<br>
       <code style="background-color: #f4f4f4; padding: 4px 6px; display: inline-block;">composer install</code>
