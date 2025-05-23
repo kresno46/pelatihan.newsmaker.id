@@ -1,0 +1,1 @@
+<img src="{{asset('assets/NewsMaker-23-logo.png')}}" alt="NewsMaker23" class="h-[100px]">
