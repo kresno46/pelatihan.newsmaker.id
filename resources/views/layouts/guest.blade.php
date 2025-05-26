@@ -31,7 +31,7 @@
 
     <div class="relative min-h-screen flex flex-col justify-center items-center px-5">
         <div
-            class="w-full sm:max-w-md px-6 py-4 bg-gray-200/70 dark:bg-gray-900/70 border border-gray-300 dark:border-gray-700 backdrop-blur-sm shadow-lg rounded-lg transition-colors duration-300">
+            class="w-full sm:max-w-md px-6 py-4 bg-gray-200/10 dark:bg-gray-900/50 border border-gray-300 dark:border-gray-700 backdrop-blur-sm shadow-lg rounded-lg transition-colors duration-300">
             <div class="flex flex-col justify-center items-center space-y-5">
                 <x-application-logo />
                 @yield('content')

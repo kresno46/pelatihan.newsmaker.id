@@ -1,1 +1,2 @@
-<img src="{{asset('assets/NewsMaker-23-logo.png')}}" alt="NewsMaker23" class="h-[100px]">
+<img src="{{asset('assets/NewsMaker-23-logo.png')}}" alt="NewsMaker23" class="h-[100px] block dark:hidden">
+<img src="{{asset('assets/NewsMaker-23-logo-white.png')}}" alt="NewsMaker23" class="h-[100px] hidden dark:block">

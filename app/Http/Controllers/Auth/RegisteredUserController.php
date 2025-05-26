@@ -32,7 +32,7 @@ class RegisteredUserController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:100'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:50', 'unique:' . User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'password' => ['required', 'confirmed', Rules\Password::defaults(), 'min:8'],
             'country_code' => ['required', 'string'],
             'no_tlp' => ['required', 'string', 'max:20'],
             'type_id' => ['required', 'in:KTP,SIM,Paspor,KITAS'], // validasi enum

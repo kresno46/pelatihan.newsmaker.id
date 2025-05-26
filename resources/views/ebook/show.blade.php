@@ -36,9 +36,9 @@
             {{-- Tombol Aksi --}}
             <div class="w-full flex flex-col md:flex-row gap-4 mt-4">
                 <a href="{{ asset('storage/' . $ebook->file_ebook) }}" target="_blank"
-                    class="flex-1 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition flex items-center justify-center md:justify-start">
+                    class="flex-1 px-4 py-2 text-center bg-blue-600 text-white rounded hover:bg-blue-700 transition flex items-center justify-center">
                     <i class="fa-solid fa-download"></i>
-                    <span class="hidden md:inline ml-2">Download e-Book</span>
+                    <span class="hidden md:inline ml-2 text-center">Download e-Book</span>
                 </a>
 
                 @auth
@@ -48,16 +48,16 @@
 
                 @if ($role === 'admin' || $role === 'superadmin')
                 <a href="{{ route('ebook.edit', $ebook->id) }}"
-                    class="flex-1 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition flex items-center justify-center md:justify-start">
+                    class="flex-1 px-4 py-2 text-center bg-green-600 text-white rounded hover:bg-green-700 transition flex items-center justify-center">
                     <i class="fa-solid fa-pen-to-square"></i>
-                    <span class="hidden md:inline ml-2">Edit e-Book</span>
+                    <span class="hidden md:inline ml-2 text-center">Edit e-Book</span>
                 </a>
 
                 <div x-data="{ showModal: false }" class="flex-1">
                     <button @click="showModal = true"
-                        class="w-full px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition flex items-center justify-center md:justify-start">
+                        class="w-full flex-1 px-4 py-2 text-center bg-red-600 text-white rounded hover:bg-red-700 transition flex items-center justify-center">
                         <i class="fa-solid fa-trash"></i>
-                        <span class="hidden md:inline ml-2">Delete e-Book</span>
+                        <span class="hidden md:inline ml-2 text-center">Delete e-Book</span>
                     </button>
 
                     {{-- Modal Konfirmasi Hapus --}}

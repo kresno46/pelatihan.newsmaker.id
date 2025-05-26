@@ -16,12 +16,17 @@
             class="bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-600 transition cursor-pointer">
             Reset
         </a>
+        @php
+        $role = strtolower(Auth::user()->role ?? '');
+        @endphp
 
+        @if ($role === 'admin' || $role === 'superadmin')
         <a href="{{ route('ebook.create') }}"
             class="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-600 transition cursor-pointer">
             <span class="block sm:hidden">+</span>
             <span class="hidden sm:block">Tambah e-Book</span>
         </a>
+        @endif
     </div>
 
     <!-- Grid Card -->
