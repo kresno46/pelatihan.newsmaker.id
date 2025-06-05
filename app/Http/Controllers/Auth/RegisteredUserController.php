@@ -30,24 +30,31 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:100'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:50', 'unique:' . User::class],
+            'name' => ['required', 'string', 'max:50'],
+            'email' => ['required', 'string', 'email', 'max:50', 'unique:users,email'],
             'password' => ['required', 'confirmed', Rules\Password::defaults(), 'min:8'],
-            'country_code' => ['required', 'string'],
-            'no_tlp' => ['required', 'string', 'max:20'],
-            'type_id' => ['required', 'in:KTP,SIM,Paspor,KITAS'], // validasi enum
-            'no_id' => ['required', 'string', 'max:17', 'unique:users,no_id'],
+            'jenis_kelamin' => ['required', 'in:Pria,Wanita'],
+            'tempat_lahir' => ['required', 'string', 'max:50'],
+            'tanggal_lahir' => ['required', 'date'],
+            'warga_negara' => ['nullable', 'string', 'max:50'],
+            'alamat' => ['required', 'string'],
+            'no_tlp' => ['required', 'string', 'max:20', 'unique:users,no_tlp'],
+            'pekerjaan' => ['required', 'string', 'max:50'],
+            'role' => ['nullable', 'in:Admin,Trainer (Eksternal)'], // opsional, default bisa di-model
         ]);
-
-        $fullPhone = $request->country_code . ltrim($request->no_tlp, '0');
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'no_tlp' => $fullPhone,
-            'type_id' => $request->type_id,
-            'no_id' => $request->no_id,
+            'jenis_kelamin' => $request->jenis_kelamin,
+            'tempat_lahir' => $request->tempat_lahir,
+            'tanggal_lahir' => $request->tanggal_lahir,
+            'warga_negara' => $request->warga_negara,
+            'alamat' => $request->alamat,
+            'no_tlp' => $request->no_tlp,
+            'pekerjaan' => $request->pekerjaan,
+            'role' => $request->role ?? 'Trainer (Eksternal)',
         ]);
 
         event(new Registered($user));

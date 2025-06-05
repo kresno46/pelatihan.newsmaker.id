@@ -119,6 +119,8 @@ return [
     'url' => 'Format :attribute tidak valid.',
     'uuid' => ':attribute harus berupa UUID yang valid.',
 
+    'current_password' => 'Password lama yang Anda masukkan salah.',
+
     'custom' => [
         'attribute-name' => [
             'rule-name' => 'pesan-khusus',

@@ -9,12 +9,12 @@
     <title>@yield('namePage') - Newsmaker23 Edukasi</title>
 
     {{-- Icon --}}
-    <link rel="icon" type="image/png" href="{{asset('Icon/favicon-96x96.png')}}" sizes="96x96" />
-    <link rel="icon" type="image/svg+xml" href="{{asset('Icon/favicon.svg')}}" />
-    <link rel="shortcut icon" href="{{asset('Icon/favicon.ico')}}" />
-    <link rel="apple-touch-icon" sizes="180x180" href="{{asset('Icon/apple-touch-icon.png')}}" />
+    <link rel="icon" type="image/png" href="{{ asset('Icon/favicon-96x96.png') }}" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="{{ asset('Icon/favicon.svg') }}" />
+    <link rel="shortcut icon" href="{{ asset('Icon/favicon.ico') }}" />
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('Icon/apple-touch-icon.png') }}" />
     <meta name="apple-mobile-web-app-title" content="NM23" />
-    <link rel="manifest" href="{{asset('Icon/site.webmanifest')}}" />
+    <link rel="manifest" href="{{ asset('Icon/site.webmanifest') }}" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -47,12 +47,13 @@
                     <ul class="flex flex-col space-y-2">
                         <li class="text-sm text-gray-500 uppercase tracking-wide">Menu</li>
                         <li>
-                            <a href="{{ route('dashboard') }}" class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
-                            {{ request()->routeIs('dashboard') 
-                            ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold' 
-                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                            <a href="{{ route('dashboard') }}"
+                                class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('dashboard')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
                                 <i class="fas fa-home"></i>
-                                <span>Dashboard</span>
+                                <span>{{ __('Beranda') }}</span>
                             </a>
                         </li>
                     </ul>
@@ -65,12 +66,23 @@
                     <ul class="flex flex-col space-y-2">
                         <li class="text-sm text-gray-500 uppercase tracking-wide">Edukasi</li>
                         <li>
-                            <a href="{{ route('ebook.index') }}" class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
-                            {{ request()->routeIs('ebook.*') 
-                            ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold' 
-                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                            <a href="{{ route('ebook.index') }}"
+                                class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('ebook.*')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
                                 <i class="fa-solid fa-book"></i>
-                                <span>eBook</span>
+                                <span>{{ __('eBook') }}</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('quiz.index') }}"
+                                class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('quiz.*')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                <i class="fa-solid fa-circle-question"></i>
+                                <span>{{ __('Kuis') }}</span>
                             </a>
                         </li>
                     </ul>
@@ -79,20 +91,33 @@
                 <hr class="border-gray-300 dark:border-gray-700">
 
                 <!-- Navigation - Manajemen -->
-                <nav>
-                    <ul class="flex flex-col space-y-2">
-                        <li class="text-sm text-gray-500 uppercase tracking-wide">Manajemen</li>
-                        <li>
-                            <a href="" class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
-                            {{ request()->routeIs('user.*') 
-                            ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold' 
-                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                <i class="fa-solid fa-user"></i>
-                                <span>User</span>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
+                @if (Auth::user()->role === 'Admin')
+                    <nav>
+                        <ul class="flex flex-col space-y-2">
+                            <li class="text-sm text-gray-500 uppercase tracking-wide">Manajemen</li>
+                            <li>
+                                <a href=""
+                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('user.*')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                    <i class="fa-solid fa-user"></i>
+                                    <span>Admin</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href=""
+                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('user.*')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                    <i class="fa-solid fa-user"></i>
+                                    <span>User</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                @endif
             </div>
         </aside>
 
@@ -142,24 +167,24 @@
                         <div id="profileDropdown"
                             class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 shadow-md rounded-md overflow-hidden z-40">
 
-                            <a href="#"
+                            <a href="{{ route('profile.edit') }}"
                                 class="block px-4 py-2 text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600">
-                                Profile
+                                Profil
                             </a>
 
                             <a href="#"
                                 class="block px-4 py-2 text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600">
-                                Settings
+                                Riwayat Saya
                             </a>
 
                             <!-- Theme Dropdown -->
                             <div class="px-4 py-2 text-gray-800 dark:text-white">
-                                <label for="themeSelect" class="block mb-1 font-semibold">Select Theme</label>
+                                <label for="themeSelect" class="block mb-1 font-semibold">Pilih Tema</label>
                                 <select id="themeSelect"
                                     class="w-full rounded bg-gray-200 dark:bg-gray-600 text-gray-900 dark:text-white p-1">
-                                    <option value="light">Light</option>
-                                    <option value="dark">Dark</option>
-                                    <option value="auto">Auto</option>
+                                    <option value="light">Terang</option>
+                                    <option value="dark">Gelap</option>
+                                    <option value="auto">Otomatis</option>
                                 </select>
                             </div>
 
@@ -169,7 +194,7 @@
                                 @csrf
                                 <button type="submit"
                                     class="w-full text-left px-4 py-2 text-white bg-red-600 hover:bg-red-700">
-                                    Logout
+                                    Keluar
                                 </button>
                             </form>
                         </div>
@@ -197,13 +222,13 @@
                         <ul class="space-y-2">
                             <li class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Menu</li>
                             <li>
-                                <a href="{{ route('dashboard') }}"
-                                    @class([ 'flex items-center space-x-4 px-3 py-2 rounded transition duration-200'
-                                    , 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'=>
-                                    request()->routeIs('dashboard'),
-                                    'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' =>
-                                    !request()->routeIs('dashboard')
-                                    ])>
+                                <a href="{{ route('dashboard') }}" @class([
+                                    'flex items-center space-x-4 px-3 py-2 rounded transition duration-200',
+                                    'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold' => request()->routeIs(
+                                        'dashboard'),
+                                    'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' => !request()->routeIs(
+                                        'dashboard'),
+                                ])>
                                     <i class="fas fa-home"></i>
                                     <span>Dashboard</span>
                                 </a>
@@ -218,13 +243,13 @@
                         <ul class="space-y-2">
                             <li class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Edukasi</li>
                             <li>
-                                <a href="{{ route('ebook.index') }}"
-                                    @class([ 'flex items-center space-x-4 px-3 py-2 rounded transition duration-200'
-                                    , 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'=>
-                                    request()->routeIs('ebook.*'),
-                                    'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' =>
-                                    !request()->routeIs('ebook.*')
-                                    ])>
+                                <a href="{{ route('ebook.index') }}" @class([
+                                    'flex items-center space-x-4 px-3 py-2 rounded transition duration-200',
+                                    'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold' => request()->routeIs(
+                                        'ebook.*'),
+                                    'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' => !request()->routeIs(
+                                        'ebook.*'),
+                                ])>
                                     <i class="fa-solid fa-book"></i>
                                     <span>eBook</span>
                                 </a>
@@ -252,14 +277,14 @@
 
             <!-- Page Content -->
             <main class="flex-1 p-6">
-                @if(session('success'))
-                <div
-                    class="mb-6 rounded-lg border-l-2 border-green-600 bg-green-100 dark:bg-green-900/50 p-4 text-green-800 dark:text-green-200">
-                    <div class="flex items-center space-x-2 font-semibold">
-                        <i class="fa-solid fa-circle-check"></i>
-                        <span>{{ session('success') }}</span>
+                @if (session('success'))
+                    <div class="mb-6 rounded-lg border-l-2 border-green-600 bg-green-100 dark:bg-green-900/50 p-4 text-green-800 dark:text-green-200"
+                        x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 5000)">
+                        <div class="flex items-center space-x-2 font-semibold">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span>{{ session('success') }}</span>
+                        </div>
                     </div>
-                </div>
                 @endif
 
                 @yield('content')
@@ -277,20 +302,20 @@
             // Fungsi untuk apply theme
             function applyTheme(theme) {
                 if (theme === 'dark') {
-                html.classList.add('dark');
-                html.style.colorScheme = 'dark';
-                } else if (theme === 'light') {
-                html.classList.remove('dark');
-                html.style.colorScheme = 'light';
-                } else if (theme === 'auto') {
-                // Sesuaikan dengan preferensi sistem
-                if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
                     html.classList.add('dark');
                     html.style.colorScheme = 'dark';
-                } else {
+                } else if (theme === 'light') {
                     html.classList.remove('dark');
                     html.style.colorScheme = 'light';
-                }
+                } else if (theme === 'auto') {
+                    // Sesuaikan dengan preferensi sistem
+                    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                        html.classList.add('dark');
+                        html.style.colorScheme = 'dark';
+                    } else {
+                        html.classList.remove('dark');
+                        html.style.colorScheme = 'light';
+                    }
                 }
                 localStorage.setItem('theme', theme);
             }
@@ -304,21 +329,21 @@
                 themeSelect.value = savedTheme;
 
                 themeSelect.addEventListener('change', (e) => {
-                applyTheme(e.target.value);
+                    applyTheme(e.target.value);
                 });
             }
 
             // Dropdown profil toggle
             if (profileButton && profileDropdown) {
                 profileButton.addEventListener('click', (e) => {
-                e.stopPropagation();
-                profileDropdown.classList.toggle('hidden');
+                    e.stopPropagation();
+                    profileDropdown.classList.toggle('hidden');
                 });
 
                 document.addEventListener('click', (e) => {
-                if (!profileDropdown.contains(e.target)) {
-                    profileDropdown.classList.add('hidden');
-                }
+                    if (!profileDropdown.contains(e.target)) {
+                        profileDropdown.classList.add('hidden');
+                    }
                 });
             }
 
@@ -329,11 +354,11 @@
 
             if (mobileMenuButton && mobileSidebar && closeMobileSidebar) {
                 mobileMenuButton.addEventListener('click', () => {
-                mobileSidebar.classList.remove('-translate-x-full');
+                    mobileSidebar.classList.remove('-translate-x-full');
                 });
 
                 closeMobileSidebar.addEventListener('click', () => {
-                mobileSidebar.classList.add('-translate-x-full');
+                    mobileSidebar.classList.add('-translate-x-full');
                 });
             }
         });

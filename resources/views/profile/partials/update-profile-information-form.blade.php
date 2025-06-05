@@ -1,64 +1,185 @@
-<section>
-    <header>
-        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-            {{ __('Profile Information') }}
-        </h2>
+{{-- Update Informasi Profil --}}
+<section class="space-y-3">
+    <header class="w-full bg-white dark:bg-gray-800 shadow rounded-lg p-4 sm:p-6">
+        <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                    {{ __('Profile') }}
+                </h2>
 
-        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            {{ __("Update your account's profile information and email address.") }}
-        </p>
-    </header>
+                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                    {{ __('Lengkapi dan perbarui data diri Anda agar informasi selalu akurat.') }}
+                </p>
+            </div>
 
-    <form id="send-verification" method="post" action="{{ route('verification.send') }}">
-        @csrf
-    </form>
-
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
-        @csrf
-        @method('patch')
-
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $user->name)" required autofocus autocomplete="name" />
-            <x-input-error class="mt-2" :messages="$errors->get('name')" />
-        </div>
-
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)" required autocomplete="username" />
-            <x-input-error class="mt-2" :messages="$errors->get('email')" />
-
-            @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
-                <div>
-                    <p class="text-sm mt-2 text-gray-800 dark:text-gray-200">
-                        {{ __('Your email address is unverified.') }}
-
-                        <button form="send-verification" class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
-                            {{ __('Click here to re-send the verification email.') }}
-                        </button>
-                    </p>
-
-                    @if (session('status') === 'verification-link-sent')
-                        <p class="mt-2 font-medium text-sm text-green-600 dark:text-green-400">
-                            {{ __('A new verification link has been sent to your email address.') }}
-                        </p>
-                    @endif
+            @if (session('status') === 'profile-updated')
+                <div x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 5000)"
+                    class="text-xs bg-green-100 dark:bg-green-200 text-green-800 py-1 px-3 rounded-lg">
+                    {{ __('Profil berhasil diperbarui.') }}
                 </div>
             @endif
         </div>
+    </header>
 
-        <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
+    <div class="w-full bg-white dark:bg-gray-800 shadow rounded-lg p-4 sm:p-8">
+        @php
+            // Array field yang ingin dicek
+            $requiredFields = [
+                'name',
+                'email',
+                'jenis_kelamin',
+                'tempat_lahir',
+                'tanggal_lahir',
+                'warga_negara',
+                'alamat',
+                'no_id',
+                'no_tlp',
+                'pekerjaan',
+            ];
+        @endphp
 
-            @if (session('status') === 'profile-updated')
-                <p
-                    x-data="{ show: true }"
-                    x-show="show"
-                    x-transition
-                    x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-gray-600 dark:text-gray-400"
-                >{{ __('Saved.') }}</p>
-            @endif
-        </div>
-    </form>
+        <form method="POST" action="{{ route('profile.update') }}">
+            @csrf
+            @method('PATCH')
+
+            {{-- Nama Lengkap --}}
+            <div>
+                <x-input-label-append for="name" :value="__('Nama Lengkap')" :append="empty($user->name) ? '<span class=\'text-red-500\'>*</span>' : ''" />
+                <x-text-input id="name" type="text" name="name" class="block mt-1 w-full"
+                    :value="old('name', $user->name)" />
+                <x-input-error :messages="$errors->get('name')" class="mt-2" />
+            </div>
+
+            {{-- Email --}}
+            <div class="mt-4">
+                <x-input-label-append for="email" :value="__('Email')" :append="empty($user->email) ? '<span class=\'text-red-500\'>*</span>' : ''" />
+                <x-text-input id="email" type="email" name="email" class="block mt-1 w-full"
+                    :value="old('email', $user->email)" />
+                <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            </div>
+
+            {{-- Jenis Kelamin --}}
+            @php
+                $jenisKelaminList = ['Pria', 'Wanita'];
+                $selectedJK = old('jenis_kelamin', $user->jenis_kelamin ?? '');
+            @endphp
+            <div class="mt-4">
+                <x-input-label-append for="jenis_kelamin" :value="__('Jenis Kelamin')" :append="empty($user->jenis_kelamin) ? '<span class=\'text-red-500\'>*</span>' : ''" />
+                <select id="jenis_kelamin" name="jenis_kelamin"
+                    class="block mt-1 w-full rounded-md shadow-sm border-gray-300
+                            dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
+                    <option value="">-- Pilih Jenis Kelamin --</option>
+                    @foreach ($jenisKelaminList as $jk)
+                        <option value="{{ $jk }}" {{ $selectedJK == $jk ? 'selected' : '' }}>
+                            {{ $jk }}
+                        </option>
+                    @endforeach
+                </select>
+                <x-input-error :messages="$errors->get('jenis_kelamin')" class="mt-2" />
+            </div>
+
+            {{-- Tempat Lahir --}}
+            <div class="mt-4">
+                <x-input-label-append for="tempat_lahir" :value="__('Tempat Lahir')" :append="empty($user->tempat_lahir) ? '<span class=\'text-red-500\'>*</span>' : ''" />
+                <x-text-input id="tempat_lahir" type="text" name="tempat_lahir" class="block mt-1 w-full"
+                    :value="old('tempat_lahir', $user->tempat_lahir)" />
+                <x-input-error :messages="$errors->get('tempat_lahir')" class="mt-2" />
+            </div>
+
+            {{-- Tanggal Lahir --}}
+            <div class="mt-4">
+                <x-input-label-append for="tanggal_lahir" :value="__('Tanggal Lahir')" :append="empty($user->tanggal_lahir) ? '<span class=\'text-red-500\'>*</span>' : ''" />
+                <x-text-input id="tanggal_lahir" type="date" name="tanggal_lahir" class="block mt-1 w-full"
+                    :value="old(
+                        'tanggal_lahir',
+                        $user->tanggal_lahir ? \Carbon\Carbon::parse($user->tanggal_lahir)->format('Y-m-d') : '',
+                    )" />
+                <x-input-error :messages="$errors->get('tanggal_lahir')" class="mt-2" />
+            </div>
+
+            {{-- Warga Negara --}}
+            <div class="mt-4">
+                <x-input-label-append for="warga_negara" :value="__('Warga Negara')" :append="empty($user->warga_negara) ? '<span class=\'text-red-500\'>*</span>' : ''" />
+                <x-text-input id="warga_negara" type="text" name="warga_negara" class="block mt-1 w-full"
+                    :value="old('warga_negara', $user->warga_negara)" />
+                <x-input-error :messages="$errors->get('warga_negara')" class="mt-2" />
+            </div>
+
+            {{-- Alamat --}}
+            <div class="mt-4">
+                <x-input-label-append for="alamat" :value="__('Alamat')" :append="empty($user->alamat) ? '<span class=\'text-red-500\'>*</span>' : ''" />
+                <textarea id="alamat" name="alamat"
+                    class="block mt-1 w-full rounded-md shadow-sm border-gray-300
+                            dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">{{ old('alamat', $user->alamat) }}</textarea>
+                <x-input-error :messages="$errors->get('alamat')" class="mt-2" />
+            </div>
+
+            {{-- Nomor Identitas --}}
+            <div class="mt-4">
+                <x-input-label-append for="no_id" :value="__('Nomor Identitas (KTP/NIK)')" :append="empty($user->no_id) ? '<span class=\'text-red-500\'>*</span>' : ''" />
+                <x-text-input id="no_id" type="text" name="no_id" class="block mt-1 w-full"
+                    :value="old('no_id', $user->no_id)" />
+                <x-input-error :messages="$errors->get('no_id')" class="mt-2" />
+            </div>
+
+            {{-- Nomor Telepon --}}
+            <div class="mt-4">
+                <x-input-label-append for="no_tlp" :value="__('Nomor Telepon')" :append="empty($user->no_tlp) ? '<span class=\'text-red-500\'>*</span>' : ''" />
+                <x-text-input id="no_tlp" type="text" name="no_tlp" class="block mt-1 w-full"
+                    :value="old('no_tlp', $user->no_tlp)" />
+                <x-input-error :messages="$errors->get('no_tlp')" class="mt-2" />
+            </div>
+
+            {{-- Pekerjaan --}}
+            @php
+                $pekerjaanList = [
+                    'Pelajar/Mahasiswa',
+                    'PNS',
+                    'TNI/Polri',
+                    'Pegawai Negeri',
+                    'Karyawan Swasta',
+                    'Wiraswasta',
+                    'Petani',
+                    'Peternak',
+                    'Nelayan',
+                    'Buruh',
+                    'Pensiunan',
+                    'Ibu Rumah Tangga',
+                    'Dokter',
+                    'Perawat',
+                    'Guru/Dosen',
+                    'Sopir',
+                    'Pengacara',
+                    'Arsitek',
+                    'Seniman/Artis',
+                    'Programmer',
+                    'Lainnya',
+                ];
+                $selectedPekerjaan = old('pekerjaan', $user->pekerjaan ?? '');
+            @endphp
+            <div class="mt-4">
+                <x-input-label-append for="pekerjaan" :value="__('Pekerjaan')" :append="empty($user->pekerjaan) ? '<span class=\'text-red-500\'>*</span>' : ''" />
+                <select id="pekerjaan" name="pekerjaan"
+                    class="block mt-1 w-full rounded-md shadow-sm border-gray-300
+                            dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
+                    <option value="">-- Pilih Pekerjaan --</option>
+                    @foreach ($pekerjaanList as $pekerjaan)
+                        <option value="{{ $pekerjaan }}" {{ $selectedPekerjaan == $pekerjaan ? 'selected' : '' }}>
+                            {{ $pekerjaan }}
+                        </option>
+                    @endforeach
+                </select>
+                <x-input-error :messages="$errors->get('pekerjaan')" class="mt-2" />
+            </div>
+
+            <x-missing-fields-alert :user="$user" />
+
+            {{-- Tombol Simpan --}}
+            <div class="flex items-center justify-end mt-10 gap-5">
+                <x-primary-button class="ml-4">
+                    {{ __('Simpan Perubahan') }}
+                </x-primary-button>
+            </div>
+        </form>
+    </div>
 </section>

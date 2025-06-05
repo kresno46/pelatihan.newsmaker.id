@@ -6,22 +6,23 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name', 50);
             $table->string('email', 50)->unique();
-            $table->enum('type_id', ['KTP', 'SIM', 'Paspor', 'KITAS']);
-            $table->string('no_id', 17)->unique();
+            $table->enum('jenis_kelamin', ['Pria', 'Wanita' ]);
+            $table->string('tempat_lahir', 50);
+            $table->date('tanggal_lahir');
+            $table->string('warga_negara', 50)->nullable();
+            $table->text('alamat');
+            $table->string('no_id', 17)->unique()->nullable();
             $table->string('no_tlp', 20)->unique();
-            $table->enum('role', ['Admin', 'Trainer (Internal)', 'Trainer (Eksternal)'])->default('Trainer (Eksternal)');
-
+            $table->string('pekerjaan', 50);
+            $table->enum('role', ['Admin', 'Trainer (Eksternal)'])->default('Trainer (Eksternal)');
             $table->timestamp('email_verified_at')->nullable();
-            $table->text('password');
+            $table->string('password');
             $table->rememberToken();
             $table->timestamps();
         });
@@ -42,9 +43,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('users');
@@ -52,3 +50,4 @@ return new class extends Migration
         Schema::dropIfExists('sessions');
     }
 };
+

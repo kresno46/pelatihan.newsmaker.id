@@ -16,11 +16,8 @@
             class="bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-600 transition cursor-pointer">
             Reset
         </a>
-        @php
-        $role = strtolower(Auth::user()->role ?? '');
-        @endphp
 
-        @if ($role === 'admin' || $role === 'superadmin')
+        @if (Auth::user()->role === 'Admin')
         <a href="{{ route('ebook.create') }}"
             class="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-600 transition cursor-pointer">
             <span class="block sm:hidden">+</span>
@@ -66,14 +63,15 @@
         </div>
         @else
         <div class="text-sm text-gray-600 dark:text-gray-300 p-2">
-            Showing
+            Menampilkan
             @if ($ebooks->total() > 0)
-            {{ $ebooks->firstItem() }} to {{ $ebooks->lastItem() }} of {{ $ebooks->total() }} results
+            {{ $ebooks->firstItem() }} sampai {{ $ebooks->lastItem() }} dari total {{ $ebooks->total() }} hasil
             @else
-            0 to 0 of 0 results
+            0 sampai 0 dari total 0 hasil
             @endif
         </div>
         @endif
+
     </div>
 
 </div>

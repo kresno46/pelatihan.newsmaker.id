@@ -25,13 +25,17 @@
 </head>
 
 <body class="font-sans antialiased text-gray-900 dark:text-gray-100"
-    style="background-image: url('{{ asset('assets/3439372_61769.jpg') }}'); background-size: cover; background-position: center;">
+    style="
+        background-image: url('{{ asset('assets/3439372_61769.jpg') }}');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;">
 
     <div class="hidden dark:block fixed inset-0 bg-black bg-opacity-70 pointer-events-none"></div>
 
     <div class="relative min-h-screen flex flex-col justify-center items-center px-5">
         <div
-            class="w-full sm:max-w-md px-6 py-4 bg-gray-200/10 dark:bg-gray-900/50 border border-gray-300 dark:border-gray-700 backdrop-blur-sm shadow-lg rounded-lg transition-colors duration-300">
+            class="w-full sm:max-w-lg px-6 py-4 my-10 bg-gray-200/10 dark:bg-gray-900/50 border border-gray-300 dark:border-gray-700 backdrop-blur-sm shadow-lg rounded-lg transition-colors duration-300">
             <div class="flex flex-col justify-center items-center space-y-5">
                 <x-application-logo />
                 @yield('content')
