@@ -11,11 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_quiz_results', function (Blueprint $table) {
+        Schema::create('ebooks', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('quiz_id')->constrained()->onDelete('cascade');
-            $table->integer('score');
+            $table->string('title', 50);
+            $table->string('slug')->unique(); // Tambahkan kolom slug
+            $table->text('deskripsi');
+            $table->text('cover');
+            $table->text('file');
             $table->timestamps();
         });
     }
@@ -25,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_quiz_results');
+        Schema::dropIfExists('ebooks');
     }
 };

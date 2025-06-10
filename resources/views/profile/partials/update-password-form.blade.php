@@ -4,18 +4,18 @@
         <div class="flex flex-col md:flex-row items-center justify-between">
             <div>
                 <h2 class="text-xl font-medium text-gray-900 dark:text-gray-100">
-                    {{ __('Profile') }}
+                    {{ __('Reset Password') }}
                 </h2>
 
                 <p class="mt-1 text-base text-gray-600 dark:text-gray-400">
-                    {{ __('Lengkapi dan perbarui data diri Anda agar informasi selalu akurat.') }}
+                    {{ __('Atur ulang kata sandi akun Anda untuk menjaga keamanan.') }}
                 </p>
             </div>
 
-            @if (session('status') === 'profile-updated')
+            @if (session('status') === 'password-updated')
                 <div x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 10000)"
                     class="text-sm bg-green-300 dark:text-green-400 py-2 px-3 rounded-xl">
-                    <span class="text-green-800">{{ __('Profil berhasil diperbarui.') }}</span>
+                    <span class="text-green-800">{{ __('Kata sandi berhasil diperbarui.') }}</span>
                 </div>
             @endif
         </div>

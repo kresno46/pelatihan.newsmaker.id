@@ -5,15 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Question extends Model
+class PostTest extends Model
 {
     use HasFactory;
 
-    protected $table = 'questions';
+    protected $table = 'post_tests';
 
-    // Field yang dapat diisi
     protected $fillable = [
-        'quiz_id',
+        'session_id',
         'question',
         'option_a',
         'option_b',
@@ -22,11 +21,9 @@ class Question extends Model
         'correct_option',
     ];
 
-    /**
-     * Relasi: Pertanyaan milik satu kuis.
-     */
-    public function quiz()
+    // Relasi ke PostTestSession
+    public function session()
     {
-        return $this->belongsTo(Quiz::class);
+        return $this->belongsTo(PostTestSession::class, 'session_id');
     }
 }

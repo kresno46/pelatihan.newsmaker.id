@@ -2,116 +2,110 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Question;
-use App\Models\Quiz;
+use App\Models\Ebook;
 use Illuminate\Http\Request;
+use App\Models\PostTestSession;
+use App\Models\PostTest;
+use Illuminate\Support\Facades\DB;
+
 
 class QuizController extends Controller
 {
     /**
-     * Tampilkan semua kuis (untuk admin), dengan pencarian dan pagination.
+     * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index($slug)
     {
-        $search = $request->input('search');
+        // Cari ebook berdasarkan slug
+        $ebook = Ebook::where('slug', $slug)->firstOrFail();
 
-        $quizzes = Quiz::with('questions')
-            ->when($search, function ($query, $search) {
-                $query->where('title', 'like', "%{$search}%");
-            })
-            // Cek role user, filter hanya public jika bukan admin
-            ->when(auth()->user()->role !== 'Admin', function ($query) {
-                $query->where('status', 'public');
-            })
-            ->latest()
-            ->paginate(8);
+        // Cari kuis (session) yang terkait dengan ebook ini, misalnya yang terakhir dibuat
+        $quiz = PostTestSession::where('ebook_id', $ebook->id)->latest()->first();
 
-        return view('quiz.index', compact('quizzes', 'search'));
+        // Jika ada quiz, ambil soal-soalnya, kalau tidak, null
+        if ($quiz) {
+            $questions = PostTest::where('session_id', $quiz->id)->get()->map(function ($item) {
+                return [
+                    'question' => $item->question,
+                    'option_a' => $item->option_a,
+                    'option_b' => $item->option_b,
+                    'option_c' => $item->option_c,
+                    'option_d' => $item->option_d,
+                    'correct_option' => strtoupper($item->correct_option),
+                ];
+            })->toArray();
+        } else {
+            $questions = null;
+        }
+
+        return view('quiz.index', compact('slug', 'quiz', 'questions'));
     }
 
-    /**
-     * Tampilkan form tambah kuis.
-     */
-    public function create()
-    {
-        return view('quiz.create');
-    }
 
-    /**
-     * Simpan kuis yang baru dibuat oleh admin.
-     */
-    public function store(Request $request)
+    public function saveQuiz(Request $request, $slug, $sessionId = null)
     {
+        // Cari ebook sesuai slug
+        $ebook = Ebook::where('slug', $slug)->firstOrFail();
+
         $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            // 'status' => 'required|in:public,private',
+            'title' => 'required|string',
+            'duration' => 'required|integer|min:1',
+            'questions' => 'required|array|min:1',
+            'questions.*.question' => 'required|string',
+            'questions.*.option_A' => 'required|string',
+            'questions.*.option_B' => 'required|string',
+            'questions.*.option_C' => 'nullable|string',
+            'questions.*.option_D' => 'nullable|string',
+            'questions.*.correct_option' => 'required|in:A,B,C,D',
         ]);
 
-        // Simpan kuis baru
-        $quiz = Quiz::create([
-            'title' => $request->title,
-            'description' => $request->description,
-            // 'status' => $request->status,
-        ]);
+        if ($sessionId) {
+            // Update mode
+            $session = PostTestSession::where('id', $sessionId)
+                ->where('ebook_id', $ebook->id)
+                ->firstOrFail();
 
-        return redirect()->route('quiz.index')->with('success', 'Kuis berhasil ditambahkan!');
-    }
+            // Update session title dan duration
+            $session->update([
+                'title' => $request->title,
+                'duration' => $request->duration,
+            ]);
 
-    /**
-     * Tampilkan form edit kuis.
-     */
-    public function edit($id)
-    {
-        $quiz = Quiz::findOrFail($id);
+            // Tambahkan soal baru tanpa hapus soal lama
+            foreach ($request->questions as $q) {
+                PostTest::create([
+                    'session_id' => $session->id,
+                    'question' => $q['question'],
+                    'option_a' => $q['option_A'],
+                    'option_b' => $q['option_B'],
+                    'option_c' => $q['option_C'],
+                    'option_d' => $q['option_D'],
+                    'correct_option' => $q['correct_option'],
+                ]);
+            }
+        } else {
+            // Store mode (buat session baru)
+            $session = PostTestSession::create([
+                'ebook_id' => $ebook->id,
+                'title' => $request->title,
+                'duration' => $request->duration,
+            ]);
 
-        return view('quiz.edit', compact('quiz'));
-    }
+            // Simpan semua soal baru
+            foreach ($request->questions as $q) {
+                PostTest::create([
+                    'session_id' => $session->id,
+                    'question' => $q['question'],
+                    'option_a' => $q['option_A'],
+                    'option_b' => $q['option_B'],
+                    'option_c' => $q['option_C'],
+                    'option_d' => $q['option_D'],
+                    'correct_option' => $q['correct_option'],
+                ]);
+            }
+        }
 
-    /**
-     * Update kuis yang sudah ada diedit oleh admin.
-     */
-    public function update(Request $request, $id)
-    {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-        ]);
-
-        // Update kuis
-        $quiz = Quiz::find($id);
-
-        $quiz->update([
-            'title' => $request->title,
-            'description' => $request->description,
-        ]);
-
-        return redirect()->route('quiz.index')->with('success', 'Kuis berhasil diupdate!');
-    }
-
-    /**
-     * Tampilkan detail kuis dan semua pertanyaannya.
-     *
-     */
-    public function show($slug)
-    {
-        // Ambil kuis berdasarkan slug
-        $quiz = Quiz::where('slug', $slug)->with('questions')->firstOrFail();
-
-        $questions = Question::where('quiz_id', $quiz->id)->get();
-
-        return view('quiz.show', compact('quiz', 'questions'));
-    }
-
-    /**
-     * Hapus kuis yang sudah ada oleh admin.
-     */
-    public function destroy($id)
-    {
-        $quiz = Quiz::find($id);
-
-        $quiz->delete();
-
-        return redirect()->route('quiz.index')->with('success', 'Kuis berhasil dihapus.');
+        return redirect()->route('quiz.index', ['slug' => $slug])
+            ->with('success', $sessionId ? 'Post test berhasil diperbarui dan soal baru ditambahkan!' : 'Post test berhasil dibuat!');
     }
 }

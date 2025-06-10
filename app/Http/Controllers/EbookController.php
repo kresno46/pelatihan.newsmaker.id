@@ -2,139 +2,155 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ebook;
+use App\Models\Ebook;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
 class EbookController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
     public function index(Request $request)
     {
-        $search = $request->input('search');
+        $query = Ebook::query();
 
-        $ebooks = Ebook::query()
-            ->when($search, function ($query, $search) {
-                $query->where('judul', 'like', "%{$search}%")
-                    ->orWhere('penulis', 'like', "%{$search}%")
-                    ->orWhere('tahun_terbit', 'like', "%{$search}%");
-            })
-            ->latest()
-            ->paginate(8); // sesuaikan jumlah per halaman jika perlu
+        // Pencarian
+        if ($request->filled('search')) {
+            $query->where('title', 'like', '%' . $request->search . '%')
+                ->orWhere('deskripsi', 'like', '%' . $request->search . '%');
+        }
+
+        // Paginasi
+        $ebooks = $query->paginate(8);
 
         return view('ebook.index', compact('ebooks'));
     }
 
+    /**
+     * Show the form for creating a new resource.
+     */
     public function create()
     {
         return view('ebook.create');
     }
 
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(Request $request)
     {
         $request->validate([
-            'judul' => 'required|string',
-            'deskripsi' => 'nullable|string',
-            'penulis' => 'required|string|max:100',
-            'tahun_terbit' => 'required|string|max:5',
-            'file_ebook' => 'nullable|file|mimes:pdf|max:10240',
-            'cover_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+            'title' => 'required|max:100',
+            'deskripsi' => 'required',
+            'cover' => 'required|mimes:jpg,jpeg,png|max:2048',
+            'file' => 'required|mimes:pdf|max:10240',
         ]);
 
-        // Simpan file ebook ke storage/app/public/ebooks
-        $ebookFile = $request->file('file_ebook')->store('ebooks', 'public');
+        // Buat folder kalau belum ada
+        if (!file_exists(public_path('uploads/cover'))) {
+            mkdir(public_path('uploads/cover'), 0777, true);
+        }
+        if (!file_exists(public_path('uploads/ebook'))) {
+            mkdir(public_path('uploads/ebook'), 0777, true);
+        }
 
-        // Simpan cover image ke public/covers
-        $coverFile = $request->file('cover_image');
-        $coverName = uniqid() . '.' . $coverFile->getClientOriginalExtension();
-        $coverFile->move(public_path('covers'), $coverName);
+        // Upload cover
+        $cover = $request->file('cover');
+        $coverName = time() . '_' . $cover->getClientOriginalName();
+        $cover->move(public_path('uploads/cover'), $coverName);
 
-        ebook::create([
-            'judul' => $request->judul,
+        // Upload file ebook
+        $file = $request->file('file');
+        $fileName = time() . '_' . $file->getClientOriginalName();
+        $file->move(public_path('uploads/ebook'), $fileName);
+
+        // Simpan data
+        Ebook::create([
+            'title' => $request->title,
             'deskripsi' => $request->deskripsi,
-            'penulis' => $request->penulis,
-            'tahun_terbit' => $request->tahun_terbit,
-            'file_ebook' => $ebookFile,
-            'cover_image' => 'covers/' . $coverName,
+            'cover' => 'uploads/cover/' . $coverName,
+            'file' => 'uploads/ebook/' . $fileName,
         ]);
 
-        return redirect()->route('ebook.index')->with('success', 'Ebook berhasil ditambahkan.');
+        return redirect()->route('ebook.index')->with('success', 'Ebook berhasil ditambahkan!');
     }
 
-    public function show(string $id)
+    /**
+     * Display the specified resource.
+     */
+    public function show($slug)
     {
-        $ebook = ebook::findOrFail($id);
+        $ebook = Ebook::with('postTestSessions')->where('slug', $slug)->firstOrFail();
         return view('ebook.show', compact('ebook'));
     }
 
-    public function edit(string $id)
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit($slug)
     {
-        $ebook = ebook::findOrFail($id);
+        $ebook = Ebook::where('slug', $slug)->firstOrFail();
         return view('ebook.edit', compact('ebook'));
     }
 
-    public function update(Request $request, string $id)
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, $id)
     {
-        $ebook = ebook::findOrFail($id);
+        $ebook = Ebook::findOrFail($id);
 
         $request->validate([
-            'judul' => 'required|string',
-            'deskripsi' => 'nullable|string',
-            'penulis' => 'required|string|max:100',
-            'tahun_terbit' => 'required|string|max:5',
-            'file_ebook' => 'nullable|file|mimes:pdf|max:10240',
-            'cover_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+            'title' => 'required|max:100',
+            'deskripsi' => 'required',
+            'cover' => 'nullable|mimes:jpg,jpeg,png|max:2048',
+            'file' => 'nullable|mimes:pdf|max:10240',
         ]);
 
-        $data = [
-            'judul' => $request->judul,
-            'deskripsi' => $request->deskripsi,
-            'penulis' => $request->penulis,
-            'tahun_terbit' => $request->tahun_terbit,
-        ];
-
-        // Ganti file ebook jika ada upload baru
-        if ($request->hasFile('file_ebook')) {
-            if ($ebook->file_ebook && Storage::disk('public')->exists($ebook->file_ebook)) {
-                Storage::disk('public')->delete($ebook->file_ebook);
+        // Update cover jika ada
+        if ($request->hasFile('cover')) {
+            if (file_exists(public_path($ebook->cover))) {
+                unlink(public_path($ebook->cover));
             }
-
-            $data['file_ebook'] = $request->file('file_ebook')->store('ebooks', 'public');
+            $cover = $request->file('cover');
+            $coverName = time() . '_' . $cover->getClientOriginalName();
+            $cover->move(public_path('uploads/cover'), $coverName);
+            $ebook->cover = 'uploads/cover/' . $coverName;
         }
 
-        // Ganti cover jika ada upload baru
-        if ($request->hasFile('cover_image')) {
-            if ($ebook->cover_image && file_exists(public_path($ebook->cover_image))) {
-                File::delete(public_path($ebook->cover_image));
+        // Update file ebook jika ada
+        if ($request->hasFile('file')) {
+            if (file_exists(public_path($ebook->file))) {
+                unlink(public_path($ebook->file));
             }
-
-            $coverFile = $request->file('cover_image');
-            $coverName = uniqid() . '.' . $coverFile->getClientOriginalExtension();
-            $coverFile->move(public_path('covers'), $coverName);
-            $data['cover_image'] = 'covers/' . $coverName;
+            $file = $request->file('file');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/ebook'), $fileName);
+            $ebook->file = 'uploads/ebook/' . $fileName;
         }
 
-        $ebook->update($data);
+        // Update data
+        $ebook->title = $request->title;
+        $ebook->deskripsi = $request->deskripsi;
+        $ebook->save();
 
-        return redirect()->route('ebook.show', $ebook->id)->with('success', 'Ebook berhasil diperbarui.');
+        return redirect()->route('ebook.show', $ebook->slug)->with('success', 'Ebook berhasil diperbarui!');
     }
 
-    public function destroy(string $id)
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy($id)
     {
-        $ebook = ebook::findOrFail($id);
+        $ebook = Ebook::where('id', $id)->firstOrFail();
 
-        // Hapus file ebook dari storage
-        if ($ebook->file_ebook && Storage::disk('public')->exists($ebook->file_ebook)) {
-            Storage::disk('public')->delete($ebook->file_ebook);
-        }
+        // Hapus file
+        Storage::disk('public')->delete([$ebook->cover, $ebook->file]);
 
-        // Hapus cover dari public folder
-        if ($ebook->cover_image && file_exists(public_path($ebook->cover_image))) {
-            File::delete(public_path($ebook->cover_image));
-        }
-
+        // Hapus data
         $ebook->delete();
 
-        return redirect()->route('ebook.index')->with('success', 'Ebook berhasil dihapus.');
+        return redirect()->route('ebook.index')->with('success', 'Ebook berhasil dihapus!');
     }
 }
