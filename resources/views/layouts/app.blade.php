@@ -68,7 +68,7 @@
                         <li>
                             <a href="{{ route('ebook.index') }}"
                                 class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
-                            {{ request()->routeIs('ebook.*')
+                            {{ request()->routeIs('ebook.*') || request()->routeIs('quiz.*')
                                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
                                 <i class="fa-solid fa-book"></i>
@@ -129,15 +129,6 @@
                 </div>
 
                 <div class="flex items-center space-x-4 relative">
-                    <!-- Search Bar -->
-                    <div class="relative">
-                        <input type="text" placeholder="Search..."
-                            class="px-3 py-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring focus:ring-blue-300 w-48 md:w-64" />
-                        <span class="absolute right-3 top-2.5 text-gray-400">
-                            <i class="fas fa-search"></i>
-                        </span>
-                    </div>
-
                     <!-- Profile Dropdown -->
                     <div class="relative">
                         <button id="profileButton" class="flex items-center space-x-2 focus:outline-none">
@@ -162,10 +153,10 @@
                                 Profil
                             </a>
 
-                            <a href="#"
+                            {{-- <a href="#"
                                 class="block px-4 py-2 text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600">
                                 Riwayat Saya
-                            </a>
+                            </a> --}}
 
                             <!-- Theme Dropdown -->
                             <div class="px-4 py-2 text-gray-800 dark:text-white">
@@ -249,19 +240,22 @@
 
                     <hr class="border-gray-300 dark:border-gray-700 mb-4">
 
-                    <!-- Manajemen Menu -->
-                    <nav>
-                        <ul class="space-y-2">
-                            <li class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Manajemen</li>
-                            <li>
-                                <a href="#"
-                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                                    <i class="fa-solid fa-user"></i>
-                                    <span>User</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
+                    @if (Auth::user()->role === 'Admin')
+                        <!-- Manajemen Menu -->
+                        <nav>
+                            <ul class="space-y-2">
+                                <li class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Manajemen
+                                </li>
+                                <li>
+                                    <a href="#"
+                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                        <i class="fa-solid fa-user"></i>
+                                        <span>User</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    @endif
                 </div>
             </div>
 

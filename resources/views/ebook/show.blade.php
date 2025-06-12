@@ -97,7 +97,7 @@
             </div>
         </div>
 
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md flex items-center justify-between">
+        {{-- <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md flex items-center justify-between">
             <div class="flex items-center gap-5">
                 <div class="bg-slate-200 dark:bg-gray-900 text-gray-800 dark:text-gray-100 p-4 rounded-full">
                     <i class="fa-regular fa-circle-question fa-3x"></i>
@@ -127,7 +127,7 @@
                     @endif
                 @endauth
             </div>
-        </div>
+        </div> --}}
 
         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md space-y-4">
             <embed src="{{ asset($ebook->file) }}" type="application/pdf" width="100%" height="1080px"

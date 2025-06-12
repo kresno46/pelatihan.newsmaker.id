@@ -4,16 +4,14 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
-    /**
-     * Run the migrations.
-     */
+return new class extends Migration {
     public function up(): void
     {
         Schema::create('post_tests', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('session_id')->constrained('post_test_sessions')->onDelete('cascade');
+            $table->foreignId('session_id')
+                ->constrained('post_test_sessions')
+                ->onDelete('cascade');
             $table->text('question');
             $table->text('option_a');
             $table->text('option_b');
@@ -24,9 +22,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('post_tests');

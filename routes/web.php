@@ -25,8 +25,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Kuis
         Route::prefix('{slug}')->group(function () {
-            Route::post('/quiz/store', [QuizController::class, 'saveQuiz'])->name('quiz.store');
-            Route::put('/quiz/{sessionId}', [QuizController::class, 'saveQuiz'])->name('quiz.update');
+            Route::post('/quiz/store', [QuizController::class, 'store'])->name('quiz.store');
+            Route::put('/quiz/{sessionId}/update', [QuizController::class, 'update'])->name('quiz.update');
+            Route::get('/quiz/{sessionId}/add-question', [QuizController::class, 'addQuestionShow'])->name('quiz.add-question-index');
+            Route::post('/quiz/{sessionId}/add-question', [QuizController::class, 'addQuestionStore'])->name('quiz.add-question-store');
+
 
             Route::get('/quiz', [QuizController::class, 'index'])->name('quiz.index');
         });
