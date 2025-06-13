@@ -29,6 +29,7 @@ class QuizController extends Controller
         $questions = $quiz
             ? PostTest::where('session_id', $quiz->id)->get()->map(function ($item) {
                 return [
+                    'id'             => $item->id, // ✅ Tambahkan ini
                     'question'       => $item->question,
                     'option_a'       => $item->option_a,
                     'option_b'       => $item->option_b,
@@ -153,5 +154,53 @@ class QuizController extends Controller
         ]);
 
         return redirect()->route('quiz.index', $slug)->with('Alert', 'Pertanyaan berhasil ditambahkan.');
+    }
+
+    /**
+     * Hapus pertanyaan berdasarkan ID.
+     *
+     * @param  string  $slug
+     * @param  int  $sessionId
+     * @param  int  $questionId
+     * @return \Illuminate\Http\RedirectResponse
+     * */
+    public function deleteQuestion($slug, $sessionId, $questionId)
+    {
+        $session = PostTestSession::findOrFail($sessionId);
+        $question = PostTest::where('session_id', $session->id)->where('id', $questionId)->firstOrFail();
+        $question->delete();
+        return redirect()->route('quiz.index', $slug)->with('Alert', 'Pertanyaan berhasil dihapus.');
+    }
+
+    public function editQuestion($slug, $sessionId, $questionId)
+    {
+        $session = PostTestSession::findOrFail($sessionId);
+        $question = PostTest::where('session_id', $session->id)->where('id', $questionId)->firstOrFail();
+
+        return view('quiz.edit-question', compact('slug', 'session', 'question'));
+    }
+
+    public function updateQuestion(Request $request, $slug, $sessionId, $questionId)
+    {
+        $request->validate([
+            'question' => 'required|string',
+            'option_a' => 'required|string',
+            'option_b' => 'required|string',
+            'option_c' => 'required|string',
+            'option_d' => 'required|string',
+            'correct_option' => 'required|in:A,B,C,D',
+        ]);
+
+        $question = PostTest::where('session_id', $sessionId)->where('id', $questionId)->firstOrFail();
+
+        $question->question = $request->question;
+        $question->option_a = $request->option_a;
+        $question->option_b = $request->option_b;
+        $question->option_c = $request->option_c;
+        $question->option_d = $request->option_d;
+        $question->correct_option = $request->correct_option;
+        $question->save();
+
+        return redirect()->route('quiz.index', $slug)->with('Alert', 'Pertanyaan berhasil diperbarui.');
     }
 }

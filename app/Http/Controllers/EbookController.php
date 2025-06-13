@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ebook;
+use App\Models\PostTestResult;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -82,7 +83,14 @@ class EbookController extends Controller
     public function show($slug)
     {
         $ebook = Ebook::with('postTestSessions')->where('slug', $slug)->firstOrFail();
-        return view('ebook.show', compact('ebook'));
+
+        // Ambil hasil post test terakhir user untuk ebook ini
+        $result = PostTestResult::where('user_id', auth()->id())
+            ->where('ebook_id', $ebook->id)
+            ->latest() // urut dari yang terbaru
+            ->first();
+
+        return view('ebook.show', compact('ebook', 'result'));
     }
 
     /**

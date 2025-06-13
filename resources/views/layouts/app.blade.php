@@ -22,13 +22,21 @@
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Summernote Lite CSS & JS -->
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
+
 </head>
 
 <body class="font-sans antialiased">
     <div class="min-h-screen bg-gray-100 dark:bg-gray-900 flex">
         <!-- Sidebar -->
         <aside
-            class="bg-white dark:bg-gray-800 w-64 hidden md:block sticky top-0 flex-shrink-0 shadow-lg border-r border-gray-200 dark:border-gray-700 h-screen overflow-auto">
+            class="bg-white dark:bg-gray-800 w-64 hidden md:block sticky top-0 flex-shrink-0 shadow-lg border-r border-gray-200 dark:border-gray-700 h-screen overflow-auto z-50">
             <div class="h-full p-4 space-y-6">
                 <!-- Logo -->
                 <div class="w-full flex justify-center">
@@ -86,7 +94,7 @@
                         <ul class="flex flex-col space-y-2">
                             <li class="text-sm text-gray-500 uppercase tracking-wide">Manajemen</li>
                             <li>
-                                <a href=""
+                                <a href="{{ route('admin.index') }}"
                                     class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                             {{ request()->routeIs('user.*')
                                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
@@ -96,9 +104,9 @@
                                 </a>
                             </li>
                             <li>
-                                <a href=""
+                                <a href="{{ route('trainer.index') }}"
                                     class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
-                            {{ request()->routeIs('user.*')
+                            {{ request()->routeIs('trainer.*')
                                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
                                     <i class="fa-solid fa-user"></i>
@@ -114,7 +122,8 @@
         <!-- Content Area -->
         <div class="flex-1 flex flex-col">
             <!-- Navbar -->
-            <header class="sticky top-0 bg-white dark:bg-gray-800 shadow px-4 py-4 flex items-center justify-between">
+            <header
+                class="sticky top-0 bg-white dark:bg-gray-800 shadow px-4 py-4 flex items-center justify-between z-20">
                 <div class="flex items-center justify-center gap-2">
                     <!-- Mobile sidebar toggle -->
                     <button id="mobileMenuButton" class="md:hidden text-gray-700 dark:text-white focus:outline-none">
@@ -153,10 +162,10 @@
                                 Profil
                             </a>
 
-                            {{-- <a href="#"
+                            <a href="{{ route('riwayat.index') }}"
                                 class="block px-4 py-2 text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600">
                                 Riwayat Saya
-                            </a> --}}
+                            </a>
 
                             <!-- Theme Dropdown -->
                             <div class="px-4 py-2 text-gray-800 dark:text-white">

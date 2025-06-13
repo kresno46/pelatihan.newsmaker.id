@@ -3,7 +3,7 @@
 @section('namePage', 'eBook')
 
 @section('content')
-    <div class="bg-white dark:bg-gray-800 p-3 rounded-2xl">
+    <div class="bg-white dark:bg-gray-800 p-3 rounded-2xl shadow-lg">
         <!-- Search Bar -->
         <div class="w-full flex items-center gap-2 mb-5">
             <form action="{{ route('ebook.index') }}" method="GET" class="flex items-center gap-2 flex-grow">
