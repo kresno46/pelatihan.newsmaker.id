@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Ebook;
+use App\Models\PostTestSession;
+use App\Models\PostTestResult;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -32,6 +36,20 @@ class HomeController extends Controller
             }
         }
 
-        return view('dashboard', compact('isIncomplete'));
+        // Statistik
+        $jumlahEbook         = Ebook::count();
+        $jumlahSession       = PostTestSession::count();
+        $riwayatUserLogin    = PostTestResult::where('user_id', auth()->id())->count();
+        $jumlahUser          = User::where('role', 'Trainer (Eksternal)')->count();
+        $jumlahAdmin         = User::where('role', 'Admin')->count();
+
+        return view('dashboard', compact(
+            'isIncomplete',
+            'jumlahEbook',
+            'jumlahSession',
+            'riwayatUserLogin',
+            'jumlahUser',
+            'jumlahAdmin'
+        ));
     }
 }

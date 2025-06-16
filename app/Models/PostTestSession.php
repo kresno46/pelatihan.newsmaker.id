@@ -22,4 +22,15 @@ class PostTestSession extends Model
     {
         return $this->belongsTo(Ebook::class);
     }
+
+    // Relasi ke soal-soal post test
+    public function questions()
+    {
+        return $this->hasMany(PostTest::class, 'session_id');
+    }
+
+    public function getRouteKeyName()
+    {
+        return 'id'; // atau 'slug' jika kamu pakai slug, tapi kamu pakai id di sini
+    }
 }
