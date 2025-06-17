@@ -88,6 +88,29 @@
 
                 <hr class="border-gray-300 dark:border-gray-700">
 
+                <!-- Navigation - Laporan -->
+                @if (Auth::user()->role === 'Admin')
+                    <nav>
+                        <ul class="flex flex-col space-y-2">
+                            <li class="text-sm text-gray-500 uppercase tracking-wide">Laporan</li>
+                            <li>
+                                <a href="{{ route('laporan.index') }}"
+                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('laporan.*')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                    <i class="fa-solid fa-clipboard"></i>
+                                    <span>Post Test</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+
+                    <hr class="border-gray-300 dark:border-gray-700">
+                @endif
+
+
+
                 <!-- Navigation - Manajemen -->
                 @if (Auth::user()->role === 'Admin')
                     <nav>

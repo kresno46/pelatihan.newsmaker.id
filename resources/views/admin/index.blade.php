@@ -70,6 +70,24 @@
                 </tbody>
             </table>
         </div>
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mt-6 gap-2">
+            @if ($admin->total() > 8)
+                <div class="w-full">
+                    {{ $admin->appends(['search' => request('search')])->links() }}
+                </div>
+            @else
+                <div class="text-sm text-gray-600 dark:text-gray-300 p-2">
+                    Menampilkan
+                    @if ($admin->total() > 0)
+                        {{ $admin->firstItem() }} sampai {{ $admin->lastItem() }} dari total
+                        {{ $admin->total() }}
+                        hasil
+                    @else
+                        0 sampai 0 dari total 0 hasil
+                    @endif
+                </div>
+            @endif
+        </div>
     </div>
 
     <!-- Modal Konfirmasi Hapus -->

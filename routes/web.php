@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EbookController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\PostTestController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuizController;
@@ -48,18 +49,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
         });
     });
 
+    // Summmernote Controller
     Route::middleware('is_admin:Admin')->group(function () {
         Route::post('/summernote/upload', [SummernoteController::class, 'upload'])->name('summernote.upload');
         Route::post('/summernote/delete', [SummernoteController::class, 'delete'])->name('summernote.delete');
     });
 
+    // Hasil Post Test
     Route::get('/post-test/result/{result}', [PostTestController::class, 'showResult'])->name('posttest.result');
 
+    // Riwayat
     Route::prefix('riwayat')->group(function () {
         Route::get('/', [RiwayaController::class, 'index'])->name('riwayat.index');
         Route::get('/{id}', [RiwayaController::class, 'show'])->name('riwayat.show');
     });
 
+    // Admin
     Route::middleware('is_admin:Admin')->group(function () {
         Route::prefix('admin')->group(function () {
             Route::get('/', [AdminController::class, 'index'])->name('admin.index');
@@ -71,6 +76,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         });
     });
 
+    // Trainer
     Route::middleware('is_admin:Admin')->group(function () {
         Route::prefix('trainer')->group(function () {
             Route::get('/', [UserController::class, 'index'])->name('trainer.index');
@@ -80,6 +86,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::put('/{id}', [UserController::class, 'update'])->name('trainer.update');
             Route::get('/{id}/show', [UserController::class, 'show'])->name('trainer.show');
             Route::delete('/{id}', [UserController::class, 'destroy'])->name('trainer.destroy');
+        });
+    });
+
+    Route::middleware('is_admin:Admin')->group(function () {
+        Route::prefix('laporan')->group(function () {
+            Route::get('/', [LaporanController::class, 'index'])->name('laporan.index');
+            Route::get('/create', [LaporanController::class, 'create'])->name('laporan.create');
+            Route::post('/store', [LaporanController::class, 'store'])->name('laporan.store');
+            Route::get('/{id}/edit', [LaporanController::class, 'edit'])->name('laporan.edit');
+            Route::put('/{id}', [LaporanController::class, 'update'])->name('laporan.update');
+            Route::get('/{id}/show', [LaporanController::class, 'show'])->name('laporan.show');
+            Route::delete('/{id}', [LaporanController::class, 'destroy'])->name('laporan.destroy');
         });
     });
 
