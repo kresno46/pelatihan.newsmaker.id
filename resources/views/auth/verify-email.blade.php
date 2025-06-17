@@ -1,33 +1,37 @@
 @extends('layouts.guest')
 
+@section('namePage', 'Email Verifikasi')
+
 @section('content')
-    <div class="mb-4 text-center     text-gray-600">
-        Terima kasih telah mendaftar! Sebelum memulai, mohon verifikasi alamat email Anda
-        dengan mengklik tautan yang baru saja kami kirimkan ke email Anda. Jika Anda tidak menerima email tersebut,
-        kami akan dengan senang hati mengirimkannya lagi.
-    </div>
-
-    @if (session('status') === 'verification-link-sent')
-        <div class="mb-4 font-medium text-sm text-green-600">
-            Link verifikasi baru telah dikirim ke alamat email Anda.
+    <div class="flex flex-col items-center justify-between gap-6">
+        <div class="text-center">
+            Terima kasih telah mendaftar! Silakan verifikasi email Anda melalui tautan yang kami kirim. Belum menerima
+            email?
+            Kami siap mengirimkannya kembali.
         </div>
-    @endif
 
-    <div class="mt-4 flex flex-col items-center justify-between">
-        <form method="POST" action="{{ route('verification.send') }}">
-            @csrf
-            <div>
-                <x-primary-button>
-                    Kirim Ulang Email Verifikasi
-                </x-primary-button>
+        @if (session('status') === 'verification-link-sent')
+            <div class="font-medium text-sm text-green-600">
+                Link verifikasi baru telah dikirim ke alamat email Anda.
             </div>
-        </form>
+        @endif
 
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button type="submit" class="underline text-sm text-gray-600 hover:text-gray-900">
-                Keluar
-            </button>
-        </form>
+        <div class="flex flex-col items-center justify-between gap-3">
+            <form method="POST" action="{{ route('verification.send') }}">
+                @csrf
+                <div>
+                    <x-primary-button>
+                        Kirim Ulang Email Verifikasi
+                    </x-primary-button>
+                </div>
+            </form>
+
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="underline text-sm">
+                    Keluar
+                </button>
+            </form>
+        </div>
     </div>
 @endsection

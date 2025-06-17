@@ -41,7 +41,7 @@
                 <!-- Logo -->
                 <div class="w-full flex justify-center">
                     <a href="{{ route('dashboard') }}">
-                    {{-- <a href="https://www.newsmaker.id"> --}}
+                        {{-- <a href="https://www.newsmaker.id"> --}}
                         <img src="{{ asset('assets/NewsMaker-23-logo.png') }}" alt="NewsMaker 23"
                             class="block dark:hidden h-20" />
                         <img src="{{ asset('assets/NewsMaker-23-logo-white.png') }}" alt="NewsMaker 23"
@@ -65,7 +65,7 @@
                                 <span>{{ __('Beranda') }}</span>
                             </a>
                         </li>
-                         <li>
+                        <li>
                             <a href="https://www.newsmaker.id"
                                 class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200">
                                 <i class="fas fa-home"></i>
@@ -127,7 +127,7 @@
                             <li>
                                 <a href="{{ route('admin.index') }}"
                                     class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
-                            {{ request()->routeIs('user.*')
+                            {{ request()->routeIs('admin.*')
                                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
                                     <i class="fa-solid fa-user"></i>

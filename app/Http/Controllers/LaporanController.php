@@ -44,7 +44,17 @@ class LaporanController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $laporan = PostTestResult::with([
+            'user:id,name',
+            'ebook:id,title,deskripsi,cover',
+            'session:id,title,duration'
+        ]);
+
+        if ($laporan = $laporan->find($id)) {
+            return view('laporan.show', compact('laporan'));
+        }
+
+        abort(404);
     }
 
     /**
