@@ -7,12 +7,27 @@
         <div class="flex items-center justify-between mb-5">
             <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Daftar Laporan Post Test</h1>
 
-            @if (session('Alert'))
-                <div x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 5000)"
-                    class="text-xs bg-green-200 dark:bg-green-900 text-green-800 dark:text-green-200 py-1 px-3 rounded-lg">
-                    {{ session('Alert') }}
-                </div>
-            @endif
+            <div class="flex items-center gap-3">
+                @if (session('Alert'))
+                    <div x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 5000)"
+                        class="text-xs bg-green-200 dark:bg-green-900 text-green-800 dark:text-green-200 py-1 px-3 rounded-lg">
+                        {{ session('Alert') }}
+                    </div>
+                @endif
+
+                {{-- Search Bar --}}
+                <form method="GET" action="{{ route('laporan.index') }}" class="relative w-full max-w-sm">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                        <i class="fas fa-search"></i>
+                    </span>
+                    <input type="text" name="search" value="{{ request('search') }}"
+                        class="w-full pl-10 pr-4 py-2 text-sm border rounded-lg bg-white dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Cari berdasarkan nama, ebook, sesi...">
+                </form>
+
+                <a href="{{ route('laporan.index') }}"
+                    class="bg-red-500 py-2 px-4 rounded-lg hover:bg-red-600 font-medium text-gray-100">Reset</a>
+            </div>
         </div>
 
         <hr class="border-gray-300 dark:border-gray-600">

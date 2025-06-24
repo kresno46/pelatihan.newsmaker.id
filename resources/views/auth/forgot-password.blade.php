@@ -1,28 +1,41 @@
 @extends('layouts.guest')
 
+@section('namePage', 'Lupa Password')
+
 @section('content')
-    <div class="mb-4 text-gray-600 dark:text-gray-400">
-        {{ __('Lupa kata sandi Anda? Tidak masalah. Cukup beri tahu kami alamat email Anda dan kami akan mengirimkan tautan pengaturan ulang kata sandi melalui email yang memungkinkan Anda memilih kata sandi baru.') }}
+    <div class="text-center">
+        <h1 class="text-xl font-bold mb-4">Lupa Password</h1>
+        <p class="text-gray-600">Masukkan alamat email yang terdaftar pada akun Anda, lalu kami akan mengirimkan tautan untuk
+            mengatur ulang kata sandi Anda. Pastikan email yang Anda masukkan aktif dan dapat diakses.</p>
     </div>
 
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+    @if (session('status'))
+        <div class="mb-4 text-green-600">{{ session('status') }}</div>
+    @endif
 
-    <form method="POST" action="{{ route('password.email') }}" class="w-full">
+    <form method="POST" action="{{ route('password.email') }}" class="w-full flex flex-col items-center">
         @csrf
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required
-                autofocus />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        <div class="w-full mb-4">
+            <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+            <input id="email" type="email" name="email"
+                value="{{ is_array(old('email')) ? old('email')[0] ?? '' : old('email') }}" required autofocus
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500" />
+            @error('email')
+                <p class="text-sm text-red-600 mt-2">{{ $message }}</p>
+            @enderror
         </div>
 
-        <div class="w-full flex items-center justify-end mt-4">
-            <x-primary-button class="w-full">
-                {{ __('Email Password Reset Link') }}
+        <div class="w-full flex flex-col items-center gap-4">
+            <x-primary-button>
+                Kirim Link Reset Password
             </x-primary-button>
+
+            <a href="{{ route('login') }}" class="text-blue-800 hover:text-blue-900">
+                <i class="fa-solid fa-arrow-left"></i> Kembali
+            </a>
         </div>
+
+
     </form>
 @endsection

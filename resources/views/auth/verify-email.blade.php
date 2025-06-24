@@ -6,8 +6,7 @@
     <div class="flex flex-col items-center justify-between gap-6">
         <div class="text-center">
             Terima kasih telah mendaftar! Silakan verifikasi email Anda melalui tautan yang kami kirim. Belum menerima
-            email?
-            Kami siap mengirimkannya kembali.
+            email? Kami siap mengirimkannya kembali.
         </div>
 
         @if (session('status') === 'verification-link-sent')

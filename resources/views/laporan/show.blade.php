@@ -1,52 +1,65 @@
 @extends('layouts.app')
 
-@section('namePage', 'Detail Hasil ' . $laporan->user->name)
+@section('namePage', 'Detail Hasil - ' . $laporan->user->name)
 
 @section('content')
     <div class="space-y-6">
-        {{-- Tombol kembali --}}
+        {{-- Tombol Kembali --}}
         <a href="{{ route('laporan.index') }}"
-            class="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-100 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition">
-            <i class="fa-solid fa-arrow-left mr-2"></i> Kembali
+            class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-white rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition">
+            <i class="fa-solid fa-arrow-left"></i> Kembali
         </a>
 
-        <div class="flex flex-col md:flex-row gap-6 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-            {{-- Cover eBook --}}
-            <div class="w-full md:w-[300px] aspect-[3/4.5] rounded overflow-hidden shadow mx-auto md:mx-0">
-                <img src="{{ asset($laporan->ebook->cover) }}" alt="Cover {{ $laporan->ebook->title }}"
-                    class="w-full h-full object-cover">
+        {{-- Info --}}
+        <div class="md:col-span-2 bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 space-y-4">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+                    {{ $laporan->ebook->title }} - {{ $laporan->user->name }}
+                </h2>
             </div>
 
-            {{-- Informasi Laporan --}}
-            <div class="flex-1 space-y-4">
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
-                    Hasil Post-Test: {{ $laporan->ebook->title }}
-                </h1>
+            @php
+                $jumlahSoal = $laporan->session->questions->count() ?? 0;
+                $jawabanBenar = round(($laporan->score / 100) * $jumlahSoal);
+            @endphp
 
-                <div class="space-y-4 text-gray-800 dark:text-gray-200">
-                    <div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Tanggal Pengerjaan</p>
-                        <p class="text-lg">{{ $laporan->created_at->format('d F Y') }}</p>
+            {{-- Detail --}}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-base text-gray-700 dark:text-gray-300">
+                <x-laporan-info icon="fa-user" label="Peserta" :value="$laporan->user->name" />
+                <x-laporan-info icon="fa-envelope" label="Email" :value="$laporan->user->email" />
+                <x-laporan-info icon="fa-phone" label="No. Telepon" :value="$laporan->user->no_tlp" />
+                <x-laporan-info icon="fa-layer-group" label="Nama Sesi" :value="$laporan->session->title ?? '-'" />
+                <x-laporan-info icon="fa-calendar-alt" label="Tanggal Pengerjaan" :value="$laporan->created_at->format('d F Y')" />
+                <x-laporan-info icon="fa-clock" label="Durasi Sesi" :value="$laporan->session->duration . ' menit'" />
+            </div>
+
+            <x-laporan-info icon="fa-check-circle" label="Jawaban Benar" :value="$jawabanBenar . ' dari ' . $jumlahSoal . ' soal'" />
+
+            {{-- Skor & Grade --}}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                @php
+                    $colorClass =
+                        $laporan->score >= 85
+                            ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'
+                            : ($laporan->score <= 50
+                                ? 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300'
+                                : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300');
+                @endphp
+
+                <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 flex items-center justify-between">
+                    <div class="flex flex-col gap-3">
+                        <p class="text-gray-500"><i class="fa-solid fa-star me-2"></i>Skor</p>
+                        <span class="text-4xl text-center font-bold {{ $colorClass }} px-4 py-1 rounded-full">
+                            {{ $laporan->score }}/100
+                        </span>
                     </div>
+                </div>
 
-                    <div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">eBook</p>
-                        <p class="text-lg">{{ $laporan->user->name }}</p>
-                    </div>
-
-                    <div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Post-Test Session</p>
-                        <p class="text-lg">{{ $laporan->session->title ?? '-' }}</p>
-                    </div>
-
-                    <div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Durasi Pengerjaan</p>
-                        <p class="text-lg">{{ $laporan->session->duration ?? '-' }} menit</p>
-                    </div>
-
-                    <div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Skor</p>
-                        <p class="text-lg font-bold text-green-600 dark:text-green-400">{{ $laporan->score }}/100</p>
+                <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 flex items-center justify-between">
+                    <div class="flex flex-col gap-3">
+                        <p class="text-gray-500"><i class="fa-solid fa-certificate me-2"></i>Grade</p>
+                        <span class="text-4xl text-center font-bold {{ $colorClass }} px-4 py-1 rounded-full">
+                            {{ $laporan->score >= 85 ? 'A' : ($laporan->score >= 70 ? 'B' : ($laporan->score >= 50 ? 'C' : 'D')) }}</span>
                     </div>
                 </div>
             </div>

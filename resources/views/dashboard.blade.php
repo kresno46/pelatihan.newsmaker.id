@@ -19,7 +19,6 @@
         </div>
     @endif
 
-
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div class="bg-white dark:bg-gray-800 border-l-4 border-blue-500 rounded-lg shadow">
             <div class="flex items-center p-5">

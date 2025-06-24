@@ -11,33 +11,33 @@ class LaporanController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->input('search');
+
         $laporans = PostTestResult::with([
             'user:id,name',
             'ebook:id,title,deskripsi,cover',
             'session:id,title,duration'
-        ])->paginate(10);
+        ])
+            ->when($search, function ($query, $search) {
+                $query->whereHas('user', function ($q) use ($search) {
+                    $q->where('name', 'like', '%' . $search . '%');
+                })
+                    ->orWhereHas('ebook', function ($q) use ($search) {
+                        $q->where('title', 'like', '%' . $search . '%');
+                    })
+                    ->orWhereHas('session', function ($q) use ($search) {
+                        $q->where('title', 'like', '%' . $search . '%');
+                    });
+            })
+            ->orderByDesc('created_at')
+            ->paginate(10)
+            ->appends(['search' => $search]); // agar pagination menyimpan kata kunci pencarian
 
         return view('laporan.index', compact('laporans'));
     }
 
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
 
     /**
      * Display the specified resource.
@@ -45,32 +45,16 @@ class LaporanController extends Controller
     public function show(string $id)
     {
         $laporan = PostTestResult::with([
-            'user:id,name',
+            'user:id,name,email,jenis_kelamin,tempat_lahir,tanggal_lahir,warga_negara,alamat,no_id,no_tlp,pekerjaan',
             'ebook:id,title,deskripsi,cover',
             'session:id,title,duration'
-        ]);
+        ])->find($id);
 
-        if ($laporan = $laporan->find($id)) {
-            return view('laporan.show', compact('laporan'));
+        if (!$laporan) {
+            abort(404);
         }
 
-        abort(404);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
+        return view('laporan.show', compact('laporan'));
     }
 
     /**
@@ -78,6 +62,13 @@ class LaporanController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $laporan = PostTestResult::find($id);
+
+        if ($laporan) {
+            $laporan->delete();
+            return redirect()->route('laporan.index')->with('Alert', 'Laporan berhasil dihapus!');
+        }
+
+        abort(404);
     }
 }

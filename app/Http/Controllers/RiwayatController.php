@@ -6,7 +6,7 @@ use App\Models\PostTestResult;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class RiwayaController extends Controller
+class RiwayatController extends Controller
 {
     /**
      * Display a listing of the resource.

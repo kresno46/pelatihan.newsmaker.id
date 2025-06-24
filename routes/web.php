@@ -2,12 +2,14 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EbookController;
+use App\Http\Controllers\EmailController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\PostTestController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuizController;
-use App\Http\Controllers\RiwayaController;
+use App\Http\Controllers\RiwayatController;
+use App\Http\Controllers\SertifikatController;
 use App\Http\Controllers\SummernoteController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UploadController;
@@ -16,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('dashboard');
 
-    Route::prefix('ebook')->group(function () {
+    Route::prefix('ebook')->middleware('profile.complete')->group(function () {
         // e-Book
         Route::get('/', [EbookController::class, 'index'])->name('ebook.index');
         Route::middleware('is_admin:Admin')->group(function () {
@@ -50,7 +52,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // Summmernote Controller
-    Route::middleware('is_admin:Admin')->group(function () {
+    Route::middleware('is_admin:Admin', 'profile.complete')->group(function () {
         Route::post('/summernote/upload', [SummernoteController::class, 'upload'])->name('summernote.upload');
         Route::post('/summernote/delete', [SummernoteController::class, 'delete'])->name('summernote.delete');
     });
@@ -60,8 +62,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Riwayat
     Route::prefix('riwayat')->group(function () {
-        Route::get('/', [RiwayaController::class, 'index'])->name('riwayat.index');
-        Route::get('/{id}', [RiwayaController::class, 'show'])->name('riwayat.show');
+        Route::get('/', [RiwayatController::class, 'index'])->name('riwayat.index');
+        Route::get('/{id}', [RiwayatController::class, 'show'])->name('riwayat.show');
     });
 
     // Admin
@@ -92,23 +94,28 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware('is_admin:Admin')->group(function () {
         Route::prefix('laporan')->group(function () {
             Route::get('/', [LaporanController::class, 'index'])->name('laporan.index');
-            Route::get('/create', [LaporanController::class, 'create'])->name('laporan.create');
-            Route::post('/store', [LaporanController::class, 'store'])->name('laporan.store');
-            Route::get('/{id}/edit', [LaporanController::class, 'edit'])->name('laporan.edit');
-            Route::put('/{id}', [LaporanController::class, 'update'])->name('laporan.update');
             Route::get('/{id}/show', [LaporanController::class, 'show'])->name('laporan.show');
             Route::delete('/{id}', [LaporanController::class, 'destroy'])->name('laporan.destroy');
         });
     });
 
-    Route::get('/cert', function () {
-        return view('cert');
-    })->name('profile.show');
+    Route::prefix('email')->middleware('is_admin:Admin')->group(function () {
+        Route::get('/', [EmailController::class, 'index'])->name('email.index');
+    });
+
+    Route::prefix('sertifikat')->group(function () {
+        Route::get('/', [SertifikatController::class, 'index'])->name('sertifikat.index');
+        Route::get('/sertifikat/unduh/{batch}', [SertifikatController::class, 'download'])->name('sertifikat.download');
+    });
 
     Route::prefix('profile')->group(function () {
         Route::get('/', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    });
+
+    Route::get('cert', function () {
+        return view('sertifikat.certificate');
     });
 });
 
