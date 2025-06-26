@@ -9,12 +9,12 @@
     <title>@yield('namePage') - Newsmaker23 Edukasi</title>
 
     {{-- Icon --}}
-    <link rel="icon" type="image/png" href="{{asset('Icon/favicon-96x96.png')}}" sizes="96x96" />
-    <link rel="icon" type="image/svg+xml" href="{{asset('Icon/favicon.svg')}}" />
-    <link rel="shortcut icon" href="{{asset('Icon/favicon.ico')}}" />
-    <link rel="apple-touch-icon" sizes="180x180" href="{{asset('Icon/apple-touch-icon.png')}}" />
+    <link rel="icon" type="image/png" href="{{ asset('Icon/favicon-96x96.png') }}" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="{{ asset('Icon/favicon.svg') }}" />
+    <link rel="shortcut icon" href="{{ asset('Icon/favicon.ico') }}" />
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('Icon/apple-touch-icon.png') }}" />
     <meta name="apple-mobile-web-app-title" content="NM23" />
-    <link rel="manifest" href="{{asset('Icon/site.webmanifest')}}" />
+    <link rel="manifest" href="{{ asset('Icon/site.webmanifest') }}" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net" />
@@ -42,6 +42,14 @@
             </div>
         </div>
     </div>
+
+    <!-- Floating Support Button -->
+    <a href="mailto:support@ebook.newsmaker.id" title="Hubungi Support"
+        class="fixed bottom-5 right-5 z-50 bg-blue-600/50 hover:bg-blue-700/50 text-white px-5 py-4 rounded-full shadow-lg transition duration-300"
+        style="box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+        <!-- Icon: Font Awesome or Inline SVG -->
+        <i class="fa-solid fa-headset fa-2x"></i>
+    </a>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {

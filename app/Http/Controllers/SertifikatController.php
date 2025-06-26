@@ -8,6 +8,9 @@ use Illuminate\Support\Str;
 use Carbon\Carbon;
 use App\Models\CertificateAward;
 use App\Models\PostTestResult;
+use App\Mail\CertificateEmail;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 
 class SertifikatController extends Controller
 {
@@ -20,7 +23,7 @@ class SertifikatController extends Controller
         return view('sertifikat.index', compact('user', 'availableBatches', 'awardedBatches'));
     }
 
-    public function download($batch)
+    public function sendCertificateByEmail($batch)
     {
         $user = auth()->user();
         $maxBatches = $user->earnedCertificateBatches();
@@ -29,7 +32,9 @@ class SertifikatController extends Controller
             abort(403, 'Sertifikat tidak tersedia.');
         }
 
-        // Cek apakah sertifikat sudah pernah dibuat
+        $titles = ['Fundamental', 'Beginner', 'Intermediate', 'Advanced', 'Expert'];
+        $title = $titles[$batch - 1] ?? 'Level Tidak Diketahui';
+
         $award = CertificateAward::where('user_id', $user->id)
             ->where('batch_number', $batch)
             ->first();
@@ -55,16 +60,26 @@ class SertifikatController extends Controller
             ]);
         }
 
-        // Gunakan Carbon::parse agar tidak error saat format
         $dateFormatted = Carbon::parse($award->awarded_at)->format('d F Y');
 
+        // Buat PDF
         $pdf = Pdf::loadView('sertifikat.certificate', [
             'name' => $user->name,
             'date' => $dateFormatted,
             'uuid' => $award->certificate_uuid,
             'batch' => $batch,
+            'levelTitle' => $title
         ])->setPaper('a4', 'landscape');
 
-        return $pdf->download("Sertifikat_{$user->name}_Batch{$batch}.pdf");
+        // Simpan PDF ke storage sementara
+        $fileName = "Sertifikat_{$user->id}_Batch{$batch}.pdf";
+        $filePath = storage_path("app/public/sertifikat/{$fileName}");
+        Storage::makeDirectory('public/sertifikat');
+        file_put_contents($filePath, $pdf->output());
+
+        // Kirim email
+        Mail::to($user->email)->send(new CertificateEmail($user->name, $batch, $title, $filePath));
+
+        return back()->with('Alert', 'Sertifikat berhasil dikirim ke email Anda!');
     }
 }

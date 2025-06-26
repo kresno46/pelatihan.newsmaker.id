@@ -12,9 +12,9 @@
                 </p>
             </div>
 
-            @if (session('success'))
+            @if (session('Alert'))
                 <div class="text-center text-green-600 dark:text-green-400">
-                    {{ session('success') }}
+                    {{ session('Alert') }}
                 </div>
             @endif
         </div>

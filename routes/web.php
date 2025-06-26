@@ -13,6 +13,7 @@ use App\Http\Controllers\SertifikatController;
 use App\Http\Controllers\SummernoteController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UploadController;
+use App\Http\Controllers\UserCleanupController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -105,7 +106,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::prefix('sertifikat')->group(function () {
         Route::get('/', [SertifikatController::class, 'index'])->name('sertifikat.index');
-        Route::get('/sertifikat/unduh/{batch}', [SertifikatController::class, 'download'])->name('sertifikat.download');
+        Route::get('/sertifikat/unduh/{batch}', [SertifikatController::class, 'sendCertificateByEmail'])->name('sertifikat.download');
     });
 
     Route::prefix('profile')->group(function () {
@@ -115,8 +116,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::get('cert', function () {
-        return view('sertifikat.certificate');
+        return view('emails.certificate');
     });
+
+    Route::get('/hapus-akun-tidak-verifikasi', [UserCleanupController::class, 'deleteUnverifiedUsers'])->name('user.delete');
 });
 
 require __DIR__ . '/auth.php';
