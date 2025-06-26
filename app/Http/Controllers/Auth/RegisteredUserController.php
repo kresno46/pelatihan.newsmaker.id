@@ -33,13 +33,6 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:50'],
             'email' => ['required', 'string', 'email', 'max:50', 'unique:users,email'],
             'password' => ['required', 'confirmed', Rules\Password::defaults(), 'min:8'],
-            'jenis_kelamin' => ['required', 'in:Pria,Wanita'],
-            'tempat_lahir' => ['required', 'string', 'max:50'],
-            'tanggal_lahir' => ['required', 'date'],
-            'warga_negara' => ['nullable', 'string', 'max:50'],
-            'alamat' => ['required', 'string'],
-            'no_tlp' => ['required', 'string', 'max:20', 'unique:users,no_tlp'],
-            'pekerjaan' => ['required', 'string', 'max:50'],
             'role' => ['nullable', 'in:Admin,Trainer (Eksternal)'], // opsional, default bisa di-model
         ]);
 
@@ -47,13 +40,6 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'jenis_kelamin' => $request->jenis_kelamin,
-            'tempat_lahir' => $request->tempat_lahir,
-            'tanggal_lahir' => $request->tanggal_lahir,
-            'warga_negara' => $request->warga_negara,
-            'alamat' => $request->alamat,
-            'no_tlp' => $request->no_tlp,
-            'pekerjaan' => $request->pekerjaan,
             'role' => $request->role ?? 'Trainer (Eksternal)',
         ]);
 

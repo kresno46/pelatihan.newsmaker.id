@@ -34,14 +34,14 @@
 
 <body class="font-sans antialiased">
     <div class="min-h-screen bg-gray-100 dark:bg-gray-900 flex">
-        <!-- Sidebar -->
+        <!-- Sidebar : Dekstop -->
         <aside
             class="bg-white dark:bg-gray-800 w-64 hidden md:block sticky top-0 flex-shrink-0 shadow-lg border-r border-gray-200 dark:border-gray-700 h-screen overflow-auto z-50">
             <div class="h-full p-4 space-y-6">
                 <!-- Logo -->
                 <div class="w-full flex justify-center">
                     <a href="{{ route('dashboard') }}">
-                    {{-- <a href="https://www.newsmaker.id"> --}}
+                        {{-- <a href="https://www.newsmaker.id"> --}}
                         <img src="{{ asset('assets/NewsMaker-23-logo.png') }}" alt="NewsMaker 23"
                             class="block dark:hidden h-20" />
                         <img src="{{ asset('assets/NewsMaker-23-logo-white.png') }}" alt="NewsMaker 23"
@@ -65,7 +65,7 @@
                                 <span>{{ __('Beranda') }}</span>
                             </a>
                         </li>
-                         <li>
+                        <li>
                             <a href="https://www.newsmaker.id"
                                 class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200">
                                 <i class="fas fa-home"></i>
@@ -127,7 +127,7 @@
                             <li>
                                 <a href="{{ route('admin.index') }}"
                                     class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
-                            {{ request()->routeIs('user.*')
+                            {{ request()->routeIs('admin.*')
                                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
                                     <i class="fa-solid fa-user"></i>
@@ -144,6 +144,16 @@
                                     <span>User</span>
                                 </a>
                             </li>
+                            {{-- <li>
+                                <a href="{{ route('email.index') }}"
+                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('email.*')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                    <i class="fa-solid fa-envelope"></i>
+                                    <span>eMail</span>
+                                </a>
+                            </li> --}}
                         </ul>
                     </nav>
                 @endif
@@ -193,6 +203,11 @@
                                 Profil
                             </a>
 
+                            <a href="{{ route('sertifikat.index') }}"
+                                class="block px-4 py-2 text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600">
+                                Sertifikat
+                            </a>
+
                             <a href="{{ route('riwayat.index') }}"
                                 class="block px-4 py-2 text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600">
                                 Riwayat Saya
@@ -223,7 +238,7 @@
                 </div>
             </header>
 
-            <!-- Mobile Sidebar -->
+            <!-- Sidebar : Mobile -->
             <div id="mobileSidebar"
                 class="fixed inset-y-0 left-0 z-40 w-64 transform -translate-x-full bg-white dark:bg-gray-800 transition-transform duration-300 shadow-xl md:hidden">
                 <div class="p-4">
@@ -251,7 +266,14 @@
                                         'dashboard'),
                                 ])>
                                     <i class="fas fa-home"></i>
-                                    <span>Dashboard</span>
+                                    <span>Beranda</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://www.newsmaker.id"
+                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    <i class="fas fa-home"></i>
+                                    <span>Back to Home</span>
                                 </a>
                             </li>
                         </ul>
@@ -259,17 +281,17 @@
 
                     <hr class="border-gray-300 dark:border-gray-700 mb-4">
 
-                    <!-- Edukasi Menu -->
+                    <!-- Edukasi -->
                     <nav class="mb-4">
                         <ul class="space-y-2">
                             <li class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Edukasi</li>
                             <li>
                                 <a href="{{ route('ebook.index') }}" @class([
                                     'flex items-center space-x-4 px-3 py-2 rounded transition duration-200',
-                                    'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold' => request()->routeIs(
-                                        'ebook.*'),
-                                    'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' => !request()->routeIs(
-                                        'ebook.*'),
+                                    'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold' =>
+                                        request()->routeIs('ebook.*') || request()->routeIs('quiz.*'),
+                                    'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' =>
+                                        !request()->routeIs('ebook.*') && !request()->routeIs('quiz.*'),
                                 ])>
                                     <i class="fa-solid fa-book"></i>
                                     <span>eBook</span>
@@ -278,17 +300,54 @@
                         </ul>
                     </nav>
 
-                    <hr class="border-gray-300 dark:border-gray-700 mb-4">
-
                     @if (Auth::user()->role === 'Admin')
-                        <!-- Manajemen Menu -->
+                        <hr class="border-gray-300 dark:border-gray-700 mb-4">
+
+                        <!-- Laporan -->
+                        <nav class="mb-4">
+                            <ul class="space-y-2">
+                                <li class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Laporan
+                                </li>
+                                <li>
+                                    <a href="{{ route('laporan.index') }}" @class([
+                                        'flex items-center space-x-4 px-3 py-2 rounded transition duration-200',
+                                        'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold' => request()->routeIs(
+                                            'laporan.*'),
+                                        'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' => !request()->routeIs(
+                                            'laporan.*'),
+                                    ])>
+                                        <i class="fa-solid fa-clipboard"></i>
+                                        <span>Post Test</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+
+                        <!-- Manajemen -->
                         <nav>
                             <ul class="space-y-2">
                                 <li class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Manajemen
                                 </li>
                                 <li>
-                                    <a href="#"
-                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    <a href="{{ route('admin.index') }}" @class([
+                                        'flex items-center space-x-4 px-3 py-2 rounded transition duration-200',
+                                        'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold' => request()->routeIs(
+                                            'admin.*'),
+                                        'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' => !request()->routeIs(
+                                            'admin.*'),
+                                    ])>
+                                        <i class="fa-solid fa-user"></i>
+                                        <span>Admin</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('trainer.index') }}" @class([
+                                        'flex items-center space-x-4 px-3 py-2 rounded transition duration-200',
+                                        'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold' => request()->routeIs(
+                                            'trainer.*'),
+                                        'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' => !request()->routeIs(
+                                            'trainer.*'),
+                                    ])>
                                         <i class="fa-solid fa-user"></i>
                                         <span>User</span>
                                     </a>
@@ -298,6 +357,7 @@
                     @endif
                 </div>
             </div>
+
 
             <!-- Page Content -->
             <main class="flex-1 p-6">
@@ -378,15 +438,20 @@
             const mobileSidebar = document.getElementById('mobileSidebar');
             const closeMobileSidebar = document.getElementById('closeMobileSidebar');
 
-            if (mobileMenuButton && mobileSidebar && closeMobileSidebar) {
-                mobileMenuButton.addEventListener('click', () => {
-                    mobileSidebar.classList.remove('-translate-x-full');
-                });
+            mobileMenuButton?.addEventListener('click', () => {
+                mobileSidebar.classList.remove('-translate-x-full');
+            });
 
-                closeMobileSidebar.addEventListener('click', () => {
+            closeMobileSidebar?.addEventListener('click', () => {
+                mobileSidebar.classList.add('-translate-x-full');
+            });
+
+            // Optional: klik di luar sidebar untuk menutup
+            document.addEventListener('click', function(event) {
+                if (!mobileSidebar.contains(event.target) && !mobileMenuButton.contains(event.target)) {
                     mobileSidebar.classList.add('-translate-x-full');
-                });
-            }
+                }
+            });
         });
     </script>
 </body>

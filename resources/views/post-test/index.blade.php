@@ -32,6 +32,7 @@
                 </div>
             @endforeach
 
+            <!-- Tombol untuk buka modal -->
             <button type="button" onclick="showModal()"
                 class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-4 py-2 rounded w-full">
                 Submit
@@ -45,10 +46,14 @@
             <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Konfirmasi</h3>
             <p class="text-gray-600 dark:text-gray-300 mb-6">Apakah Anda yakin ingin menyelesaikan kuis ini?</p>
             <div class="flex justify-end space-x-3">
-                <button onclick="hideModal()"
+                <button type="button" onclick="hideModal()"
                     class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Batal</button>
-                <button onclick="submitForm()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Ya,
-                    Selesai</button>
+
+                <!-- Tombol submit langsung -->
+                <button type="submit" form="quizForm" onclick="clearData()"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+                    Ya, Selesai
+                </button>
             </div>
         </div>
     </div>
@@ -116,9 +121,11 @@
             document.getElementById('confirmModal').classList.add('hidden');
         }
 
-        function submitForm() {
-            clearData();
-            quizForm.submit();
-        }
+        // Cegah submit via Enter
+        quizForm.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+            }
+        });
     </script>
 @endsection
