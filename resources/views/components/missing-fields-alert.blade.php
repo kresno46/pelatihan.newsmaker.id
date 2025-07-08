@@ -9,7 +9,6 @@
         'tanggal_lahir' => 'Tanggal Lahir',
         'warga_negara' => 'Warga Negara',
         'alamat' => 'Alamat',
-        'no_id' => 'Nomor Identitas',
         'no_tlp' => 'Nomor Telepon',
         'pekerjaan' => 'Pekerjaan',
     ];

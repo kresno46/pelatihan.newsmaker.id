@@ -26,7 +26,6 @@ class EnsureProfileIsComplete
         if (
             !$user->tempat_lahir ||
             !$user->tanggal_lahir ||
-            !$user->no_id ||
             !$user->alamat ||
             !$user->jenis_kelamin ||
             !$user->warga_negara ||

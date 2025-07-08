@@ -117,8 +117,6 @@
                     <hr class="border-gray-300 dark:border-gray-700">
                 @endif
 
-
-
                 <!-- Navigation - Manajemen -->
                 @if (Auth::user()->role === 'Admin')
                     <nav>
@@ -156,7 +154,44 @@
                             </li> --}}
                         </ul>
                     </nav>
+
+                    <hr class="border-gray-300 dark:border-gray-700">
                 @endif
+
+                <nav>
+                    <ul class="flex flex-col space-y-2">
+                        <li>
+                            <a href="{{ route('profile.edit') }}"
+                                class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('profile.*')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                <i class="fa-solid fa-user"></i>
+                                <span>Profile</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('sertifikat.index') }}"
+                                class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('sertifikat.*')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                <i class="fa-solid fa-certificate"></i>
+                                <span>Sertifikat</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('riwayat.index') }}"
+                                class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('riwayat.*')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                <i class="fa-solid fa-clock-rotate-left"></i>
+                                <span>Riwayat Saya</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
             </div>
         </aside>
 
@@ -189,29 +224,14 @@
                             <span class="text-gray-800 dark:text-white font-medium hidden md:inline">
                                 {{ Auth::user()->name }}
                             </span>
-                            <svg class="w-4 h-4 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor"
-                                stroke-width="2" viewBox="0 0 24 24">
+                            <svg class="w-4 h-4 text-gray-600 dark:text-gray-300" fill="none"
+                                stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
                         <!-- Dropdown Menu -->
                         <div id="profileDropdown"
                             class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 shadow-md rounded-md overflow-hidden z-40">
-
-                            <a href="{{ route('profile.edit') }}"
-                                class="block px-4 py-2 text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600">
-                                Profil
-                            </a>
-
-                            <a href="{{ route('sertifikat.index') }}"
-                                class="block px-4 py-2 text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600">
-                                Sertifikat
-                            </a>
-
-                            <a href="{{ route('riwayat.index') }}"
-                                class="block px-4 py-2 text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600">
-                                Riwayat Saya
-                            </a>
 
                             <!-- Theme Dropdown -->
                             <div class="px-4 py-2 text-gray-800 dark:text-white">

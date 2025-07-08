@@ -12,7 +12,6 @@ use App\Http\Controllers\RiwayatController;
 use App\Http\Controllers\SertifikatController;
 use App\Http\Controllers\SummernoteController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\UploadController;
 use App\Http\Controllers\UserCleanupController;
 use Illuminate\Support\Facades\Route;
 
