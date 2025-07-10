@@ -18,11 +18,18 @@ class Ebook extends Model
         'deskripsi',
         'cover',
         'file',
+        'folder_id',
     ];
 
     public function postTestSessions()
     {
         return $this->hasMany(PostTestSession::class, 'ebook_id');
+    }
+
+    // Relasi folder ebook
+    public function folderEbook()
+    {
+        return $this->belongsTo(FolderEbook::class, 'folder_id');
     }
 
     /**

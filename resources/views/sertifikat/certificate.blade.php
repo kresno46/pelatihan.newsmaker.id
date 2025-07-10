@@ -72,7 +72,7 @@
             <p>Sertifikat ini diberikan kepada</p>
             <h1><strong>{{ $name ?? 'Nama Peserta' }}</strong></h1>
             <p class="max-w-md">sebagai bentuk penghargaan atas pencapaian menyelesaikan pembelajaran dengan baik pada
-                level
+                materi
                 <strong>{{ $levelTitle ?? 'Level Tidak Diketahui' }}</strong>.
             </p>
         </div>

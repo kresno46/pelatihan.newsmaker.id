@@ -90,4 +90,26 @@ class User extends Authenticatable implements MustVerifyEmail
 
         return $validBatches;
     }
+
+    /**
+     * Mengecek apakah user sudah menyelesaikan semua post-test dalam sebuah folder (materi).
+     *
+     * @param int $folderId
+     * @return bool
+     */
+    public function hasCompletedFolder($folderId)
+    {
+        // Ambil semua eBook dalam folder tersebut
+        $ebookIds = \App\Models\Ebook::where('folder_id', $folderId)->pluck('id')->toArray();
+
+        // Ambil semua eBook yang sudah dikerjakan oleh user
+        $userEbookIds = PostTestResult::where('user_id', $this->id)
+            ->whereIn('ebook_id', $ebookIds)
+            ->pluck('ebook_id')
+            ->unique()
+            ->toArray();
+
+        // Cek apakah semua eBook sudah dikerjakan
+        return count(array_diff($ebookIds, $userEbookIds)) === 0;
+    }
 }

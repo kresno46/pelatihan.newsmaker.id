@@ -3,162 +3,162 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ebook;
+use App\Models\FolderEbook;
 use App\Models\PostTestResult;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class EbookController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Tampilkan daftar eBook dalam folder.
      */
-    public function index(Request $request)
+    public function index(Request $request, $folderSlug)
     {
-        $query = Ebook::query();
+        $folder = FolderEbook::where('slug', $folderSlug)->firstOrFail();
+        $query = Ebook::where('folder_id', $folder->id);
 
-        // Pencarian
         if ($request->filled('search')) {
-            $query->where('title', 'like', '%' . $request->search . '%')
-                ->orWhere('deskripsi', 'like', '%' . $request->search . '%');
+            $query->where(function ($q) use ($request) {
+                $q->where('title', 'like', '%' . $request->search . '%')
+                    ->orWhere('deskripsi', 'like', '%' . $request->search . '%');
+            });
         }
 
-        // Paginasi
         $ebooks = $query->paginate(8);
 
-        return view('ebook.index', compact('ebooks'));
+        return view('ebook.index', compact('ebooks', 'folder'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Tampilkan form tambah eBook.
      */
-    public function create()
+    public function create($folderSlug)
     {
-        return view('ebook.create');
+        $folder = FolderEbook::where('slug', $folderSlug)->firstOrFail();
+        return view('ebook.create', compact('folder'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Simpan eBook baru.
      */
-    public function store(Request $request)
+    public function store(Request $request, $folderSlug)
     {
+        $folder = FolderEbook::where('slug', $folderSlug)->firstOrFail();
+
         $request->validate([
-            'title' => 'required|max:100',
+            'title'     => 'required|max:100|unique:ebooks,title',
             'deskripsi' => 'required',
-            'cover' => 'required|mimes:jpg,jpeg,png|max:2048',
-            'file' => 'required|mimes:pdf|max:10240',
+            'cover'     => 'required|mimes:jpg,jpeg,png|max:2048',
+            'file'      => 'required|mimes:pdf|max:10240',
         ]);
 
-        // Buat folder kalau belum ada
-        if (!file_exists(public_path('uploads/cover'))) {
-            mkdir(public_path('uploads/cover'), 0777, true);
-        }
-        if (!file_exists(public_path('uploads/ebook'))) {
-            mkdir(public_path('uploads/ebook'), 0777, true);
-        }
+        $ebookSlug = Str::slug($request->title) . '-' . time();
 
-        // Upload cover
-        $cover = $request->file('cover');
-        $coverName = time() . '_' . $cover->getClientOriginalName();
-        $cover->move(public_path('uploads/cover'), $coverName);
+        // Upload Cover
+        $coverName = time() . '_' . $request->file('cover')->getClientOriginalName();
+        $request->file('cover')->move(public_path('uploads/cover'), $coverName);
 
-        // Upload file ebook
-        $file = $request->file('file');
-        $fileName = time() . '_' . $file->getClientOriginalName();
-        $file->move(public_path('uploads/ebook'), $fileName);
+        // Upload File Ebook
+        $fileName = time() . '_' . $request->file('file')->getClientOriginalName();
+        $request->file('file')->move(public_path('uploads/ebook'), $fileName);
 
-        // Simpan data
+        // Simpan Data
         Ebook::create([
-            'title' => $request->title,
+            'folder_id' => $folder->id,
+            'title'     => $request->title,
+            'slug'      => $ebookSlug,
             'deskripsi' => $request->deskripsi,
-            'cover' => 'uploads/cover/' . $coverName,
-            'file' => 'uploads/ebook/' . $fileName,
+            'cover'     => 'uploads/cover/' . $coverName,
+            'file'      => 'uploads/ebook/' . $fileName,
         ]);
 
-        return redirect()->route('ebook.index')->with('success', 'Ebook berhasil ditambahkan!');
+        return redirect()->route('ebook.index', $folderSlug)->with('success', 'Ebook berhasil ditambahkan!');
     }
 
     /**
-     * Display the specified resource.
+     * Tampilkan detail eBook.
      */
-    public function show($slug)
+    public function show($folderSlug, $ebookSlug)
     {
-        $ebook = Ebook::with('postTestSessions')->where('slug', $slug)->firstOrFail();
+        $folder = FolderEbook::where('slug', $folderSlug)->firstOrFail();
 
-        // Ambil hasil post test terakhir user untuk ebook ini
-        $result = PostTestResult::where('user_id', auth()->id())
-            ->where('ebook_id', $ebook->id)
-            ->latest() // urut dari yang terbaru
-            ->first();
+        $ebook = Ebook::with(['postTestSessions.results' => function ($query) {
+            $query->where('user_id', auth()->id());
+        }])->where('slug', $ebookSlug)->firstOrFail();
 
-        return view('ebook.show', compact('ebook', 'result'));
+        return view('ebook.show', compact('ebook', 'folder'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Tampilkan form edit eBook.
      */
-    public function edit($slug)
+    public function edit($folderSlug, $ebookSlug)
     {
-        $ebook = Ebook::where('slug', $slug)->firstOrFail();
-        return view('ebook.edit', compact('ebook'));
+        $folder = FolderEbook::where('slug', $folderSlug)->firstOrFail();
+        $ebook = Ebook::where('folder_id', $folder->id)->where('slug', $ebookSlug)->firstOrFail();
+
+        return view('ebook.edit', compact('ebook', 'folder'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update eBook.
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $folderSlug, $ebookSlug)
     {
-        $ebook = Ebook::findOrFail($id);
+        $folder = FolderEbook::where('slug', $folderSlug)->firstOrFail();
+        $ebook = Ebook::where('folder_id', $folder->id)->where('slug', $ebookSlug)->firstOrFail();
 
         $request->validate([
-            'title' => 'required|max:100',
+            'title'     => 'required|max:100|unique:ebooks,title,' . $ebook->id,
             'deskripsi' => 'required',
-            'cover' => 'nullable|mimes:jpg,jpeg,png|max:2048',
-            'file' => 'nullable|mimes:pdf|max:10240',
+            'cover'     => 'nullable|mimes:jpg,jpeg,png|max:2048',
+            'file'      => 'nullable|mimes:pdf|max:10240',
         ]);
 
-        // Update cover jika ada
         if ($request->hasFile('cover')) {
             if (file_exists(public_path($ebook->cover))) {
                 unlink(public_path($ebook->cover));
             }
-            $cover = $request->file('cover');
-            $coverName = time() . '_' . $cover->getClientOriginalName();
-            $cover->move(public_path('uploads/cover'), $coverName);
+            $coverName = time() . '_' . $request->file('cover')->getClientOriginalName();
+            $request->file('cover')->move(public_path('uploads/cover'), $coverName);
             $ebook->cover = 'uploads/cover/' . $coverName;
         }
 
-        // Update file ebook jika ada
         if ($request->hasFile('file')) {
             if (file_exists(public_path($ebook->file))) {
                 unlink(public_path($ebook->file));
             }
-            $file = $request->file('file');
-            $fileName = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('uploads/ebook'), $fileName);
+            $fileName = time() . '_' . $request->file('file')->getClientOriginalName();
+            $request->file('file')->move(public_path('uploads/ebook'), $fileName);
             $ebook->file = 'uploads/ebook/' . $fileName;
         }
 
-        // Update data
-        $ebook->title = $request->title;
+        $ebook->title     = $request->title;
+        $ebook->slug      = Str::slug($request->title) . '-' . time();
         $ebook->deskripsi = $request->deskripsi;
         $ebook->save();
 
-        return redirect()->route('ebook.show', $ebook->slug)->with('success', 'Ebook berhasil diperbarui!');
+        return redirect()->route('ebook.show', [$folderSlug, $ebook->slug])->with('success', 'Ebook berhasil diperbarui!');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Hapus eBook.
      */
-    public function destroy($id)
+    public function destroy($folderSlug, $ebookSlug)
     {
-        $ebook = Ebook::where('id', $id)->firstOrFail();
+        $folder = FolderEbook::where('slug', $folderSlug)->firstOrFail();
+        $ebook = Ebook::where('folder_id', $folder->id)->where('slug', $ebookSlug)->firstOrFail();
 
-        // Hapus file
-        Storage::disk('public')->delete([$ebook->cover, $ebook->file]);
+        if (file_exists(public_path($ebook->cover))) {
+            unlink(public_path($ebook->cover));
+        }
+        if (file_exists(public_path($ebook->file))) {
+            unlink(public_path($ebook->file));
+        }
 
-        // Hapus data
         $ebook->delete();
 
-        return redirect()->route('ebook.index')->with('success', 'Ebook berhasil dihapus!');
+        return redirect()->route('ebook.index', $folderSlug)->with('success', 'Ebook berhasil dihapus!');
     }
 }

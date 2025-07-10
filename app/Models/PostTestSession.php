@@ -9,28 +9,44 @@ class PostTestSession extends Model
 {
     use HasFactory;
 
+    // Nama tabel (optional jika sesuai konvensi Laravel)
     protected $table = 'post_test_sessions';
 
+    // Mass Assignment
     protected $fillable = [
         'ebook_id',
         'title',
         'duration',
     ];
 
-    // Relasi ke Ebook
+    /**
+     * Relasi: Sesi ini milik sebuah Ebook
+     */
     public function ebook()
     {
-        return $this->belongsTo(Ebook::class);
+        return $this->belongsTo(Ebook::class, 'ebook_id');
     }
 
-    // Relasi ke soal-soal post test
+    /**
+     * Relasi: Sesi ini memiliki banyak pertanyaan (PostTest)
+     */
     public function questions()
     {
         return $this->hasMany(PostTest::class, 'session_id');
     }
 
+    public function results()
+    {
+        return $this->hasMany(PostTestResult::class, 'session_id');
+    }
+
+
+
+    /**
+     * Override key untuk route model binding (optional)
+     */
     public function getRouteKeyName()
     {
-        return 'id'; // atau 'slug' jika kamu pakai slug, tapi kamu pakai id di sini
+        return 'id';  // Tetap pakai 'id' karena route kamu passing sessionId numerik, bukan slug
     }
 }

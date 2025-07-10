@@ -1,11 +1,12 @@
 @extends('layouts.app')
 
-@section('namePage', 'eBook')
+@section('namePage', $folder->folder_name)
 
 @section('content')
     <div class="card p-6 bg-white dark:bg-gray-800 rounded shadow">
-        <form id="pivotForm" action="{{ route('ebook.store', $folder->slug) }}" method="POST" enctype="multipart/form-data">
+        <form id="pivotForm" action="{{ route('folder.update', $folder->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
+            @method('PUT')
 
             <div class="flex justify-between items-center mb-5">
                 <button type="button" onclick="openBackModal()"
@@ -14,7 +15,7 @@
                     <span class="hidden md:block">Kembali</span>
                 </button>
 
-                <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Tambah Buku</h2>
+                <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Tambah Materi</h2>
 
                 <button type="button" onclick="openSubmitModal()"
                     class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded-lg font-semibold transition">
@@ -26,42 +27,22 @@
             <div class="space-y-5">
                 {{-- Judul Buku --}}
                 <div class="w-full">
-                    <label for="title" class="block font-medium text-gray-900 dark:text-gray-100">Judul Buku</label>
-                    <input type="text" name="title" id="title" value="{{ old('title') }}"
+                    <label for="folder_name"
+                        class="block font-medium text-gray-900 dark:text-gray-100">{{ __('Nama Materi') }}</label>
+                    <input type="text" name="folder_name" id="folder_name"
+                        value="{{ old('folder_name', $folder->folder_name ?? '') }}"
                         class="w-full border rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-400 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('title') border-red-500 dark:border-red-400 @enderror">
-                    @error('title')
+                    @error('folder_name')
                         <p class="text-red-600 dark:text-red-400 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
 
-                <div class="flex gap-4">
-                    {{-- Cover Buku --}}
-                    <div class="w-full">
-                        <label for="cover" class="block font-medium text-gray-900 dark:text-gray-100">Gambar Cover
-                            Buku</label>
-                        <input type="file" name="cover" id="cover" required
-                            class="w-full border rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-400 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('cover') border-red-500 dark:border-red-400 @enderror">
-                        @error('cover')
-                            <p class="text-red-600 dark:text-red-400 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    {{-- File eBook --}}
-                    <div class="w-full">
-                        <label for="file" class="block font-medium text-gray-900 dark:text-gray-100">File e-Book</label>
-                        <input type="file" name="file" id="file" required
-                            class="w-full border rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-400 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('file') border-red-500 dark:border-red-400 @enderror">
-                        @error('file')
-                            <p class="text-red-600 dark:text-red-400 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-                </div>
-
                 {{-- Deskripsi Buku --}}
                 <div class="w-full">
-                    <label for="deskripsi" class="block font-medium text-gray-900 dark:text-gray-100">Deskripsi Buku</label>
+                    <label for="deskripsi"
+                        class="block font-medium text-gray-900 dark:text-gray-100">{{ __('Deskripsi') }}</label>
                     <textarea name="deskripsi" id="deskripsi" rows="10"
-                        class="w-full border rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-400 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('deskripsi') border-red-500 dark:border-red-400 @enderror">{{ old('deskripsi') }}</textarea>
+                        class="w-full border rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-400 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('deskripsi') border-red-500 @enderror">{{ old('deskripsi', $folder->Deskripsi ?? '') }}</textarea>
                     @error('deskripsi')
                         <p class="text-red-600 dark:text-red-400 text-sm mt-1">{{ $message }}</p>
                     @enderror
@@ -118,7 +99,7 @@
                     class="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded-md text-gray-800 dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500 transition">
                     Batal
                 </button>
-                <a href="{{ route('ebook.index', $folder->slug) }}"
+                <a href="{{ route('folder.index') }}"
                     class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition">
                     Ya, Kembali
                 </a>

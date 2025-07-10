@@ -3,90 +3,76 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ebook;
-use Illuminate\Http\Request;
 use App\Models\PostTestSession;
 use App\Models\PostTest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
 class QuizController extends Controller
 {
     /**
-     * Tampilkan halaman kuis berdasarkan slug ebook.
+     * Tampilkan halaman kuis berdasarkan folder dan ebook slug.
      *
-     * @param  string  $slug
+     * @param  string  $folderSlug
+     * @param  string  $ebookSlug
      * @return \Illuminate\View\View
      */
-    public function index($slug)
+    public function index($folderSlug, $ebookSlug)
     {
-        // Ambil ebook berdasarkan slug
-        $ebook = Ebook::where('slug', $slug)->firstOrFail();
-
-        // Ambil sesi post test terbaru dari ebook ini
+        $ebook = Ebook::where('slug', $ebookSlug)->firstOrFail();
         $quiz = PostTestSession::where('ebook_id', $ebook->id)->latest()->first();
 
-        // Ambil semua pertanyaan jika sesi ditemukan
-        $questions = $quiz
-            ? PostTest::where('session_id', $quiz->id)->get()->map(function ($item) {
-                return [
-                    'id'             => $item->id, // ✅ Tambahkan ini
-                    'question'       => $item->question,
-                    'option_a'       => $item->option_a,
-                    'option_b'       => $item->option_b,
-                    'option_c'       => $item->option_c,
-                    'option_d'       => $item->option_d,
-                    'correct_option' => strtoupper($item->correct_option),
-                ];
-            })->toArray()
-            : null;
+        $questions = $quiz ? PostTest::where('session_id', $quiz->id)->get()->map(function ($item) {
+            return [
+                'id'             => $item->id,
+                'question'       => $item->question,
+                'option_a'       => $item->option_a,
+                'option_b'       => $item->option_b,
+                'option_c'       => $item->option_c,
+                'option_d'       => $item->option_d,
+                'correct_option' => strtoupper($item->correct_option),
+            ];
+        })->toArray() : null;
 
-        return view('quiz.index', compact('slug', 'quiz', 'questions'));
+        return view('quiz.index', compact('folderSlug', 'ebookSlug', 'quiz', 'questions'));
     }
 
     /**
      * Simpan sesi post test baru berdasarkan ebook.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request)
+    public function store(Request $request, $folderSlug, $ebookSlug)
     {
-        // Ambil ebook berdasarkan slug yang dikirim dari form
-        $ebook = Ebook::where('slug', $request->slug)->firstOrFail();
+        $ebook = Ebook::where('slug', $ebookSlug)->firstOrFail();
 
-        // Validasi input
         $validator = Validator::make($request->all(), [
-            'title'    => ['required', 'string', 'max:100'],
-            'duration' => ['required', 'integer', 'min:1'], // durasi minimal 1 menit
+            'title'    => 'required|string|max:100',
+            'duration' => 'required|integer|min:1',
         ]);
 
         if ($validator->fails()) {
             return Redirect::back()->withErrors($validator)->withInput();
         }
 
-        // Simpan sesi baru
         PostTestSession::create([
             'title'    => $request->title,
             'duration' => $request->duration,
             'ebook_id' => $ebook->id,
         ]);
 
-        return redirect()->back()->with('success', 'Sesi post test berhasil dibuat.');
+        return redirect()->route('quiz.index', [$folderSlug, $ebookSlug])->with('success', 'Sesi post test berhasil dibuat.');
     }
 
     /**
-     * Update sesi post test baru berdasarkan ebook.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
+     * Update sesi post test.
      */
-    public function update(Request $request, $slug, $sessionId)
+    public function update(Request $request, $folderSlug, $ebookSlug, $sessionId)
     {
         $session = PostTestSession::findOrFail($sessionId);
 
         $validator = Validator::make($request->all(), [
-            'title'    => ['required', 'string', 'max:100'],
-            'duration' => ['required', 'integer', 'min:1'],
+            'title'    => 'required|string|max:100',
+            'duration' => 'required|integer|min:1',
         ]);
 
         if ($validator->fails()) {
@@ -98,45 +84,37 @@ class QuizController extends Controller
             'duration' => $request->duration,
         ]);
 
-        return redirect()->back()->with('success', 'Sesi post test berhasil diperbarui.');
+        return redirect()->route('quiz.index', [$folderSlug, $ebookSlug])->with('success', 'Sesi post test berhasil diperbarui.');
     }
 
     /**
-     * Tampilkan form tambah pertanyaan dan simpan ke database.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  string  $slug
-     * @param  int  $sessionId
-     * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
+     * Tampilkan form tambah pertanyaan.
      */
-    public function addQuestionShow($slug, $sessionId)
+    public function addQuestionShow($folderSlug, $ebookSlug, $sessionId)
     {
         $session = PostTestSession::findOrFail($sessionId);
 
         return view('quiz.add-question', [
-            'slug' => $slug,
-            'sessionId' => $session,
+            'folderSlug' => $folderSlug,
+            'ebookSlug'  => $ebookSlug,
+            'session'    => $session,
         ]);
     }
 
-    /** 
-     * Store pertanyaan baru ke database.
-     * 
-     * @param  \Illuminate\Http\Request  $request
-     * @param  string  $slug
-     * @param  int  $sessionId
+    /**
+     * Simpan pertanyaan baru.
      */
-    public function addQuestionStore(Request $request, $slug, $sessionId)
+    public function addQuestionStore(Request $request, $folderSlug, $ebookSlug, $sessionId)
     {
         $session = PostTestSession::findOrFail($sessionId);
 
         $validator = Validator::make($request->all(), [
-            'question'       => ['required', 'string'],
-            'option_a'       => ['required', 'string', 'max:255'],
-            'option_b'       => ['required', 'string', 'max:255'],
-            'option_c'       => ['nullable', 'string', 'max:255'],
-            'option_d'       => ['nullable', 'string', 'max:255'],
-            'correct_option' => ['required', 'in:A,B,C,D'],
+            'question'       => 'required|string',
+            'option_a'       => 'required|string|max:255',
+            'option_b'       => 'required|string|max:255',
+            'option_c'       => 'nullable|string|max:255',
+            'option_d'       => 'nullable|string|max:255',
+            'correct_option' => 'required|in:A,B,C,D',
         ]);
 
         if ($validator->fails()) {
@@ -153,54 +131,56 @@ class QuizController extends Controller
             'session_id'     => $session->id,
         ]);
 
-        return redirect()->route('quiz.index', $slug)->with('Alert', 'Pertanyaan berhasil ditambahkan.');
+        return redirect()->route('quiz.index', [$folderSlug, $ebookSlug])->with('Alert', 'Pertanyaan berhasil ditambahkan.');
     }
 
     /**
-     * Hapus pertanyaan berdasarkan ID.
-     *
-     * @param  string  $slug
-     * @param  int  $sessionId
-     * @param  int  $questionId
-     * @return \Illuminate\Http\RedirectResponse
-     * */
-    public function deleteQuestion($slug, $sessionId, $questionId)
+     * Hapus pertanyaan.
+     */
+    public function deleteQuestion($folderSlug, $ebookSlug, $sessionId, $questionId)
     {
-        $session = PostTestSession::findOrFail($sessionId);
-        $question = PostTest::where('session_id', $session->id)->where('id', $questionId)->firstOrFail();
+        $question = PostTest::where('session_id', $sessionId)->where('id', $questionId)->firstOrFail();
         $question->delete();
-        return redirect()->route('quiz.index', $slug)->with('Alert', 'Pertanyaan berhasil dihapus.');
+
+        return redirect()->route('quiz.index', [$folderSlug, $ebookSlug])->with('Alert', 'Pertanyaan berhasil dihapus.');
     }
 
-    public function editQuestion($slug, $sessionId, $questionId)
+    /**
+     * Tampilkan form edit pertanyaan.
+     */
+    public function editQuestion($folderSlug, $ebookSlug, $sessionId, $questionId)
     {
         $session = PostTestSession::findOrFail($sessionId);
-        $question = PostTest::where('session_id', $session->id)->where('id', $questionId)->firstOrFail();
+        $question = PostTest::where('session_id', $sessionId)->where('id', $questionId)->firstOrFail();
 
-        return view('quiz.edit-question', compact('slug', 'session', 'question'));
+        return view('quiz.edit-question', compact('folderSlug', 'ebookSlug', 'session', 'question'));
     }
 
-    public function updateQuestion(Request $request, $slug, $sessionId, $questionId)
+    /**
+     * Update pertanyaan.
+     */
+    public function updateQuestion(Request $request, $folderSlug, $ebookSlug, $sessionId, $questionId)
     {
         $request->validate([
-            'question' => 'required|string',
-            'option_a' => 'required|string',
-            'option_b' => 'required|string',
-            'option_c' => 'required|string',
-            'option_d' => 'required|string',
+            'question'       => 'required|string',
+            'option_a'       => 'required|string|max:255',
+            'option_b'       => 'required|string|max:255',
+            'option_c'       => 'required|string|max:255',
+            'option_d'       => 'required|string|max:255',
             'correct_option' => 'required|in:A,B,C,D',
         ]);
 
         $question = PostTest::where('session_id', $sessionId)->where('id', $questionId)->firstOrFail();
 
-        $question->question = $request->question;
-        $question->option_a = $request->option_a;
-        $question->option_b = $request->option_b;
-        $question->option_c = $request->option_c;
-        $question->option_d = $request->option_d;
-        $question->correct_option = $request->correct_option;
-        $question->save();
+        $question->update([
+            'question'       => $request->question,
+            'option_a'       => $request->option_a,
+            'option_b'       => $request->option_b,
+            'option_c'       => $request->option_c,
+            'option_d'       => $request->option_d,
+            'correct_option' => $request->correct_option,
+        ]);
 
-        return redirect()->route('quiz.index', $slug)->with('Alert', 'Pertanyaan berhasil diperbarui.');
+        return redirect()->route('quiz.index', [$folderSlug, $ebookSlug])->with('Alert', 'Pertanyaan berhasil diperbarui.');
     }
 }

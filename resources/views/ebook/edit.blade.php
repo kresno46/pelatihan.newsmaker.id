@@ -4,7 +4,8 @@
 
 @section('content')
     <div class="card p-6 bg-white dark:bg-gray-800 rounded shadow">
-        <form id="pivotForm" action="{{ route('ebook.update', $ebook->id) }}" method="POST" enctype="multipart/form-data">
+        <form id="pivotForm" action="{{ route('ebook.update', [$folder->slug, $ebook->slug]) }}" method="POST"
+            enctype="multipart/form-data">
             @csrf
             @method('PUT')
 
@@ -138,7 +139,7 @@
                     class="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded-md text-gray-800 dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500 transition">
                     Batal
                 </button>
-                <a href="{{ route('ebook.index') }}"
+                <a href="{{ route('ebook.show', [$folder->slug, $ebook->slug]) }}"
                     class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition">
                     Ya, Kembali
                 </a>
