@@ -32,7 +32,6 @@
                 'tanggal_lahir',
                 'warga_negara',
                 'alamat',
-                'no_id',
                 'no_tlp',
                 'pekerjaan',
             ];
@@ -112,14 +111,6 @@
                     class="block mt-1 w-full rounded-md shadow-sm border-gray-300
                             dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">{{ old('alamat', $user->alamat) }}</textarea>
                 <x-input-error :messages="$errors->get('alamat')" class="mt-2" />
-            </div>
-
-            {{-- Nomor Identitas --}}
-            <div class="mt-4">
-                <x-input-label-append for="no_id" :value="__('Nomor Identitas (KTP/NIK)')" :append="empty($user->no_id) ? '<span class=\'text-red-500\'>*</span>' : ''" />
-                <x-text-input id="no_id" type="text" name="no_id" class="block mt-1 w-full"
-                    :value="old('no_id', $user->no_id)" />
-                <x-input-error :messages="$errors->get('no_id')" class="mt-2" />
             </div>
 
             {{-- Nomor Telepon --}}
