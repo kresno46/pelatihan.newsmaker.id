@@ -4,21 +4,28 @@
 
 @section('content')
     <div class="bg-white dark:bg-gray-800 p-3 rounded-2xl shadow-lg">
-        <!-- Search Bar -->
+
+        {{-- Search Bar --}}
         <div class="w-full flex items-center gap-2 mb-5">
-            <form action="{{ route('ebook.index') }}" method="GET" class="flex items-center gap-2 flex-grow">
+            <a href="{{ route('folder.index') }}"
+                class="bg-gray-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-600 transition cursor-pointer">
+                <span class="block sm:hidden"><i class="fa-solid fa-arrow-left"></i></span>
+                <span class="hidden sm:block">Kembali</span>
+            </a>
+
+            <form action="{{ route('ebook.index', $folder->slug) }}" method="GET" class="flex items-center gap-2 flex-grow">
                 <input type="text" name="search" value="{{ request('search') }}"
                     placeholder="Cari judul atau penulis eBook..."
                     class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800" />
             </form>
 
-            <a href="{{ route('ebook.index') }}"
+            <a href="{{ route('ebook.index', $folder->slug) }}"
                 class="bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-600 transition cursor-pointer">
                 Reset
             </a>
 
             @if (Auth::user()->role === 'Admin')
-                <a href="{{ route('ebook.create') }}"
+                <a href="{{ route('ebook.create', $folder->slug) }}"
                     class="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-600 transition cursor-pointer">
                     <span class="block sm:hidden">+</span>
                     <span class="hidden sm:block">Tambah e-Book</span>
@@ -26,28 +33,41 @@
             @endif
         </div>
 
-        <!-- Grid Card -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
-            @forelse ($ebooks as $item)
-                <a href="{{ route('ebook.show', $item->slug) }}"
-                    class="flex flex-col gap-3 bg-neutral-200 dark:bg-gray-600 p-4 rounded-xl group hover:text-blue-700 dark:hover:text-blue-200 hover:bg-neutral-300 dark:hover:bg-gray-700 transition-all">
-                    <div class="aspect-w-3 aspect-h-4 overflow-hidden rounded-md">
+        {{-- List eBook dengan Baris Bergantian --}}
+        <div class="flex flex-col divide-y divide-gray-200 dark:divide-gray-600">
+            @forelse ($ebooks as $index => $item)
+                <a href="{{ route('ebook.show', [$folder->slug, $item->slug]) }}"
+                    class="flex items-start gap-4 py-4 px-4 transition rounded-lg md:rounded-none
+                           @if ($index % 2 === 0) bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 
+                           @else bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 @endif">
+
+                    {{-- Gambar kecil --}}
+                    <div class="w-16 h-24 overflow-hidden rounded shadow flex-shrink-0">
                         <img src="{{ asset($item->cover) }}" alt="Cover {{ $item->title }}"
                             class="object-cover w-full h-full" />
                     </div>
-                    <div class="text-center h-20 flex gap-2 flex-col justify-between items-center">
-                        <h2 class="font-semibold">{{ $item->title }}</h2>
-                        <p class="text-muted text-sm">(NewsMaker 23) {{ $item->created_at->diffForHumans() }}</p>
+
+                    {{-- Konten --}}
+                    <div class="flex-1">
+                        <h3 class="font-semibold text-gray-900 dark:text-gray-100 text-base mb-1">{{ $item->title }}</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 mb-1">
+                            {{ $item->deskripsi ?? 'Tidak ada deskripsi.' }}
+                        </p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                            (NewsMaker 23)
+                            {{ $item->created_at->diffForHumans() }}
+                        </p>
                     </div>
+
                 </a>
             @empty
-                <div class="col-span-full
-                            text-center py-10 text-gray-500 dark:text-gray-400">
+                <div class="text-center py-10 text-gray-500 dark:text-gray-400">
                     Tidak ada ebook ditemukan.
                 </div>
             @endforelse
         </div>
 
+        {{-- Pagination --}}
         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mt-6 gap-2">
             @if ($ebooks->total() > 8)
                 <div class="w-full">

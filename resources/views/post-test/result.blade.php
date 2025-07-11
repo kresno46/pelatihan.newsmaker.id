@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Hasil Post Test')
+@section('namePage', $user->name . ' - Hasil Post Test')
 
 @section('content')
     <div
@@ -13,7 +13,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm md:text-base">
             <div class="bg-gray-50 dark:bg-gray-800 p-5 rounded-lg shadow-sm">
                 <p class="text-gray-500 dark:text-gray-400">👤 <span class="font-semibold">Nama</span></p>
-                <p class="text-gray-800 dark:text-white text-lg">{{ auth()->user()->name ?? '-' }}</p>
+                <p class="text-gray-800 dark:text-white text-lg">{{ $user->name ?? '-' }}</p>
             </div>
 
             <div class="bg-gray-50 dark:bg-gray-800 p-5 rounded-lg shadow-sm">
@@ -60,7 +60,7 @@
         </div>
 
         <div class="text-center mt-10">
-            <a href="{{ route('ebook.show', $session->ebook->slug) }}"
+            <a href="{{ route('ebook.show', [$folderSlug, $ebookSlug]) }}"
                 class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2 rounded-lg transition-all">
                 ← Kembali ke Halaman Ebook
             </a>

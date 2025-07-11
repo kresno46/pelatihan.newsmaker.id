@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EbookController;
 use App\Http\Controllers\EmailController;
+use App\Http\Controllers\FolderController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\PostTestController;
@@ -18,38 +19,56 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('dashboard');
 
-    Route::prefix('ebook')->middleware('profile.complete')->group(function () {
-        // e-Book
-        Route::get('/', [EbookController::class, 'index'])->name('ebook.index');
-        Route::middleware('is_admin:Admin')->group(function () {
-            Route::post('/store', [EbookController::class, 'store'])->name('ebook.store');
-            Route::get('/create', [EbookController::class, 'create'])->name('ebook.create');
-            Route::put('/{id}', [EbookController::class, 'update'])->name('ebook.update');
-            Route::get('/{slug}/edit', [EbookController::class, 'edit'])->name('ebook.edit');
-            Route::delete('/{id}', [EbookController::class, 'destroy'])->name('ebook.destroy');
-        });
-        Route::get('/{slug}', [EbookController::class, 'show'])->name('ebook.show');
+    Route::prefix('ebook')->middleware(['auth', 'verified'])->group(function () {
 
-        // Kuis
-        Route::prefix('{slug}')->group(function () {
+        // 📁 Folder Routes
+        Route::get('/', [FolderController::class, 'index'])->name('folder.index');
+
+        Route::middleware('is_admin:Admin')->group(function () {
+            Route::get('/create', [FolderController::class, 'create'])->name('folder.create');
+            Route::post('/store', [FolderController::class, 'store'])->name('folder.store');
+            Route::get('/{folderSlug}/edit', [FolderController::class, 'edit'])->name('folder.edit');
+            Route::put('/{folderSlug}', [FolderController::class, 'update'])->name('folder.update');
+            Route::delete('/{folderSlug}', [FolderController::class, 'destroy'])->name('folder.destroy');
+        });
+
+        // 📚 Ebook & Quiz Routes
+        Route::prefix('{folderSlug}')->middleware('profile.complete')->group(function () {
+
+            // 📄 List eBook dalam Folder
+            Route::get('/', [EbookController::class, 'index'])->name('ebook.index');
+
+            // ➕ Admin - Kelola eBook
             Route::middleware('is_admin:Admin')->group(function () {
-                Route::get('/quiz', [QuizController::class, 'index'])->name('quiz.index');
-                Route::post('/quiz/store', [QuizController::class, 'store'])->name('quiz.store');
-                Route::put('/quiz/{sessionId}/update', [QuizController::class, 'update'])->name('quiz.update');
-                Route::get('/quiz/{sessionId}/add-question', [QuizController::class, 'addQuestionShow'])->name('quiz.add-question-index');
-                Route::post('/quiz/{sessionId}/add-question', [QuizController::class, 'addQuestionStore'])->name('quiz.add-question-store');
-                Route::delete('quiz/{sessionId}/question/{questionId}', [QuizController::class, 'deleteQuestion'])->name('quiz.delete-question');
-                Route::get('quiz/{sessionId}/question/{questionId}/edit', [QuizController::class, 'editQuestion'])
-                    ->name('quiz.edit-question');
-                Route::put('quiz/{sessionId}/question/{questionId}', [QuizController::class, 'updateQuestion'])
-                    ->name('quiz.update-question');
-                Route::post('/summernote/upload', [SummernoteController::class, 'upload'])->name('summernote.upload');
-                Route::post('/summernote/delete', [SummernoteController::class, 'delete'])->name('summernote.delete');
+                Route::get('/create', [EbookController::class, 'create'])->name('ebook.create');
+                Route::post('/store', [EbookController::class, 'store'])->name('ebook.store');
+                Route::get('/{ebookSlug}/edit', [EbookController::class, 'edit'])->name('ebook.edit');
+                Route::put('/{ebookSlug}/update', [EbookController::class, 'update'])->name('ebook.update');
+                Route::delete('/{ebookSlug}/delete', [EbookController::class, 'destroy'])->name('ebook.destroy');
             });
-            Route::post('/post-test/{session}/submit', [PostTestController::class, 'submitQuiz'])->name('posttest.submit');
-            Route::get('/post-test/{session}', [PostTestController::class, 'showQuiz'])->name('posttest.show');
+
+            // 📄 Tampil Detail eBook
+            Route::get('/{ebookSlug}', [EbookController::class, 'show'])->name('ebook.show');
+
+            // 📝 Quiz & Post-Test (langsung di bawah {folderSlug}/{ebookSlug})
+            Route::middleware('is_admin:Admin')->group(function () {
+                Route::get('/{ebookSlug}/quiz', [QuizController::class, 'index'])->name('quiz.index');
+                Route::post('/{ebookSlug}/quiz/store', [QuizController::class, 'store'])->name('quiz.store');
+                Route::put('/{ebookSlug}/quiz/{sessionId}/update', [QuizController::class, 'update'])->name('quiz.update');
+                Route::get('/{ebookSlug}/quiz/{sessionId}/add-question', [QuizController::class, 'addQuestionShow'])->name('quiz.add-question-index');
+                Route::post('/{ebookSlug}/quiz/{sessionId}/add-question', [QuizController::class, 'addQuestionStore'])->name('quiz.add-question-store');
+                Route::delete('/{ebookSlug}/quiz/{sessionId}/question/{questionId}', [QuizController::class, 'deleteQuestion'])->name('quiz.delete-question');
+                Route::get('/{ebookSlug}/quiz/{sessionId}/question/{questionId}/edit', [QuizController::class, 'editQuestion'])->name('quiz.edit-question');
+                Route::put('/{ebookSlug}/quiz/{sessionId}/question/{questionId}', [QuizController::class, 'updateQuestion'])->name('quiz.update-question');
+            });
+
+            // 📝 Post-Test (User)
+            Route::post('/{ebookSlug}/post-test/{session}/submit', [PostTestController::class, 'submitQuiz'])->name('posttest.submit');
+            Route::get('/{ebookSlug}/post-test/{session}', [PostTestController::class, 'showQuiz'])->name('posttest.show');
+            Route::get('/{ebookSlug}/post-test/result/{resultId}', [PostTestController::class, 'showResult'])->name('posttest.result');
         });
     });
+
 
     // Summmernote Controller
     Route::middleware('is_admin:Admin', 'profile.complete')->group(function () {
@@ -105,7 +124,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::prefix('sertifikat')->group(function () {
         Route::get('/', [SertifikatController::class, 'index'])->name('sertifikat.index');
-        Route::get('/sertifikat/unduh/{batch}', [SertifikatController::class, 'sendCertificateByEmail'])->name('sertifikat.download');
+        Route::get('/unduh/{folderSlug}', [SertifikatController::class, 'generateCertificate'])->name('sertifikat.generate');
     });
 
     Route::prefix('profile')->group(function () {

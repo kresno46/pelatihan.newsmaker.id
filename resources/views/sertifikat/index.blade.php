@@ -8,53 +8,51 @@
             <div>
                 <h2 class="text-xl font-bold text-gray-900 dark:text-white">Sertifikat</h2>
                 <p class="text-gray-600 dark:text-gray-300">
-                    Kami mengirimkan sertifikat Anda ke alamat email yang terdaftar.
+                    Dapatkan sertifikat setelah menyelesaikan seluruh eBook dalam satu materi dengan nilai minimal 75.
                 </p>
             </div>
 
             @if (session('Alert'))
-                <div class="text-center text-green-600 dark:text-green-400">
+                <div class="text-center text-green-600 dark:text-green-400 font-semibold">
                     {{ session('Alert') }}
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div class="text-center text-red-600 dark:text-red-400 font-semibold">
+                    {{ session('error') }}
                 </div>
             @endif
         </div>
 
         <hr class="border-gray-300 dark:border-gray-600">
 
-        {{-- Container Sertifikat --}}
+        {{-- List Semua Folder --}}
         <div class="flex flex-col gap-3">
-            @php
-                $titles = ['Fundamental', 'Beginner', 'Intermediate', 'Advanced', 'Expert'];
-            @endphp
-
-            @foreach ($titles as $index => $title)
+            @foreach ($allFolders as $folder)
                 @php
-                    $batchNumber = $index + 1;
-                    $canDownload = $availableBatches >= $batchNumber;
+                    $folderId = $folder->id;
+                    $isEligible = $eligibility[$folderId] ?? false;
+                    $hasAward = $awards->firstWhere('batch_number', $folderId);
                 @endphp
 
-                @if ($canDownload)
-                    <a href="{{ route('sertifikat.download', ['batch' => $batchNumber]) }}"
-                        class="hover:bg-green-50 dark:hover:bg-green-900 transition">
-                        <div
-                            class="flex justify-between items-center gap-4 border border-green-500 dark:border-green-400 p-4 rounded-lg">
-                            <div class="flex items-center gap-2 text-green-700 dark:text-green-300">
-                                <i class="fa-solid fa-certificate"></i>
-                                <h1 class="font-bold">Sertifikat {{ $title }}</h1>
-                            </div>
-                            <i class="fa-solid fa-download text-green-600 dark:text-green-300"></i>
-                        </div>
-                    </a>
-                @else
+                <div
+                    class="flex justify-between items-center gap-4 border {{ $isEligible ? 'border-green-500 dark:border-green-400' : 'border-gray-300 dark:border-gray-600' }} p-4 rounded-lg {{ $isEligible ? '' : 'opacity-60 cursor-not-allowed' }}">
                     <div
-                        class="flex justify-between items-center gap-4 border border-gray-300 dark:border-gray-600 p-4 rounded-lg opacity-60 cursor-not-allowed">
-                        <div class="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                            <i class="fa-solid fa-certificate"></i>
-                            <h1 class="font-bold">Sertifikat {{ $title }}</h1>
-                        </div>
-                        <i class="fa-solid fa-lock text-gray-400"></i>
+                        class="flex items-center gap-2 {{ $isEligible ? 'text-green-700 dark:text-green-300' : 'text-gray-600 dark:text-gray-400' }}">
+                        <i class="fa-solid fa-certificate"></i>
+                        <h1 class="font-bold">{{ $folder->folder_name }}</h1>
                     </div>
-                @endif
+
+                    @if ($isEligible)
+                        <a href="{{ route('sertifikat.generate', ['folderSlug' => $folder->slug]) }}"
+                            class="text-green-600 dark:text-green-300 hover:text-green-800">
+                            <i class="fa-solid fa-download"></i>
+                        </a>
+                    @else
+                        <i class="fa-solid fa-lock text-gray-400"></i>
+                    @endif
+                </div>
             @endforeach
         </div>
     </div>

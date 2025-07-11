@@ -5,7 +5,7 @@
 @section('content')
     <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl">
         <form id="quizForm"
-            action="{{ isset($quiz) ? route('quiz.update', ['slug' => $slug, 'sessionId' => $quiz->id]) : route('quiz.store', ['slug' => $slug]) }}"
+            action="{{ isset($quiz) ? route('quiz.update', [$folderSlug, $ebookSlug, $quiz->id]) : route('quiz.store', [$folderSlug, $ebookSlug]) }}"
             method="POST" class="space-y-6">
             @csrf
             @if (isset($quiz))
@@ -59,7 +59,7 @@
         <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl mt-6">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Daftar Pertanyaan</h3>
-                <a href="{{ route('quiz.add-question-index', [$slug, $quiz->id]) }}"
+                <a href="{{ route('quiz.add-question-index', [$folderSlug, $ebookSlug, $quiz->id]) }}"
                     class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded text-sm">Tambah Soal</a>
             </div>
 
@@ -76,7 +76,7 @@
                         @endforeach
                     </div>
                     <div class="flex justify-end gap-2">
-                        <a href="{{ route('quiz.edit-question', [$slug, $quiz->id, $item['id']]) }}"
+                        <a href="{{ route('quiz.edit-question', [$folderSlug, $ebookSlug, $quiz->id, $item['id']]) }}"
                             class="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded text-sm">
                             <i class="fa-solid fa-pen"></i> Edit
                         </a>
@@ -92,7 +92,7 @@
         </div>
     @endif
 
-    {{-- Modal: Kembali --}}
+    {{-- Modal Kembali --}}
     <div id="backModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-md w-full p-6">
             <h3 class="text-xl font-bold text-red-500 mb-4"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Konfirmasi
@@ -102,13 +102,13 @@
             <div class="flex justify-end gap-3">
                 <button onclick="closeBackModal()"
                     class="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded dark:bg-gray-600 dark:text-white">Batal</button>
-                <a href="{{ route('ebook.show', $slug) }}"
+                <a href="{{ route('ebook.show', [$folderSlug, $ebookSlug]) }}"
                     class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded">Ya, Kembali</a>
             </div>
         </div>
     </div>
 
-    {{-- Modal: Simpan --}}
+    {{-- Modal Simpan --}}
     <div id="submitModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-md w-full p-6">
             <h3 class="text-xl font-bold text-blue-600 mb-4"><i class="fa-solid fa-circle-check mr-2"></i>Konfirmasi Simpan
@@ -123,7 +123,7 @@
         </div>
     </div>
 
-    {{-- Modal: Hapus Soal --}}
+    {{-- Modal Hapus Soal --}}
     <div id="deleteModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-md w-full p-6">
             <h3 class="text-xl font-bold text-red-600 mb-4"><i class="fa-solid fa-trash mr-2"></i>Konfirmasi Hapus</h3>
@@ -162,9 +162,8 @@
         }
 
         function openDeleteModal(id) {
-            const url =
-                `{{ route('quiz.delete-question', ['slug' => $slug, 'sessionId' => $quiz->id ?? 0, 'questionId' => '__ID__']) }}`
-                .replace('__ID__', id);
+            const url = `{{ route('quiz.delete-question', [$folderSlug, $ebookSlug, $quiz->id ?? 0, '__ID__']) }}`.replace(
+                '__ID__', id);
             document.getElementById('deleteForm').setAttribute('action', url);
             document.getElementById('deleteModal').classList.remove('hidden');
         }

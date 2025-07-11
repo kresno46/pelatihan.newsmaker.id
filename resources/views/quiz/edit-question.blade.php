@@ -17,7 +17,12 @@
         @endif
 
         <form id="questionForm" method="POST"
-            action="{{ route('quiz.update-question', ['slug' => $slug, 'sessionId' => $session->id, 'questionId' => $question->id]) }}">
+            action="{{ route('quiz.update-question', [
+                'folderSlug' => $folderSlug,
+                'ebookSlug' => $ebookSlug,
+                'sessionId' => $session->id,
+                'questionId' => $question->id,
+            ]) }}">
             @csrf
             @method('PUT')
 
@@ -53,8 +58,12 @@
             </div>
 
             <div class="flex justify-between items-center mt-6">
-                <a href="{{ route('quiz.index', $slug) }}"
+                <a href="{{ route('quiz.index', [
+                    'folderSlug' => $folderSlug,
+                    'ebookSlug' => $ebookSlug,
+                ]) }}"
                     class="text-sm text-gray-500 dark:text-gray-400 hover:underline">← Kembali</a>
+
                 <button type="button" onclick="document.getElementById('confirmModal').classList.remove('hidden')"
                     class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Perbarui</button>
             </div>

@@ -11,7 +11,12 @@
             </div>
         </div>
 
-        <form id="quizForm" action="{{ route('posttest.submit', ['slug' => $ebook->slug, 'session' => $session->id]) }}"
+        <form id="quizForm"
+            action="{{ route('posttest.submit', [
+                'folderSlug' => $folderSlug,
+                'ebookSlug' => $ebook->slug,
+                'session' => $session->id,
+            ]) }}"
             method="POST" class="space-y-5">
             @csrf
             @foreach ($questions as $index => $question)
