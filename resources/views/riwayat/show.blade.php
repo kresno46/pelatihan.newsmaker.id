@@ -16,6 +16,13 @@
             </div>
 
             <div class="bg-gray-50 dark:bg-gray-900 p-5 rounded-lg shadow-sm">
+                <p class="text-gray-500 dark:text-gray-400">📂 <span class="font-semibold">Folder Materi</span></p>
+                <p class="text-gray-800 dark:text-white text-lg">
+                    {{ $session->ebook->folderEbook->folder_name ?? '-' }}
+                </p>
+            </div>
+
+            <div class="bg-gray-50 dark:bg-gray-900 p-5 rounded-lg shadow-sm">
                 <p class="text-gray-500 dark:text-gray-400">📚 <span class="font-semibold">Ebook</span></p>
                 <p class="text-gray-800 dark:text-white text-lg">{{ $session->ebook->title ?? '-' }}</p>
             </div>

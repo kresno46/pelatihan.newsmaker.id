@@ -24,28 +24,12 @@ class RiwayatController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
      * Display the specified resource.
      */
     public function show($id)
     {
         // Ambil hasil post test milik user yang sedang login
-        $result = PostTestResult::with(['session.ebook', 'session.questions'])
+        $result = PostTestResult::with(['session.ebook', 'session.ebook.folderEbook', 'session.questions'])
             ->where('id', $id)
             ->where('user_id', Auth::id())
             ->firstOrFail();
@@ -53,29 +37,5 @@ class RiwayatController extends Controller
         $session = $result->session;
 
         return view('riwayat.show', compact('result', 'session'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }

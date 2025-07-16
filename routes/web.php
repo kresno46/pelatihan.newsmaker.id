@@ -122,10 +122,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/', [EmailController::class, 'index'])->name('email.index');
     });
 
-    Route::prefix('sertifikat')->group(function () {
-        Route::get('/', [SertifikatController::class, 'index'])->name('sertifikat.index');
-        Route::get('/unduh/{folderSlug}', [SertifikatController::class, 'generateCertificate'])->name('sertifikat.generate');
-    });
+    Route::get('/sertifikat', [\App\Http\Controllers\SertifikatController::class, 'index'])->name('sertifikat.index');
+    Route::get('/sertifikat/{folderSlug}/download', [\App\Http\Controllers\SertifikatController::class, 'generateCertificate'])->name('sertifikat.download');
 
     Route::prefix('profile')->group(function () {
         Route::get('/', [ProfileController::class, 'edit'])->name('profile.edit');

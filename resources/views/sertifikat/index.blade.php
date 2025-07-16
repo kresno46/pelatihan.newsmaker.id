@@ -29,31 +29,54 @@
 
         {{-- List Semua Folder --}}
         <div class="flex flex-col gap-3">
-            @foreach ($allFolders as $folder)
-                @php
-                    $folderId = $folder->id;
-                    $isEligible = $eligibility[$folderId] ?? false;
-                    $hasAward = $awards->firstWhere('batch_number', $folderId);
-                @endphp
-
-                <div
-                    class="flex justify-between items-center gap-4 border {{ $isEligible ? 'border-green-500 dark:border-green-400' : 'border-gray-300 dark:border-gray-600' }} p-4 rounded-lg {{ $isEligible ? '' : 'opacity-60 cursor-not-allowed' }}">
-                    <div
-                        class="flex items-center gap-2 {{ $isEligible ? 'text-green-700 dark:text-green-300' : 'text-gray-600 dark:text-gray-400' }}">
-                        <i class="fa-solid fa-certificate"></i>
-                        <h1 class="font-bold">{{ $folder->folder_name }}</h1>
+            @forelse ($eligibleFolders as $data)
+                @if ($data->can_download)
+                    <a href="{{ route('sertifikat.download', $data->folder->slug) }}"
+                        class="border border-green-500 px-5 py-3 rounded-lg hover:bg-green-100 transition-all duration-100 block mb-3">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-green-600 font-semibold">{{ $data->folder->folder_name }}</p>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="text-green-500 text-sm rounded-full">
+                                    {{ $data->average_score }}/100
+                                </div>
+                                <i class="fa-solid fa-download text-green-600"></i>
+                            </div>
+                        </div>
+                    </a>
+                @elseif ($data->is_completed_but_failed)
+                    <div class="border border-red-500 px-5 py-3 rounded-lg bg-red-50 text-red-500 mb-3">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-red-600 font-semibold">{{ $data->folder->folder_name }}</p>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="text-red-500 text-sm rounded-full">
+                                    {{ $data->average_score }}/100
+                                </div>
+                                <span class="italic text-red-500">Nilai kurang dari 75</span>
+                            </div>
+                        </div>
                     </div>
-
-                    @if ($isEligible)
-                        <a href="{{ route('sertifikat.generate', ['folderSlug' => $folder->slug]) }}"
-                            class="text-green-600 dark:text-green-300 hover:text-green-800">
-                            <i class="fa-solid fa-download"></i>
-                        </a>
-                    @else
-                        <i class="fa-solid fa-lock text-gray-400"></i>
-                    @endif
+                @else
+                    <div class="border border-gray-300 px-5 py-3 rounded-lg bg-gray-50 text-gray-400 mb-3">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500 font-semibold">{{ $data->folder->folder_name }}</p>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <span class="italic text-gray-400">Belum memenuhi</span>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+            @empty
+                <div>
+                    <p>Belum ada data post-test Anda.</p>
                 </div>
-            @endforeach
+            @endforelse
+
         </div>
     </div>
 @endsection
