@@ -29,25 +29,29 @@
         }
 
         .certificate-title {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: bold;
-            margin-top: 40px;
+            margin-top: 20px;
             margin-bottom: 30px;
         }
 
         .certificate-body {
             font-size: 16px;
-            margin-bottom: 40px;
+            margin-bottom: 25px;
+        }
+
+        .certificate-materi {
+            font-size: 24px;
         }
 
         .logo {
             width: 150px;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
 
         .id-sertifikat {
             font-size: 10px;
-            margin-top: 25px;
+            margin-top: 15px;
             color: #555;
         }
 
@@ -72,9 +76,9 @@
             <p>Sertifikat ini diberikan kepada</p>
             <h1><strong>{{ $name ?? 'Nama Peserta' }}</strong></h1>
             <p class="max-w-md">sebagai bentuk penghargaan atas pencapaian menyelesaikan pembelajaran dengan baik pada
-                materi
-                <strong>{{ $levelTitle ?? 'Level Tidak Diketahui' }}</strong>.
+                materi:
             </p>
+            <p class="certificate-materi"><strong>{{ $levelTitle }}</strong></p>
         </div>
 
         <!-- Tanggal dan Penandatangan -->

@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="card p-6 bg-white dark:bg-gray-800 rounded shadow">
-        <form id="pivotForm" action="{{ route('outlookfolder.store') }}" method="POST" enctype="multipart/form-data">
+        <form id="pivotForm" action="{{ route('outlook.store', $folder->slug) }}" method="POST" enctype="multipart/form-data">
             @csrf
 
             <div class="flex justify-between items-center mb-5">
@@ -48,7 +48,8 @@
 
                     {{-- File Outlook --}}
                     <div class="w-full">
-                        <label for="file" class="block font-medium text-gray-900 dark:text-gray-100">File Outlook</label>
+                        <label for="file" class="block font-medium text-gray-900 dark:text-gray-100">File
+                            Outlook</label>
                         <input type="file" name="file" id="file" required
                             class="w-full border rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-400 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('file') border-red-500 dark:border-red-400 @enderror">
                         @error('file')
@@ -59,7 +60,8 @@
 
                 {{-- Deskripsi Outlook --}}
                 <div class="w-full">
-                    <label for="deskripsi" class="block font-medium text-gray-900 dark:text-gray-100">Deskripsi Outlook</label>
+                    <label for="deskripsi" class="block font-medium text-gray-900 dark:text-gray-100">Deskripsi
+                        Outlook</label>
                     <textarea name="deskripsi" id="deskripsi" rows="10"
                         class="w-full border rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-400 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('deskripsi') border-red-500 dark:border-red-400 @enderror">{{ old('deskripsi') }}</textarea>
                     @error('deskripsi')

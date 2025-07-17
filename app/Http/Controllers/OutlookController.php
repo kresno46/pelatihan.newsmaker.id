@@ -2,21 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\FolderOutlook;
 use App\Models\Outlook;
-use App\Models\OutlookFolder;
-use App\Models\PostTestResult;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class OutlookController extends Controller
 {
     /**
-     * Tampilkan daftar Outlook dalam folder.
+     * Display a listing of the resource.
      */
-    public function index(Request $request, $folderSlug)
+    public function index(Request $request, $slug)
     {
-        $folder = OutlookFolder::where('slug', $folderSlug)->firstOrFail();
-        $query = Outlook::where('folder_id', $folder->id);
+        $folder = FolderOutlook::where('slug', $slug)->firstOrFail();
+        $query = Outlook::where('folderOutlook_id', $folder->id);
 
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
@@ -25,92 +24,89 @@ class OutlookController extends Controller
             });
         }
 
-        $outlooks = $query->paginate(8);
+        $outlooks = $query->paginate(8)->appends(['search' => $request->search]); // <-- ini penting
 
         return view('outlook.index', compact('outlooks', 'folder'));
     }
 
     /**
-     * Tampilkan form tambah Outlook.
+     * Show the form for creating a new resource.
      */
-    public function create($folderSlug)
+    public function create($slug)
     {
-        $folder = OutlookFolder::where('slug', $folderSlug)->firstOrFail();
+        $folder = FolderOutlook::where('slug', $slug)->firstOrFail();
         return view('outlook.create', compact('folder'));
     }
 
     /**
-     * Simpan Outlook baru.
+     * Store a newly created resource in storage.
      */
-    public function store(Request $request, $folderSlug)
+    public function store(Request $request, $slug)
     {
-        $folder = OutlookFolder::where('slug', $folderSlug)->firstOrFail();
+        $folder = FolderOutlook::where('slug', $slug)->firstOrFail();
 
         $request->validate([
-            'title'     => 'required|max:100|unique:outlooks,title',
+            'title'     => 'required|max:100|unique:ebooks,title',
             'deskripsi' => 'required',
             'cover'     => 'required|mimes:jpg,jpeg,png|max:2048',
             'file'      => 'required|mimes:pdf|max:10240',
         ]);
 
-        $outlookSlug = Str::slug($request->title) . '-' . time();
+        $ebookSlug = Str::slug($request->title) . '-' . time();
 
         // Upload Cover
         $coverName = time() . '_' . $request->file('cover')->getClientOriginalName();
-        $request->file('cover')->move(public_path('uploads/cover'), $coverName);
+        $request->file('cover')->move(public_path('uploads/outlook/cover'), $coverName);
 
-        // Upload File Outlook
+        // Upload File Ebook
         $fileName = time() . '_' . $request->file('file')->getClientOriginalName();
-        $request->file('file')->move(public_path('uploads/outlook'), $fileName);
+        $request->file('file')->move(public_path('uploads/outlook/file'), $fileName);
 
         // Simpan Data
         Outlook::create([
-            'folder_id' => $folder->id,
+            'folderOutlook_id' => $folder->id, // ✅ ini yang benar
             'title'     => $request->title,
-            'slug'      => $outlookSlug,
+            'slug'      => $ebookSlug,
             'deskripsi' => $request->deskripsi,
-            'cover'     => 'uploads/cover/' . $coverName,
-            'file'      => 'uploads/outlook/' . $fileName,
+            'cover'     => 'uploads/outlook/cover/' . $coverName,
+            'file'      => 'uploads/outlook/file/' . $fileName,
         ]);
 
-        return redirect()->route('outlook.index', $folderSlug)->with('success', 'Outlook berhasil ditambahkan!');
+        return redirect()->route('outlook.index', $slug)->with('success', 'Outlook berhasil ditambahkan!');
     }
 
     /**
-     * Tampilkan detail Outlook.
+     * Display the specified resource.
      */
-    public function show($folderSlug, $outlookSlug)
+    public function show(string $slug, string $outlookSlug)
     {
-        $folder = OutlookFolder::where('slug', $folderSlug)->firstOrFail();
+        $folder = FolderOutlook::where('slug', $slug)->firstOrFail();
+        $outlook = Outlook::where('slug', $outlookSlug)->firstOrFail();
 
-        $outlook = Outlook::with(['postTestSessions.results' => function ($query) {
-            $query->where('user_id', auth()->id());
-        }])->where('slug', $outlookSlug)->firstOrFail();
-
-        return view('outlook.show', compact('outlook', 'folder'));
+        return view('outlook.show', compact('folder', 'outlook'));
     }
 
     /**
-     * Tampilkan form edit Outlook.
+     * Show the form for editing the specified resource.
      */
-    public function edit($folderSlug, $outlookSlug)
+    public function edit(string $slug, $outlookSlug)
     {
-        $folder = OutlookFolder::where('slug', $folderSlug)->firstOrFail();
-        $outlook = Outlook::where('folder_id', $folder->id)->where('slug', $outlookSlug)->firstOrFail();
+        $folder = FolderOutlook::where('slug', $slug)->firstOrFail();
+        $outlook = Outlook::where('slug', $outlookSlug)->firstOrFail();
 
         return view('outlook.edit', compact('outlook', 'folder'));
     }
 
     /**
-     * Update Outlook.
+     * Update the specified resource in storage.
      */
-    public function update(Request $request, $folderSlug, $outlookSlug)
+    public function update(Request $request, $slug, $outlookSlug)
     {
-        $folder = OutlookFolder::where('slug', $folderSlug)->firstOrFail();
-        $outlook = Outlook::where('folder_id', $folder->id)->where('slug', $outlookSlug)->firstOrFail();
+        $folder = FolderOutlook::where('slug', $slug)->firstOrFail();
+        $outlook = Outlook::where('folderOutlook_id', $folder->id)->where('slug', $outlookSlug)->firstOrFail();
 
         $request->validate([
-            'title'     => 'required|max:100|unique:outlooks,title,' . $outlook->id,
+            'title'     => 'required|max:100|unique:ebooks,title,' . $outlook->id,
             'deskripsi' => 'required',
             'cover'     => 'nullable|mimes:jpg,jpeg,png|max:2048',
             'file'      => 'nullable|mimes:pdf|max:10240',
@@ -121,8 +117,8 @@ class OutlookController extends Controller
                 unlink(public_path($outlook->cover));
             }
             $coverName = time() . '_' . $request->file('cover')->getClientOriginalName();
-            $request->file('cover')->move(public_path('uploads/cover'), $coverName);
-            $outlook->cover = 'uploads/cover/' . $coverName;
+            $request->file('cover')->move(public_path('uploads/outlook/cover/'), $coverName);
+            $outlook->cover = 'uploads/outlook/cover/' . $coverName;
         }
 
         if ($request->hasFile('file')) {
@@ -130,8 +126,8 @@ class OutlookController extends Controller
                 unlink(public_path($outlook->file));
             }
             $fileName = time() . '_' . $request->file('file')->getClientOriginalName();
-            $request->file('file')->move(public_path('uploads/outlook'), $fileName);
-            $outlook->file = 'uploads/outlook/' . $fileName;
+            $request->file('file')->move(public_path('uploads/outlook/file/'), $fileName);
+            $outlook->file = 'uploads/outlook/file/' . $fileName;
         }
 
         $outlook->title     = $request->title;
@@ -139,16 +135,16 @@ class OutlookController extends Controller
         $outlook->deskripsi = $request->deskripsi;
         $outlook->save();
 
-        return redirect()->route('outlook.show', [$folderSlug, $outlook->slug])->with('success', 'Outlook berhasil diperbarui!');
+        return redirect()->route('outlook.show', [$slug, $outlook->slug])->with('success', 'Ebook berhasil diperbarui!');
     }
 
     /**
-     * Hapus Outlook.
+     * Remove the specified resource from storage.
      */
-    public function destroy($folderSlug, $outlookSlug)
+    public function destroy($slug, $outlookSlug)
     {
-        $folder = OutlookFolder::where('slug', $folderSlug)->firstOrFail();
-        $outlook = Outlook::where('folder_id', $folder->id)->where('slug', $outlookSlug)->firstOrFail();
+        $folder = FolderOutlook::where('slug', $slug)->firstOrFail();
+        $outlook = Outlook::where('folderOutlook_id', $folder->id)->where('slug', $outlookSlug)->firstOrFail();
 
         if (file_exists(public_path($outlook->cover))) {
             unlink(public_path($outlook->cover));
@@ -159,6 +155,6 @@ class OutlookController extends Controller
 
         $outlook->delete();
 
-        return redirect()->route('outlook.index', $folderSlug)->with('success', 'Outlook berhasil dihapus!');
+        return redirect()->route('outlook.index', $slug)->with('success', 'Ebook berhasil dihapus!');
     }
 }

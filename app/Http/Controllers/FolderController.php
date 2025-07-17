@@ -19,16 +19,6 @@ class FolderController extends Controller
     }
 
     /**
-     * Display a listing of the resource for Outlook.
-     */
-    public function outlookIndex()
-    {
-        $folders = FolderEbook::withCount('ebooks')->latest()->paginate(8);
-
-        return view('outlook.folder_index', compact('folders'));
-    }
-
-    /**
      * Show the form for creating a new resource.
      */
     public function create()
@@ -52,7 +42,7 @@ class FolderController extends Controller
             'slug'        => Str::slug($request->folder_name),
         ]);
 
-        return redirect()->route('folder.index')->with('success', 'Folder berhasil dibuat.');
+        return redirect()->route('folder.index')->with('success', 'Folder Outlook berhasil dibuat.');
     }
 
     /**
@@ -90,7 +80,7 @@ class FolderController extends Controller
             'slug'        => Str::slug($request->folder_name),
         ]);
 
-        return redirect()->route('folder.index')->with('success', 'Folder berhasil diperbarui.');
+        return redirect()->route('folder.index')->with('success', 'Folder Outlook berhasil diperbarui.');
     }
 
     /**
@@ -101,6 +91,6 @@ class FolderController extends Controller
         $folder = FolderEbook::findOrFail($id);
         $folder->delete();
 
-        return redirect()->route('folder.index')->with('success', 'Folder berhasil dihapus.');
+        return redirect()->route('folder.index')->with('success', 'Folder Outlook berhasil dihapus.');
     }
 }

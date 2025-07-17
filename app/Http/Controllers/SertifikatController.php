@@ -4,119 +4,113 @@ namespace App\Http\Controllers;
 
 use App\Models\CertificateAward;
 use App\Models\PostTestResult;
+use App\Models\FolderEbook;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
-use App\Mail\CertificateEmail;
-use App\Models\FolderEbook;
+use Illuminate\Http\Request;
 
 class SertifikatController extends Controller
 {
-    /**
-     * Menampilkan halaman daftar sertifikat user
-     */
     public function index()
     {
         $user = auth()->user();
-        $allFolders = FolderEbook::with('ebooks')->get();
+        $folders = FolderEbook::with('ebooks')->get();
 
-        $eligibility = [];
-
-        foreach ($allFolders as $folder) {
+        $eligibleFolders = [];
+        foreach ($folders as $folder) {
             $ebookIds = $folder->ebooks->pluck('id')->toArray();
+            $userResults = PostTestResult::where('user_id', $user->id)
+                ->whereIn('ebook_id', $ebookIds)
+                ->get();
 
-            $userResults = collect($ebookIds)->map(function ($ebookId) use ($user) {
-                return PostTestResult::where('user_id', $user->id)
-                    ->where('ebook_id', $ebookId)
-                    ->max('score');
-            });
+            if ($userResults->isEmpty()) continue;
 
-            $completed = !$userResults->contains(null);
-            $allAbove75 = $userResults->every(fn($score) => !is_null($score) && $score >= 75);
+            $totalEbooks = count($ebookIds);
+            $totalUserResults = $userResults->count();
+            $averageScore = round($userResults->avg('score'), 2);
 
-            $eligibility[$folder->id] = $completed && $allAbove75;
+            $canDownload = $totalUserResults === $totalEbooks && $averageScore >= 75;
+            $isCompletedButFailed = $totalUserResults === $totalEbooks && $averageScore < 75;
+
+            $eligibleFolders[] = (object)[
+                'folder' => $folder,
+                'average_score' => $averageScore,
+                'can_download' => $canDownload,
+                'is_completed_but_failed' => $isCompletedButFailed,
+            ];
         }
 
         $awards = CertificateAward::where('user_id', $user->id)->get();
 
-        return view('sertifikat.index', [
-            'allFolders' => $allFolders,
-            'awards' => $awards,
-            'eligibility' => $eligibility,
-            'user' => $user,
-        ]);
+        return view('sertifikat.index', compact('eligibleFolders', 'awards'));
     }
 
-    /**
-     * Generate dan unduh sertifikat berdasarkan folder
-     */
     public function generateCertificate($folderSlug)
     {
         $user = auth()->user();
         $folder = FolderEbook::where('slug', $folderSlug)->with('ebooks')->firstOrFail();
         $ebookIds = $folder->ebooks->pluck('id')->toArray();
 
-        $userResults = collect($ebookIds)->map(function ($ebookId) use ($user) {
-            return PostTestResult::where('user_id', $user->id)
-                ->where('ebook_id', $ebookId)
-                ->max('score');
-        });
+        $userResults = PostTestResult::where('user_id', $user->id)
+            ->whereIn('ebook_id', $ebookIds)
+            ->get();
 
-        // Validasi semua post-test selesai
-        if ($userResults->contains(null) || $userResults->contains(false)) {
-            return back()->with('error', 'Anda belum menyelesaikan semua post-test dalam materi ini.');
+        if ($userResults->isEmpty()) {
+            return back()->with('error', 'Belum ada post-test yang Anda kerjakan di folder ini.');
         }
 
-        // Validasi skor minimal 75
-        if (!$userResults->every(fn($score) => !is_null($score) && $score >= 75)) {
-            return back()->with('error', 'Nilai minimal 75 diperlukan untuk mendapatkan sertifikat.');
+        $totalEbooks = count($ebookIds);
+        $totalUserResults = $userResults->count();
+
+        if ($totalUserResults < $totalEbooks) {
+            return back()->with('error', 'Anda belum menyelesaikan seluruh eBook di materi ini.');
         }
 
-        // Pastikan data valid
-        if ($userResults->count() === 0) {
-            return back()->with('error', 'Data post-test tidak valid.');
+        $averageScore = round($userResults->avg('score'), 2);
+
+        if ($averageScore < 75) {
+            return back()->with('error', 'Nilai rata-rata minimal 75 diperlukan.');
         }
 
-        $averageScore = round($userResults->sum() / $userResults->count(), 2);
+        // Cek apakah sudah ada sertifikat sebelumnya
+        $award = CertificateAward::where('user_id', $user->id)
+            ->where('batch_number', $folder->id)
+            ->first();
 
-        $award = CertificateAward::firstOrCreate(
-            [
+        if (!$award) {
+            $award = CertificateAward::create([
                 'user_id' => $user->id,
                 'batch_number' => $folder->id,
-            ],
-            [
                 'average_score' => $averageScore,
-                'total_ebooks' => count($ebookIds),
+                'total_ebooks' => $totalEbooks,
                 'certificate_uuid' => (string) Str::uuid(),
                 'awarded_at' => now(),
-            ]
-        );
+            ]);
+        } else {
+            $award->update([
+                'average_score' => $averageScore,
+                'total_ebooks' => $totalEbooks,
+            ]);
+        }
 
         $dateFormatted = Carbon::parse($award->awarded_at)->format('d F Y');
-        $levelTitle = $folder->folder_name ?? 'Level Tidak Diketahui';
 
         $pdf = Pdf::loadView('sertifikat.certificate', [
             'name' => $user->name,
             'date' => $dateFormatted,
             'uuid' => $award->certificate_uuid,
             'batch' => $folder->id,
-            'levelTitle' => $levelTitle,
+            'levelTitle' => $folder->folder_name,
         ])->setPaper('a4', 'landscape');
 
         $safeFolderName = Str::slug($folder->folder_name);
-        $fileName = "Sertifikat_{$user->id}_Folder_{$safeFolderName}.pdf";
+        $fileName = "Sertifikat_{$user->name}_Folder_{$safeFolderName}.pdf";
         $filePath = storage_path("app/public/sertifikat/{$fileName}");
 
         Storage::makeDirectory('public/sertifikat');
         file_put_contents($filePath, $pdf->output());
-
-        try {
-            Mail::to($user->email)->send(new CertificateEmail($user->name, $folder->id, $folder->folder_name, $filePath));
-        } catch (\Exception $e) {
-            // Bisa log error jika perlu
-        }
 
         return response()->download($filePath, $fileName);
     }
