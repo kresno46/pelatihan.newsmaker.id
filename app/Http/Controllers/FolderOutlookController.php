@@ -21,7 +21,7 @@ class FolderOutlookController extends Controller
 
         $FolderOutlooks = $query->latest()->paginate(8)->appends(['search' => $request->search]);
 
-        return view('FolderOutlook.index', compact('FolderOutlooks'));
+        return view('folderoutlook.index', compact('FolderOutlooks'));
     }
 
     /**
@@ -29,7 +29,7 @@ class FolderOutlookController extends Controller
      */
     public function create()
     {
-        return view('FolderOutlook.create');
+        return view('folderoutlook.create');
     }
 
     /**
@@ -66,7 +66,7 @@ class FolderOutlookController extends Controller
     {
         $FolderOutlook = FolderOutlook::where('slug', $slug)->first();
 
-        return view('FolderOutlook.edit', compact('FolderOutlook'));
+        return view('folderoutlook.edit', compact('FolderOutlook'));
     }
 
     /**
