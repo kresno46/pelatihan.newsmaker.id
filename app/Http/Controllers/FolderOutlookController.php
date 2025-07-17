@@ -2,30 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\FolderEbook;
+use App\Models\OutlookFolder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
-class FolderController extends Controller
+class FolderOutlookController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        $folders = FolderEbook::withCount('ebooks')->latest()->paginate(8);
-
-        return view('folder.index', compact('folders'));
-    }
-
     /**
      * Display a listing of the resource for Outlook.
      */
-    public function outlookIndex()
+    public function index()
     {
-        $folders = FolderEbook::withCount('ebooks')->latest()->paginate(8);
+        $folderoutlook = OutlookFolder::withCount('outlooks')->latest()->paginate(8);
 
-        return view('outlook.folder_index', compact('folders'));
+        return view('folderoutlook.index', compact('folderoutlook'));
     }
 
     /**
@@ -33,7 +23,7 @@ class FolderController extends Controller
      */
     public function create()
     {
-        return view('folder.create');
+        return view('folderoutlook.create');
     }
 
     /**
@@ -46,22 +36,13 @@ class FolderController extends Controller
             'deskripsi'   => 'nullable|string',
         ]);
 
-        FolderEbook::create([
+        OutlookFolder::create([
             'folder_name' => $request->folder_name,
             'deskripsi'   => $request->deskripsi,
             'slug'        => Str::slug($request->folder_name),
         ]);
 
-        return redirect()->route('folder.index')->with('success', 'Folder berhasil dibuat.');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show($id)
-    {
-        $folder = FolderEbook::findOrFail($id);
-        return view('folder.show', compact('folder'));
+        return redirect()->route('outlook.index')->with('success', 'Folder Outlook berhasil dibuat.');
     }
 
     /**
@@ -69,8 +50,8 @@ class FolderController extends Controller
      */
     public function edit($slug)
     {
-        $folder = FolderEbook::where('slug', $slug)->firstOrFail();
-        return view('folder.edit', compact('folder'));
+        $folder = OutlookFolder::where('slug', $slug)->firstOrFail();
+        return view('outlook.folder_edit', compact('folder'));
     }
 
     /**
@@ -83,14 +64,14 @@ class FolderController extends Controller
             'deskripsi'   => 'nullable|string',
         ]);
 
-        $folder = FolderEbook::findOrFail($id);
+        $folder = OutlookFolder::findOrFail($id);
         $folder->update([
             'folder_name' => $request->folder_name,
             'deskripsi'   => $request->deskripsi,
             'slug'        => Str::slug($request->folder_name),
         ]);
 
-        return redirect()->route('folder.index')->with('success', 'Folder berhasil diperbarui.');
+        return redirect()->route('outlook.folder.index')->with('success', 'Folder Outlook berhasil diperbarui.');
     }
 
     /**
@@ -98,9 +79,9 @@ class FolderController extends Controller
      */
     public function destroy($id)
     {
-        $folder = FolderEbook::findOrFail($id);
+        $folder = OutlookFolder::findOrFail($id);
         $folder->delete();
 
-        return redirect()->route('folder.index')->with('success', 'Folder berhasil dihapus.');
+        return redirect()->route('outlook.folder.index')->with('success', 'Folder Outlook berhasil dihapus.');
     }
 }
