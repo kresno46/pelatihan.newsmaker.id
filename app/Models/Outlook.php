@@ -1,30 +1,43 @@
 <?php
 
+// app/Models/Outlook.php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Outlook extends Model
 {
     use HasFactory;
 
+    protected $table = 'outlooks';
+
     protected $fillable = [
-        'folder_id',
         'title',
-        'slug',
         'deskripsi',
         'cover',
         'file',
+        'slug',
+        'folderOutlook_id',
     ];
 
-    public function folder()
+    protected static function boot()
     {
-        return $this->belongsTo(OutlookFolder::class, 'folder_id');
+        parent::boot();
+
+        static::creating(function ($model) {
+            $model->slug = Str::slug($model->title);
+        });
+
+        static::updating(function ($model) {
+            $model->slug = Str::slug($model->title);
+        });
     }
 
-    public function postTestSessions()
+    public function folderOutlook()
     {
-        return $this->hasMany(PostTestSession::class, 'ebook_id');
+        return $this->belongsTo(FolderOutlook::class, 'folderOutlook_id');
     }
 }

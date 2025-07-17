@@ -2,20 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\OutlookFolder;
+use App\Models\FolderOutlook;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class FolderOutlookController extends Controller
 {
     /**
-     * Display a listing of the resource for Outlook.
+     * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $folderoutlook = OutlookFolder::withCount('outlooks')->latest()->paginate(8);
+        $query = FolderOutlook::withCount('outlooks');
 
-        return view('folderoutlook.index', compact('folderoutlook'));
+        if ($request->filled('search')) {
+            $query->where('folder_name', 'like', '%' . $request->search . '%');
+        }
+
+        $FolderOutlooks = $query->latest()->paginate(8)->appends(['search' => $request->search]);
+
+        return view('FolderOutlook.index', compact('FolderOutlooks'));
     }
 
     /**
@@ -23,7 +29,7 @@ class FolderOutlookController extends Controller
      */
     public function create()
     {
-        return view('folderoutlook.create');
+        return view('FolderOutlook.create');
     }
 
     /**
@@ -32,56 +38,66 @@ class FolderOutlookController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'folder_name' => 'required|string|max:255',
-            'deskripsi'   => 'nullable|string',
+            'folder_name' => 'required|string|max:100',
+            'deskripsi'   => 'required|string',
         ]);
 
-        OutlookFolder::create([
+        FolderOutlook::create([
             'folder_name' => $request->folder_name,
             'deskripsi'   => $request->deskripsi,
             'slug'        => Str::slug($request->folder_name),
         ]);
 
-        return redirect()->route('outlook.index')->with('success', 'Folder Outlook berhasil dibuat.');
+        return redirect()->route('outlookfolder.index')->with('success', 'Folder berhasil dibuat.');
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        //
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($slug)
+    public function edit(string $slug)
     {
-        $folder = OutlookFolder::where('slug', $slug)->firstOrFail();
-        return view('outlook.folder_edit', compact('folder'));
+        $FolderOutlook = FolderOutlook::where('slug', $slug)->first();
+
+        return view('FolderOutlook.edit', compact('FolderOutlook'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, string $id)
     {
         $request->validate([
             'folder_name' => 'required|string|max:255',
             'deskripsi'   => 'nullable|string',
         ]);
 
-        $folder = OutlookFolder::findOrFail($id);
+        $folder = FolderOutlook::findOrFail($id);
+
         $folder->update([
             'folder_name' => $request->folder_name,
             'deskripsi'   => $request->deskripsi,
             'slug'        => Str::slug($request->folder_name),
         ]);
 
-        return redirect()->route('outlook.folder.index')->with('success', 'Folder Outlook berhasil diperbarui.');
+        return redirect()->route('outlookfolder.index')->with('success', 'Folder berhasil diperbarui.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(string $id)
     {
-        $folder = OutlookFolder::findOrFail($id);
+        $folder = FolderOutlook::findOrFail($id);
         $folder->delete();
 
-        return redirect()->route('outlook.folder.index')->with('success', 'Folder Outlook berhasil dihapus.');
+        return redirect()->route('outlookfolder.index')->with('success', 'Folder Outlook berhasil dihapus.');
     }
 }

@@ -22,17 +22,18 @@ class HomeController extends Controller
             'tanggal_lahir',
             'warga_negara',
             'alamat',
-            'no_id',
             'no_tlp',
             'pekerjaan',
         ];
 
         $isIncomplete = false;
 
-        foreach ($requiredFields as $field) {
-            if (empty($user->$field)) {
-                $isIncomplete = true;
-                break;
+        if ($user->role !== 'Admin') {
+            foreach ($requiredFields as $field) {
+                if (empty($user->$field)) {
+                    $isIncomplete = true;
+                    break;
+                }
             }
         }
 

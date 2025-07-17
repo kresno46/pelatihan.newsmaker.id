@@ -28,7 +28,7 @@
 
         {{-- Grid Cards --}}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            @forelse ($folderoutlook as $folder)
+            @forelse ($FolderOutlooks as $folder)
                 <div
                     class="shadow-lg rounded-2xl bg-zinc-50 dark:bg-zinc-700 dark:text-gray-100 p-6 space-y-4 transition-all border dark:border-zinc-800 duration-300 hover:shadow-xl h-full">
 
@@ -43,43 +43,75 @@
                             </h1>
 
                             <p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed line-clamp-1 mb-1">
-                                {{ $folder->Deskripsi ?? 'Tidak ada deskripsi.' }}
+                                {{ $folder->deskripsi ?? 'Tidak ada deskripsi.' }}
                             </p>
 
                             <p class="text-gray-600 dark:text-gray-300 text-sm">
                                 <i class="fa-solid fa-envelope-open mr-1"></i>
-                                {{ $folder->ebooks_count }} Outlook dalam materi ini
+                                {{ $folder->outlooks_count }} Outlook dalam materi ini
                             </p>
                         </div>
                     </div>
 
                     <div class="flex items-stretch gap-2 mt-4">
                         {{-- Tombol Lihat Outlook --}}
-                        <a href=""
+                        <a href="{{ route('outlook.index', $folder->slug) }}"
                             class="w-full px-4 py-1 bg-green-500 text-white rounded-lg text-sm hover:bg-green-600 transition text-center block">
                             Lihat
                         </a>
 
                         @if (Auth::user()->role === 'Admin')
                             {{-- Tombol Edit Folder --}}
-                            <a href=""
+                            <a href="{{ route('outlookfolder.edit', $folder->slug) }}"
                                 class="w-full px-4 py-1 bg-yellow-500 text-white rounded-lg text-sm hover:bg-yellow-600 transition text-center block">
                                 Edit
                             </a>
 
                             {{-- Tombol Hapus Folder --}}
-                            <form action="" method="POST" class="w-full">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" onclick="return confirm('Yakin ingin menghapus folder ini?')"
-                                    class="w-full px-4 py-1 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600 transition text-center">
-                                    Hapus
-                                </button>
-                            </form>
+                            <button type="button"
+                                onclick="document.getElementById('modalDelete-{{ $folder->id }}').classList.remove('hidden')"
+                                class="w-full px-4 py-1 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600 transition text-center">
+                                Hapus
+                            </button>
+
+                            {{-- Modal khusus untuk ID ini --}}
+                            <div id="modalDelete-{{ $folder->id }}"
+                                class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center">
+                                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md">
+                                    <div class="px-6 py-5">
+                                        <h3 class="text-xl font-bold text-red-500">
+                                            <i class="fa-solid fa-triangle-exclamation mr-2"></i>Konfirmasi Hapus
+                                        </h3>
+                                    </div>
+
+                                    <div class="px-6 py-4 border-t border-b dark:border-gray-700">
+                                        <p class="text-gray-700 dark:text-gray-300">
+                                            Apakah Anda yakin ingin menghapus Outlook
+                                            "<strong>{{ $folder->folder_name }}</strong>"?
+                                            Tindakan ini tidak dapat dibatalkan.
+                                        </p>
+                                    </div>
+
+                                    <div class="flex justify-end gap-3 px-6 py-4">
+                                        <button
+                                            onclick="document.getElementById('modalDelete-{{ $folder->id }}').classList.add('hidden')"
+                                            class="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded-md dark:bg-gray-600 dark:text-white">
+                                            Batal
+                                        </button>
+                                        <form action="{{ route('outlookfolder.destroy', $folder->id) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md">
+                                                Hapus
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                         @endif
                     </div>
                 </div>
-
             @empty
                 <div class="col-span-1 md:col-span-2 lg:col-span-4 text-center py-10">
                     <p class="text-gray-500">Tidak ada folder Outlook ditemukan.</p>
@@ -89,15 +121,16 @@
 
         {{-- Pagination --}}
         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mt-6 gap-2">
-            @if ($folderoutlook->total() > 8)
+            @if ($FolderOutlooks->total() > 8)
                 <div class="w-full">
-                    {{ $folderoutlook->appends(['search' => request('search')])->links() }}
+                    {{ $FolderOutlooks->appends(['search' => request('search')])->links() }}
                 </div>
             @else
                 <div class="text-sm text-gray-600 dark:text-gray-300 p-2">
                     Menampilkan
-                    @if ($folderoutlook->total() > 0)
-                        {{ $folderoutlook->firstItem() }} sampai {{ $folderoutlook->lastItem() }} dari total {{ $folderoutlook->total() }}
+                    @if ($FolderOutlooks->total() > 0)
+                        {{ $FolderOutlooks->firstItem() }} sampai {{ $FolderOutlooks->lastItem() }} dari total
+                        {{ $FolderOutlooks->total() }}
                         hasil
                     @else
                         0 sampai 0 dari total 0 hasil
@@ -105,6 +138,5 @@
                 </div>
             @endif
         </div>
-
     </div>
 @endsection

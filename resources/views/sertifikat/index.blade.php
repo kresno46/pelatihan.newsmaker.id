@@ -60,7 +60,7 @@
                         </div>
                     </div>
                 @else
-                    <div class="border border-gray-300 px-5 py-3 rounded-lg bg-gray-50 text-gray-400 mb-3">
+                    <div class="border border-gray-300 px-5 py-3 rounded-lg text-gray-400 mb-3">
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-gray-500 font-semibold">{{ $data->folder->folder_name }}</p>
@@ -76,7 +76,6 @@
                     <p>Belum ada data post-test Anda.</p>
                 </div>
             @endforelse
-
         </div>
     </div>
 @endsection
