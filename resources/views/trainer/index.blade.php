@@ -156,7 +156,7 @@
         function openDeleteModal(id, name) {
             document.getElementById('modalDelete').classList.remove('hidden');
             document.getElementById('adminNameToDelete').textContent = name || 'admin ini';
-            document.getElementById('deleteForm').action = '{{ url('admin') }}/' + id;
+            document.getElementById('deleteForm').action = '{{ url('trainer') }}/' + id;
         }
 
         function closeDeleteModal() {
