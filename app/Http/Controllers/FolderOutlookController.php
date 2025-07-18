@@ -19,7 +19,10 @@ class FolderOutlookController extends Controller
             $query->where('folder_name', 'like', '%' . $request->search . '%');
         }
 
-        $FolderOutlooks = $query->latest()->paginate(8)->appends(['search' => $request->search]);
+        $FolderOutlooks = $query->orderBy('updated_at', 'desc')
+            ->latest()
+            ->paginate(8)
+            ->appends(['search' => $request->search]);
 
         return view('folderoutlook.index', compact('FolderOutlooks'));
     }

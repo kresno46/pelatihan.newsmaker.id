@@ -6,6 +6,7 @@ use App\Models\FolderOutlook;
 use App\Models\Outlook;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class OutlookController extends Controller
 {
@@ -18,16 +19,34 @@ class OutlookController extends Controller
         $query = Outlook::where('folderOutlook_id', $folder->id);
 
         if ($request->filled('search')) {
-            $query->where(function ($q) use ($request) {
-                $q->where('title', 'like', '%' . $request->search . '%')
-                    ->orWhere('deskripsi', 'like', '%' . $request->search . '%');
+            $search = $request->search;
+
+            // Coba ubah '17 Juli 2025' menjadi Carbon
+            try {
+                // Ganti bulan Indonesia ke Inggris manual
+                $indoMonth = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+                $enMonth = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                $searchDate = str_replace($indoMonth, $enMonth, $search);
+
+                $date = Carbon::parse($searchDate)->format('Y-m-d');
+            } catch (\Exception $e) {
+                $date = null;
+            }
+
+            $query->where(function ($q) use ($search, $date) {
+                $q->where('title', 'like', '%' . $search . '%')
+                    ->orWhere('deskripsi', 'like', '%' . $search . '%');
+
+                if ($date) {
+                    $q->orWhereDate('created_at', $date);
+                }
             });
         }
 
-        $outlooks = $query->paginate(8)->appends(['search' => $request->search]); // <-- ini penting
-
+        $outlooks = $query->paginate(8)->appends(['search' => $request->search]);
         return view('outlook.index', compact('outlooks', 'folder'));
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -106,7 +125,7 @@ class OutlookController extends Controller
         $outlook = Outlook::where('folderOutlook_id', $folder->id)->where('slug', $outlookSlug)->firstOrFail();
 
         $request->validate([
-            'title'     => 'required|max:100|unique:ebooks,title,' . $outlook->id,
+            'title'     => 'required|max:100|unique:outlooks,title' . $outlook->id,
             'deskripsi' => 'required',
             'cover'     => 'nullable|mimes:jpg,jpeg,png|max:2048',
             'file'      => 'nullable|mimes:pdf|max:10240',
