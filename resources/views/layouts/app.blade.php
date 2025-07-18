@@ -81,17 +81,6 @@
                 <nav>
                     <ul class="flex flex-col space-y-2">
                         <li class="text-sm text-gray-500 uppercase tracking-wide">Edukasi</li>
-                        {{-- <li>
-                            <a href="{{ route('ebook.index', $folder->slug) }}"
-                                class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
-                            {{ request()->routeIs('ebook.*') || request()->routeIs('quiz.*')
-                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
-                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                <i class="fa-solid fa-book"></i>
-                                <span>{{ __('eBook') }}</span>
-                            </a>
-                        </li> --}}
-
                         <li>
                             <a href="{{ route('folder.index') }}"
                                 class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
@@ -316,18 +305,7 @@
                     <nav class="mb-4">
                         <ul class="space-y-2">
                             <li class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Edukasi</li>
-                            {{-- <li>
-                                <a href="{{ route('ebook.index', $folder->slug) }}" @class([
-                                    'flex items-center space-x-4 px-3 py-2 rounded transition duration-200',
-                                    'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold' =>
-                                        request()->routeIs('ebook.*') || request()->routeIs('quiz.*'),
-                                    'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' =>
-                                        !request()->routeIs('ebook.*') && !request()->routeIs('quiz.*'),
-                                ])>
-                                    <i class="fa-solid fa-book"></i>
-                                    <span>eBook</span>
-                                </a>
-                            </li> --}}
+
                         </ul>
                     </nav>
 

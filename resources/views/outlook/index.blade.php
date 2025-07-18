@@ -16,7 +16,7 @@
             <form action="{{ route('outlook.index', $folder->slug) }}" method="GET"
                 class="flex items-center gap-2 flex-grow">
                 <input type="text" name="search" value="{{ request('search') }}"
-                    placeholder="Cari judul atau penulis Outlook..."
+                    placeholder="Cari judul, deskripsi, atau tanggal (cth: 17 Juli 2025)"
                     class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800" />
             </form>
 
