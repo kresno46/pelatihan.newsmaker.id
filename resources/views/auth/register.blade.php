@@ -13,6 +13,7 @@
                 placeholder="John Doe" autofocus autocomplete="name" />
             <x-input-error :messages="$errors->get('name')" class="mt-2 dark:text-red-400" />
         </div>
+
         <!-- Email -->
         <div>
             <x-input-label for="email" :value="__('Email')" class="dark:text-gray-200" />
@@ -24,16 +25,28 @@
         <!-- Kata Sandi -->
         <div>
             <x-input-label for="password" :value="__('Kata Sandi')" class="dark:text-gray-200" />
-            <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required
-                autocomplete="new-password" />
+            <div class="relative">
+                <x-text-input id="password" class="block mt-1 w-full pr-10" type="password" name="password" required
+                    autocomplete="new-password" />
+                <button type="button" onclick="togglePassword('password', 'eyeIcon1')"
+                    class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 dark:text-gray-400">
+                    <i class="fa-solid fa-eye" id="eyeIcon1"></i>
+                </button>
+            </div>
             <x-input-error :messages="$errors->get('password')" class="mt-2 dark:text-red-400" />
         </div>
 
         <!-- Konfirmasi Kata Sandi -->
         <div>
             <x-input-label for="password_confirmation" :value="__('Konfirmasi Kata Sandi')" class="dark:text-gray-200" />
-            <x-text-input id="password_confirmation" class="block mt-1 w-full" type="password" name="password_confirmation"
-                required autocomplete="new-password" />
+            <div class="relative">
+                <x-text-input id="password_confirmation" class="block mt-1 w-full pr-10" type="password"
+                    name="password_confirmation" required autocomplete="new-password" />
+                <button type="button" onclick="togglePassword('password_confirmation', 'eyeIcon2')"
+                    class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 dark:text-gray-400">
+                    <i class="fa-solid fa-eye" id="eyeIcon2"></i>
+                </button>
+            </div>
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2 dark:text-red-400" />
         </div>
 
@@ -57,4 +70,40 @@
             @endif
         </div>
     </form>
+@endsection
+
+@section('scripts')
+    <style>
+        .fa-eye,
+        .fa-eye-slash {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .rotate-180 {
+            transform: rotate(180deg);
+        }
+    </style>
+
+    <script>
+        function togglePassword(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            const isPassword = input.type === 'password';
+
+            // Toggle input type
+            input.type = isPassword ? 'text' : 'password';
+
+            // Toggle eye icon class
+            icon.classList.toggle('fa-eye', !isPassword);
+            icon.classList.toggle('fa-eye-slash', isPassword);
+
+            // Add rotation animation
+            icon.classList.add('rotate-180');
+
+            // Remove rotation after animation
+            setTimeout(() => {
+                icon.classList.remove('rotate-180');
+            }, 300);
+        }
+    </script>
 @endsection

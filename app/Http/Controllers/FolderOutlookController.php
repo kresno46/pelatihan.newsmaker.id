@@ -19,8 +19,7 @@ class FolderOutlookController extends Controller
             $query->where('folder_name', 'like', '%' . $request->search . '%');
         }
 
-        $FolderOutlooks = $query->orderBy('updated_at', 'desc')
-            ->latest()
+        $FolderOutlooks = $query->orderBy('position')
             ->paginate(8)
             ->appends(['search' => $request->search]);
 
@@ -41,25 +40,19 @@ class FolderOutlookController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'cover_folder' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2045',
             'folder_name' => 'required|string|max:100',
             'deskripsi'   => 'required|string',
         ]);
 
         FolderOutlook::create([
+            'cover_folder' => $request->cover_folder,
             'folder_name' => $request->folder_name,
             'deskripsi'   => $request->deskripsi,
             'slug'        => Str::slug($request->folder_name),
         ]);
 
         return redirect()->route('outlookfolder.index')->with('success', 'Folder berhasil dibuat.');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
     }
 
     /**
@@ -102,5 +95,14 @@ class FolderOutlookController extends Controller
         $folder->delete();
 
         return redirect()->route('outlookfolder.index')->with('success', 'Folder Outlook berhasil dihapus.');
+    }
+
+    public function reorder(Request $request)
+    {
+        foreach ($request->positions as $index => $id) {
+            FolderOutlook::where('id', $id)->update(['position' => $index]);
+        }
+
+        return response()->json(['message' => 'Posisi folder berhasil diperbarui.']);
     }
 }

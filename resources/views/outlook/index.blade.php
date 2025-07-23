@@ -5,33 +5,73 @@
 @section('content')
     <div class="bg-white dark:bg-gray-800 p-3 rounded-2xl shadow-lg">
 
-        {{-- Search Bar --}}
-        <div class="w-full flex items-center gap-2 mb-5">
+        <div class="w-full flex items-center justify-between mb-5">
+            {{-- Tombol Kembali --}}
             <a href="{{ route('outlookfolder.index') }}"
-                class="bg-gray-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-600 transition cursor-pointer">
+                class="bg-gray-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-600 transition cursor-pointer sm:w-auto">
                 <span class="block sm:hidden"><i class="fa-solid fa-arrow-left"></i></span>
                 <span class="hidden sm:block">Kembali</span>
             </a>
 
-            <form action="{{ route('outlook.index', $folder->slug) }}" method="GET"
-                class="flex items-center gap-2 flex-grow">
-                <input type="text" name="search" value="{{ request('search') }}"
-                    placeholder="Cari judul, deskripsi, atau tanggal (cth: 17 Juli 2025)"
-                    class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800" />
-            </form>
+            {{-- Kumpulan Tombol Aksi --}}
+            <div class="flex gap-2">
+                {{-- Tombol Filter --}}
+                <button onclick="document.getElementById('filterModal').classList.remove('hidden')"
+                    class="px-4 py-2 bg-zinc-300 hover:bg-zinc-200 transition-all duration-300 rounded-lg text-sm">
+                    <i class="fa-solid fa-sliders"></i>
+                </button>
 
-            <a href="{{ route('outlook.index', $folder->slug) }}"
-                class="bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-600 transition cursor-pointer">
-                Reset
-            </a>
+                {{-- Tombol Tambah (Hanya Admin) --}}
+                @if (Auth::user()->role === 'Admin')
+                    <a href="{{ route('outlook.create', $folder->slug) }}"
+                        class="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-600 transition cursor-pointer">
+                        <span class="block sm:hidden">+</span>
+                        <span class="hidden sm:block">Tambah Outlook</span>
+                    </a>
+                @endif
+            </div>
+        </div>
 
-            @if (Auth::user()->role === 'Admin')
-                <a href="{{ route('outlook.create', $folder->slug) }}"
-                    class="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-600 transition cursor-pointer">
-                    <span class="block sm:hidden">+</span>
-                    <span class="hidden sm:block">Tambah Outlook</span>
-                </a>
-            @endif
+        {{-- Modal Filter --}}
+        <div id="filterModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 hidden px-4">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-lg w-full p-6">
+                <form method="GET" action="{{ route('outlook.index', $folder->slug) }}">
+                    <h2 class="text-lg font-bold mb-4 text-gray-800 dark:text-gray-100">Filter Pencarian</h2>
+
+                    <div class="mb-4">
+                        <label class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Kata Kunci</label>
+                        <input type="text" name="search" value="{{ request('search') }}"
+                            placeholder="Cari judul atau deskripsi"
+                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Tanggal Dari</label>
+                        <input type="date" name="tanggal_dari" value="{{ request('tanggal_dari') }}"
+                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Tanggal
+                            Sampai</label>
+                        <input type="date" name="tanggal_sampai" value="{{ request('tanggal_sampai') }}"
+                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <div class="flex justify-end gap-2 mt-6">
+                        <button type="button" onclick="document.getElementById('filterModal').classList.add('hidden')"
+                            class="px-4 py-2 rounded-lg bg-gray-300 hover:bg-gray-400 text-sm text-gray-800 dark:text-gray-900">Batal</button>
+                        <button type="submit"
+                            class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-sm text-white">Terapkan</button>
+
+                        {{-- Tombol Reset --}}
+                        <a href="{{ route('outlook.index', $folder->slug) }}"
+                            class="bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-600 transition cursor-pointer">
+                            Reset
+                        </a>
+                    </div>
+                </form>
+            </div>
         </div>
 
         {{-- List Outlook dengan Baris Bergantian --}}

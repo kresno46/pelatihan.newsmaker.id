@@ -15,9 +15,11 @@ class FolderOutlook extends Model
     protected $table = 'folder_outlooks'; // pakai S
 
     protected $fillable = [
+        'cover_folder',
         'folder_name',
         'deskripsi',
         'slug',
+        'position',
     ];
 
     protected static function boot()
