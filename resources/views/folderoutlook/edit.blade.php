@@ -19,7 +19,7 @@
 
                 {{-- Cover Folder --}}
                 <div class="flex flex-col md:flex-row items-center gap-5 mb-4">
-                    <div class="w-24 h-24 bg-green-300 dark:bg-green-800 rounded-full overflow-hidden flex-shrink-0 px-4">
+                    <div class="w-24 h-24 bg-green-300 dark:bg-green-800 rounded-full overflow-hidden flex-shrink-0">
                         <img src="{{ asset($FolderOutlook->cover_folder) }}" alt="{{ $FolderOutlook->folder_name }}"
                             class="w-full h-full object-cover object-center">
                     </div>
