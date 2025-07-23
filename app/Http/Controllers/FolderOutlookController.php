@@ -40,16 +40,21 @@ class FolderOutlookController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'cover_folder' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2045',
+            'cover_folder' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'folder_name' => 'required|string|max:100',
             'deskripsi'   => 'required|string',
         ]);
 
+        // Simpan file ke folder publik
+        $file = $request->file('cover_folder');
+        $filename = time() . '_' . $file->getClientOriginalName();
+        $file->move(public_path('uploads/cover-outlook-folder'), $filename);
+
         FolderOutlook::create([
-            'cover_folder' => $request->cover_folder,
-            'folder_name' => $request->folder_name,
-            'deskripsi'   => $request->deskripsi,
-            'slug'        => Str::slug($request->folder_name),
+            'cover_folder' => 'uploads/cover-outlook-folder/' . $filename,
+            'folder_name'  => $request->folder_name,
+            'deskripsi'    => $request->deskripsi,
+            'slug'         => Str::slug($request->folder_name),
         ]);
 
         return redirect()->route('outlookfolder.index')->with('success', 'Folder berhasil dibuat.');
@@ -73,15 +78,30 @@ class FolderOutlookController extends Controller
         $request->validate([
             'folder_name' => 'required|string|max:255',
             'deskripsi'   => 'nullable|string',
+            'cover_folder' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         $folder = FolderOutlook::findOrFail($id);
 
-        $folder->update([
+        $data = [
             'folder_name' => $request->folder_name,
             'deskripsi'   => $request->deskripsi,
             'slug'        => Str::slug($request->folder_name),
-        ]);
+        ];
+
+        if ($request->hasFile('cover_folder')) {
+            // Hapus file lama jika ada
+            if ($folder->cover_folder && file_exists(public_path($folder->cover_folder))) {
+                unlink(public_path($folder->cover_folder));
+            }
+
+            $file = $request->file('cover_folder');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/cover-outlook-folder'), $filename);
+            $data['cover_folder'] = 'uploads/cover-outlook-folder/' . $filename;
+        }
+
+        $folder->update($data);
 
         return redirect()->route('outlookfolder.index')->with('success', 'Folder berhasil diperbarui.');
     }
@@ -95,14 +115,5 @@ class FolderOutlookController extends Controller
         $folder->delete();
 
         return redirect()->route('outlookfolder.index')->with('success', 'Folder Outlook berhasil dihapus.');
-    }
-
-    public function reorder(Request $request)
-    {
-        foreach ($request->positions as $index => $id) {
-            FolderOutlook::where('id', $id)->update(['position' => $index]);
-        }
-
-        return response()->json(['message' => 'Posisi folder berhasil diperbarui.']);
     }
 }
