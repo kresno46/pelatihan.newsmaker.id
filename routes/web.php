@@ -132,6 +132,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/{slug}/edit', [FolderOutlookController::class, 'edit'])->name('outlookfolder.edit');
             Route::put('/{id}', [FolderOutlookController::class, 'update'])->name('outlookfolder.update');
             Route::delete('/{id}', [FolderOutlookController::class, 'destroy'])->name('outlookfolder.destroy');
+            Route::post('/reorder', [FolderOutlookController::class, 'reorder'])->name('outlookfolder.reorder');
         });
 
         // 📚 outlook & Quiz Routes

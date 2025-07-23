@@ -12,8 +12,22 @@
 
             <hr>
 
-            <form id="createForm" method="POST" action="{{ route('outlookfolder.store') }}">
+            <form id="createForm" method="POST" action="{{ route('outlookfolder.store') }}" enctype="multipart/form-data">
                 @csrf
+
+                {{-- Cover Folder --}}
+                <div class="mb-4">
+                    <label for="cover_folder" class="block text-sm font-medium mb-1">
+                        Icon Folder
+                    </label>
+                    <input type="file" id="cover_folder" name="cover_folder"
+                        class="w-full px-4 py-2 border rounded-md shadow-sm focus:ring dark:bg-gray-800 focus:ring-blue-200 focus:outline-none
+                                  @error('folder_name') border-red-500 @enderror"
+                        value="{{ old('cover_folder') }}" required>
+                    @error('cover_folder')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
 
                 {{-- Folder Name --}}
                 <div class="mb-4">
@@ -59,7 +73,7 @@
 
     {{-- Modal Confirm Create --}}
     <div id="modalCreate"
-        class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center">
+        class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center px-4">
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md">
             <div class="px-6 py-5">
                 <h3 class="text-xl font-bold text-blue-500">
@@ -88,7 +102,7 @@
 
     {{-- Modal Confirm Back --}}
     <div id="modalBack"
-        class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center">
+        class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center px-4">
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md">
             <div class="px-6 py-5">
                 <h3 class="text-xl font-bold text-red-500">

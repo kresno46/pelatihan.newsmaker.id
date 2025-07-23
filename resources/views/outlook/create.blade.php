@@ -74,7 +74,7 @@
 
     {{-- Modal Konfirmasi Simpan --}}
     <div id="submitModal"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm hidden">
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm hidden px-4">
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md">
             <div class="px-6 py-5">
                 <h3 class="text-xl font-bold text-blue-600 dark:text-blue-400 flex items-center gap-3">
@@ -102,7 +102,7 @@
 
     {{-- Modal Konfirmasi Kembali --}}
     <div id="backModal"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm hidden">
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm hidden px-4">
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md">
             <div class="px-6 py-5">
                 <h3 class="text-xl font-bold text-red-500 dark:text-red-400 flex items-center gap-3">

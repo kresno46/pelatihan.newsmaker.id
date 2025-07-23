@@ -16,18 +16,18 @@ class OutlookController extends Controller
     public function index(Request $request, $slug)
     {
         $folder = FolderOutlook::where('slug', $slug)->firstOrFail();
-        $query = Outlook::where('folderOutlook_id', $folder->id);
+        $query = Outlook::orderBy('created_at', 'desc')->where('folderOutlook_id', $folder->id);
 
+        // Filter search
         if ($request->filled('search')) {
             $search = $request->search;
 
-            // Coba ubah '17 Juli 2025' menjadi Carbon
-            try {
-                // Ganti bulan Indonesia ke Inggris manual
-                $indoMonth = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-                $enMonth = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-                $searchDate = str_replace($indoMonth, $enMonth, $search);
+            // Ganti nama bulan Indonesia ke Inggris
+            $indoMonth = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            $enMonth   = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            $searchDate = str_replace($indoMonth, $enMonth, $search);
 
+            try {
                 $date = Carbon::parse($searchDate)->format('Y-m-d');
             } catch (\Exception $e) {
                 $date = null;
@@ -43,10 +43,20 @@ class OutlookController extends Controller
             });
         }
 
-        $outlooks = $query->paginate(8)->appends(['search' => $request->search]);
+        // Filter tanggal dari dan sampai
+        if ($request->filled('tanggal_dari')) {
+            $query->whereDate('created_at', '>=', $request->tanggal_dari);
+        }
+
+        if ($request->filled('tanggal_sampai')) {
+            $query->whereDate('created_at', '<=', $request->tanggal_sampai);
+        }
+
+        // Pagination dengan query string
+        $outlooks = $query->paginate(8)->appends($request->query());
+
         return view('outlook.index', compact('outlooks', 'folder'));
     }
-
 
     /**
      * Show the form for creating a new resource.
