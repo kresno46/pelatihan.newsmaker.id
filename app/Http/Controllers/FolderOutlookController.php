@@ -116,4 +116,13 @@ class FolderOutlookController extends Controller
 
         return redirect()->route('outlookfolder.index')->with('success', 'Folder Outlook berhasil dihapus.');
     }
+
+    public function reorder(Request $request)
+    {
+        foreach ($request->positions as $index => $id) {
+            FolderOutlook::where('id', $id)->update(['position' => $index]);
+        }
+
+        return response()->json(['message' => 'Urutan folder berhasil diperbarui.']);
+    }
 }
