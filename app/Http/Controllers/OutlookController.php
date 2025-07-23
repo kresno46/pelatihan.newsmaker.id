@@ -135,7 +135,7 @@ class OutlookController extends Controller
         $outlook = Outlook::where('folderOutlook_id', $folder->id)->where('slug', $outlookSlug)->firstOrFail();
 
         $request->validate([
-            'title'     => 'required|max:100|unique:outlooks,title' . $outlook->id,
+            'title' => 'required|max:100|unique:outlooks,title,' . $outlook->id,
             'deskripsi' => 'required',
             'cover'     => 'nullable|mimes:jpg,jpeg,png|max:2048',
             'file'      => 'nullable|mimes:pdf|max:10240',
