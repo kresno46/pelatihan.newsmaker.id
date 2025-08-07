@@ -33,14 +33,14 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:50'],
             'email' => ['required', 'string', 'email', 'max:50', 'unique:users,email'],
             'password' => ['required', 'confirmed', Rules\Password::defaults(), 'min:8'],
-            'role' => ['nullable', 'in:Admin,Trainer (Eksternal)'], // opsional, default bisa di-model
+            'role' => ['required', 'in:Trainer (RFB),Trainer (SGB),Trainer (KPF),Trainer (BPF),Trainer (EWF)'],
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $request->role ?? 'Trainer (Eksternal)',
+            'role' => $request->role,
         ]);
 
         event(new Registered($user));

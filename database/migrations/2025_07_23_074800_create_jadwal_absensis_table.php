@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('folder_outlooks', function (Blueprint $table) {
+        Schema::create('jadwal_absensis', function (Blueprint $table) {
             $table->id();
-            $table->string('folder_name');
-            $table->text('deskripsi');
-            $table->string('slug')->unique();
+            $table->string('title', 50);
+            $table->date('tanggal')->unique();
+            $table->boolean('is_open')->default(false);
             $table->timestamps();
         });
     }
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('folder_outlooks');
+        Schema::dropIfExists('jadwal_absensis');
     }
 };

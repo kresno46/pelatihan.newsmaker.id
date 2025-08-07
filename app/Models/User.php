@@ -112,4 +112,17 @@ class User extends Authenticatable implements MustVerifyEmail
         // Cek apakah semua eBook sudah dikerjakan
         return count(array_diff($ebookIds, $userEbookIds)) === 0;
     }
+
+    // App\Models\User.php
+    public function getNamaPerusahaanAttribute()
+    {
+        return match ($this->role) {
+            'Trainer (RFB)' => 'PT Rifan Financindo Berjangka',
+            'Trainer (SGB)' => 'PT Solid Gold Berjangka',
+            'Trainer (KPF)' => 'PT Kontak Perkasa Futures',
+            'Trainer (BPF)' => 'PT Best Profit Futures',
+            'Trainer (EWF)' => 'PT Equity World Futures',
+            default => $this->role,
+        };
+    }
 }

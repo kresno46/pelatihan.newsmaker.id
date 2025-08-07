@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('namePage') - Newsmaker23 Edukasi</title>
+    <title>@yield('namePage') - Newsmaker23 Internal</title>
 
     {{-- Icon --}}
     <link rel="icon" type="image/png" href="{{ asset('Icon/favicon-96x96.png') }}" sizes="96x96" />
@@ -19,6 +19,18 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+
+    <!-- ✅ Dark mode prevention script -->
+    <script>
+        (function() {
+            const theme = localStorage.getItem('theme') || 'auto';
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (theme === 'dark' || (theme === 'auto' && prefersDark)) {
+                document.documentElement.classList.add('dark');
+                document.documentElement.style.colorScheme = 'dark';
+            }
+        })();
+    </script>
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -65,13 +77,6 @@
                                 <span>{{ __('Beranda') }}</span>
                             </a>
                         </li>
-                        <li>
-                            <a href="https://www.newsmaker.id"
-                                class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200">
-                                <i class="fas fa-home"></i>
-                                <span>{{ __('Back to Home') }}</span>
-                            </a>
-                        </li>
                     </ul>
                 </nav>
 
@@ -101,6 +106,18 @@
                                 <span>{{ __('Outlook') }}</span>
                             </a>
                         </li>
+                        @if (Auth::user()->role !== 'Admin')
+                            <li>
+                                <a href="{{ route('AbsensiUser.index') }}"
+                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('AbsensiUser.*')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                    <i class="fa-solid fa-users-viewfinder"></i>
+                                    <span>{{ __('Absensi') }}</span>
+                                </a>
+                            </li>
+                        @endif
                     </ul>
                 </nav>
 
@@ -119,6 +136,26 @@
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
                                     <i class="fa-solid fa-clipboard"></i>
                                     <span>Post Test</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('absensi.index') }}"
+                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('absensi.*')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                    <i class="fa-solid fa-users-viewfinder"></i>
+                                    <span>{{ __('Absensi') }}</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('LaporanSertifikat.index') }}"
+                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('LaporanSertifikat.*')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                    <i class="fa-solid fa-certificate"></i>
+                                    <span>{{ __('Sertifikat') }}</span>
                                 </a>
                             </li>
                         </ul>
@@ -170,26 +207,28 @@
                                 <span>Profile</span>
                             </a>
                         </li>
-                        <li>
-                            <a href="{{ route('sertifikat.index') }}"
-                                class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                        @if (Auth::user()->role !== 'Admin')
+                            <li>
+                                <a href="{{ route('sertifikat.index') }}"
+                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                             {{ request()->routeIs('sertifikat.*')
                                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                <i class="fa-solid fa-certificate"></i>
-                                <span>Sertifikat</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('riwayat.index') }}"
-                                class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                                    <i class="fa-solid fa-certificate"></i>
+                                    <span>Sertifikat</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('riwayat.index') }}"
+                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                             {{ request()->routeIs('riwayat.*')
                                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                <i class="fa-solid fa-clock-rotate-left"></i>
-                                <span>Riwayat Saya</span>
-                            </a>
-                        </li>
+                                    <i class="fa-solid fa-clock-rotate-left"></i>
+                                    <span>Riwayat Saya</span>
+                                </a>
+                            </li>
+                        @endif
                     </ul>
                 </nav>
             </div>
@@ -287,13 +326,6 @@
                                 ])>
                                     <i class="fas fa-home"></i>
                                     <span>Beranda</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="https://www.newsmaker.id"
-                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                                    <i class="fas fa-home"></i>
-                                    <span>Back to Home</span>
                                 </a>
                             </li>
                         </ul>
@@ -398,31 +430,32 @@
                                     <span>Profile</span>
                                 </a>
                             </li>
-                            <li>
-                                <a href="{{ route('sertifikat.index') }}"
-                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
-                            {{ request()->routeIs('sertifikat.*')
-                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
-                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                    <i class="fa-solid fa-certificate"></i>
-                                    <span>Sertifikat</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{{ route('riwayat.index') }}"
-                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
-                            {{ request()->routeIs('riwayat.*')
-                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
-                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                    <i class="fa-solid fa-clock-rotate-left"></i>
-                                    <span>Riwayat Saya</span>
-                                </a>
-                            </li>
+                            @if (Auth::user()->role != 'Admin')
+                                <li>
+                                    <a href="{{ route('sertifikat.index') }}"
+                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                                    {{ request()->routeIs('sertifikat.*')
+                                        ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                        <i class="fa-solid fa-certificate"></i>
+                                        <span>Sertifikat</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('riwayat.index') }}"
+                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                                    {{ request()->routeIs('riwayat.*')
+                                        ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                        <i class="fa-solid fa-clock-rotate-left"></i>
+                                        <span>Riwayat Saya</span>
+                                    </a>
+                                </li>
+                            @endif
                         </ul>
                     </nav>
                 </div>
             </div>
-
 
             <!-- Page Content -->
             <main class="flex-1 p-6">

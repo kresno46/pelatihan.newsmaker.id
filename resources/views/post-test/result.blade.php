@@ -8,6 +8,9 @@
         <div class="text-center mb-10">
             <h2 class="text-4xl font-bold text-gray-800 dark:text-white">📊 Hasil Post Test</h2>
             <p class="text-gray-500 dark:text-gray-400 mt-2 text-lg">Detail lengkap hasil pengerjaan Anda</p>
+            @if ($result->score < 75)
+                <p class="text-red-600 font-semibold">Nilai Anda kurang dari 75. Silakan ulangi post test ini.</p>
+            @endif
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm md:text-base">
@@ -42,21 +45,21 @@
             </div>
 
             <div class="bg-gray-50 dark:bg-gray-800 p-5 rounded-lg shadow-sm">
-                <p class="text-gray-500 dark:text-gray-400">📈 <span class="font-semibold">Nilai Akhir</span></p>
-                <p
-                    class="text-2xl font-extrabold {{ $pass ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">
-                    {{ $result->score ?? '-' }}/100
-                </p>
-                <p class="mt-1 text-sm {{ $pass ? 'text-green-500' : 'text-red-500' }}">
-                    {{ $pass ? 'Lulus ✅' : 'Tidak Lulus ❌' }}
-                </p>
-            </div>
-
-            <div class="bg-gray-50 dark:bg-gray-800 p-5 rounded-lg shadow-sm">
                 <p class="text-gray-500 dark:text-gray-400">🗓️ <span class="font-semibold">Tanggal Pengerjaan</span></p>
                 <p class="text-gray-800 dark:text-white text-lg">{{ $result->created_at->translatedFormat('d F Y - H:i') }}
                 </p>
             </div>
+        </div>
+
+        <div class="bg-gray-50 dark:bg-gray-800 p-5 rounded-lg shadow-sm mt-6">
+            <p class="text-gray-500 dark:text-gray-400">📈 <span class="font-semibold">Nilai Akhir</span></p>
+            <p
+                class="text-2xl font-extrabold {{ $pass ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">
+                {{ $result->score ?? '-' }}/100
+            </p>
+            <p class="mt-1 text-sm {{ $pass ? 'text-green-500' : 'text-red-500' }}">
+                {{ $pass ? 'Lulus ✅' : 'Tidak Lulus ❌' }}
+            </p>
         </div>
 
         <div class="text-center mt-10">

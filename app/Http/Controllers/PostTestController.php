@@ -20,13 +20,15 @@ class PostTestController extends Controller
 
         $userId = auth()->id();
 
+        // Cek hasil sebelumnya
         $existingResult = PostTestResult::where('user_id', $userId)
             ->where('session_id', $session->id)
-            ->exists();
+            ->latest()
+            ->first();
 
-        if ($existingResult) {
+        if ($existingResult && $existingResult->score >= 75) {
             return redirect()->route('ebook.show', [$folderSlug, $ebookSlug])
-                ->with('info', 'Anda sudah mengerjakan post test ini sebelumnya.');
+                ->with('info', 'Anda sudah mengerjakan post test ini dan mendapatkan nilai yang cukup.');
         }
 
         $key = "quiz_{$session->id}_questions_user_{$userId}";
@@ -62,15 +64,25 @@ class PostTestController extends Controller
             abort(404, 'Sesi tidak sesuai dengan ebook.');
         }
 
-        $existingResult = PostTestResult::where('user_id', auth()->id())
-            ->where('session_id', $session->id)
-            ->exists();
+        $userId = auth()->id();
 
-        if ($existingResult) {
+        // Cek hasil sebelumnya
+        $latestResult = PostTestResult::where('user_id', $userId)
+            ->where('session_id', $session->id)
+            ->latest()
+            ->first();
+
+        if ($latestResult && $latestResult->score >= 75) {
             return redirect()->route('ebook.show', [$folderSlug, $ebookSlug])
-                ->with('info', 'Anda sudah mengerjakan post test ini sebelumnya.');
+                ->with('info', 'Anda sudah mengerjakan post test ini dengan nilai yang cukup.');
         }
 
+        // Hapus nilai lama jika ada (dan skor < 75)
+        if ($latestResult && $latestResult->score < 75) {
+            $latestResult->delete();
+        }
+
+        // Hitung skor
         $answers = $request->input('answer', []);
         $correct = 0;
         $total = count($session->questions);
@@ -84,8 +96,9 @@ class PostTestController extends Controller
 
         $score = $total > 0 ? round(($correct / $total) * 100, 2) : 0;
 
+        // Simpan hasil baru
         $result = PostTestResult::create([
-            'user_id'    => auth()->id(),
+            'user_id'    => $userId,
             'session_id' => $session->id,
             'ebook_id'   => $ebook->id,
             'score'      => $score,
@@ -94,13 +107,14 @@ class PostTestController extends Controller
         return redirect()->route('posttest.result', [
             'folderSlug' => $folderSlug,
             'ebookSlug'  => $ebookSlug,
-            'result'     => $result->id,  // <-- ini harus sesuai nama param route
+            'result'     => $result->id,
         ])->with('success', 'Post test berhasil dikumpulkan.');
     }
 
+
     public function showResult(PostTestResult $result)
     {
-        $user = $result->user; // kalau relasi sudah ada di model PostTestResult
+        $user = $result->user;
         $ebook = $result->ebook;
         $folderSlug = $ebook->folderEbook->slug ?? null;
         $ebookSlug = $ebook->slug;

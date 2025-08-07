@@ -15,7 +15,6 @@
                     </div>
                 @endif
 
-                {{-- Search Bar --}}
                 <form method="GET" action="{{ route('laporan.index') }}" class="relative w-full max-w-sm">
                     <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
                         <i class="fas fa-search"></i>
@@ -52,11 +51,12 @@
                     @forelse ($laporans as $item)
                         <tr>
                             <td class="px-6 py-4 text-sm text-gray-800 dark:text-gray-200">{{ $loop->iteration }}</td>
-                            <td class="px-6 py-4 text-sm text-gray-800 dark:text-gray-200">{{ $item->user->name }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-800 dark:text-gray-200">{{ $item->user->name ?? '-' }}
+                            </td>
                             <td class="px-6 py-4 text-sm text-center text-gray-800 dark:text-gray-200">
-                                {{ $item->ebook->title }}</td>
+                                {{ $item->ebook->title ?? '-' }}</td>
                             <td class="px-6 py-4 text-sm text-center text-gray-800 dark:text-gray-200">
-                                {{ $item->session->title }}</td>
+                                {{ $item->session->title ?? '-' }}</td>
                             <td class="px-6 py-4 text-sm text-center">
                                 @php
                                     $score = $item->score;
@@ -75,7 +75,6 @@
                                         $badgeColor = 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
                                     }
                                 @endphp
-
                                 <span class="px-3 py-1 rounded-full text-xs font-semibold {{ $badgeColor }}">
                                     {{ $score }}/100
                                 </span>
@@ -89,7 +88,7 @@
                                     Detail</a>
 
                                 <button type="button"
-                                    onclick="openDeleteModal({{ $item->id }}, '{{ $item->user->name }}', '{{ $item->session->title }}')"
+                                    onclick="openDeleteModal({{ $item->id }}, '{{ $item->user->name ?? 'Tidak diketahui' }}', '{{ $item->session->title ?? 'Tanpa Judul' }}')"
                                     class="w-full px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700">
                                     Hapus
                                 </button>
@@ -129,15 +128,12 @@
     <div id="modalDelete"
         class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm hidden">
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md">
-            <!-- Header -->
             <div class="px-6 py-5">
                 <h3 class="text-xl font-bold text-red-500 dark:text-red-400 flex items-center gap-3">
                     <i class="fa-solid fa-triangle-exclamation"></i>
                     <span>Konfirmasi Hapus</span>
                 </h3>
             </div>
-
-            <!-- Body -->
             <div class="px-6 py-4 border-t border-b border-gray-200 dark:border-gray-700">
                 <p class="text-gray-700 dark:text-gray-300">
                     Apakah Anda yakin ingin menghapus laporan post test
@@ -145,8 +141,6 @@
                     <strong id="adminNameToDelete" class="font-semibold"></strong>?
                 </p>
             </div>
-
-            <!-- Footer / Actions -->
             <div class="flex justify-end gap-3 px-6 py-4">
                 <button onclick="closeDeleteModal()"
                     class="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded-md text-gray-800 dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500 transition">

@@ -19,6 +19,7 @@ class SertifikatController extends Controller
         $folders = FolderEbook::with('ebooks')->get();
 
         $eligibleFolders = [];
+
         foreach ($folders as $folder) {
             $ebookIds = $folder->ebooks->pluck('id')->toArray();
             $userResults = PostTestResult::where('user_id', $user->id)
@@ -74,30 +75,31 @@ class SertifikatController extends Controller
             return back()->with('error', 'Nilai rata-rata minimal 75 diperlukan.');
         }
 
-        // Cek apakah sudah ada sertifikat sebelumnya
-        $award = CertificateAward::where('user_id', $user->id)
-            ->where('batch_number', $folder->id)
-            ->first();
-
-        if (!$award) {
-            $award = CertificateAward::create([
+        $award = CertificateAward::updateOrCreate(
+            [
                 'user_id' => $user->id,
                 'batch_number' => $folder->id,
+            ],
+            [
                 'average_score' => $averageScore,
                 'total_ebooks' => $totalEbooks,
                 'certificate_uuid' => (string) Str::uuid(),
                 'awarded_at' => now(),
-            ]);
-        } else {
-            $award->update([
-                'average_score' => $averageScore,
-                'total_ebooks' => $totalEbooks,
-            ]);
-        }
+            ]
+        );
 
         $dateFormatted = Carbon::parse($award->awarded_at)->format('d F Y');
 
-        $pdf = Pdf::loadView('sertifikat.certificate', [
+        $templateView = match ($user->role) {
+            'Trainer (RFB)' => 'sertifikat.rfb.index',
+            'Trainer (SGB)' => 'sertifikat.sgb.index',
+            'Trainer (KPF)' => 'sertifikat.kpf.index',
+            'Trainer (EWF)' => 'sertifikat.ewf.index',
+            'Trainer (BPF)' => 'sertifikat.bpf.index',
+            default => 'sertifikat.default.index',
+        };
+
+        $pdf = Pdf::loadView($templateView, [
             'name' => $user->name,
             'date' => $dateFormatted,
             'uuid' => $award->certificate_uuid,
@@ -105,13 +107,24 @@ class SertifikatController extends Controller
             'levelTitle' => $folder->folder_name,
         ])->setPaper('a4', 'landscape');
 
+        $safeUserName = Str::slug($user->name);
         $safeFolderName = Str::slug($folder->folder_name);
-        $fileName = "Sertifikat_{$user->name}_Folder_{$safeFolderName}.pdf";
-        $filePath = storage_path("app/public/sertifikat/{$fileName}");
+        $fileName = "Sertifikat_{$safeUserName}_Folder_{$safeFolderName}.pdf";
+        $storagePath = "public/sertifikat/{$fileName}";
+        $fullPath = storage_path("app/{$storagePath}");
 
+        // Buat folder jika belum ada
         Storage::makeDirectory('public/sertifikat');
-        file_put_contents($filePath, $pdf->output());
 
-        return response()->download($filePath, $fileName);
+        // Simpan manual menggunakan file_put_contents
+        file_put_contents($fullPath, $pdf->output());
+
+        // Debug logging
+        \Log::info("PDF disimpan ke: {$fullPath}");
+        \Log::info("Ukuran PDF: " . strlen($pdf->output()));
+        \Log::info("Ada file? " . (file_exists($fullPath) ? 'Ya' : 'Tidak'));
+
+        // Unduh
+        return response()->download($fullPath, $fileName);
     }
 }

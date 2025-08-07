@@ -20,6 +20,7 @@ class FolderOutlook extends Model
         'deskripsi',
         'slug',
         'position',
+        'category',
     ];
 
     protected static function boot()

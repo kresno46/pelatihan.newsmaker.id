@@ -1,8 +1,9 @@
 <?php
-// app/Models/CertificateAward.php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CertificateAward extends Model
 {
@@ -12,8 +13,23 @@ class CertificateAward extends Model
         'user_id',
         'batch_number',
         'average_score',
-        'total_ebooks',
         'certificate_uuid',
         'awarded_at',
     ];
+
+    /**
+     * Relasi ke tabel users
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Relasi ke tabel folder_ebooks (batch_number → id)
+     */
+    public function folder(): BelongsTo
+    {
+        return $this->belongsTo(FolderEbook::class, 'batch_number');
+    }
 }

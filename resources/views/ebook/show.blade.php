@@ -5,6 +5,7 @@
 @section('content')
     <div class="space-y-4">
 
+        {{-- Card eBook --}}
         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md space-y-4">
             {{-- Tombol Kembali --}}
             <div>
@@ -73,9 +74,7 @@
         @endauth
 
         <div class="space-y-4">
-
             @if ($ebook->postTestSessions->count() > 0)
-                {{-- Loop sesi Post Test --}}
                 @foreach ($ebook->postTestSessions as $session)
                     <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md flex items-center justify-between mb-4">
                         <div class="flex items-center gap-5">
@@ -90,17 +89,12 @@
                         <div class="flex items-center gap-4">
                             @auth
                                 @if ($role === 'Admin')
-                                    {{-- Card Admin --}}
                                     <a href="{{ route('quiz.index', [$folder->slug, $ebook->slug]) }}"
                                         class="px-4 py-2 text-center bg-blue-600 text-white rounded hover:bg-blue-700 transition">
                                         Tambah Pertanyaan
                                     </a>
                                 @else
-                                    {{-- Card User --}}
-                                    @php
-                                        $result = $session->results->where('user_id', auth()->id())->first();
-                                    @endphp
-
+                                    {{-- Pesan jika ada session info --}}
                                     @if (session('info'))
                                         <div x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 5000)"
                                             class="text-xs bg-red-200 text-red-800 py-1 px-3 rounded-lg">
@@ -109,17 +103,43 @@
                                     @endif
 
                                     @php
-                                        $result = $session->results->first();
+                                        $userResult = $session->results
+                                            ->where('user_id', auth()->id())
+                                            ->sortByDesc('created_at')
+                                            ->first();
                                     @endphp
 
-                                    @if ($result)
-                                        <div class="text-xs bg-green-200 text-green-800 py-1 px-3 rounded-lg">
-                                            Skor: {{ $result->score }}/100
+                                    @if ($userResult)
+                                        <div
+                                            class="text-xs py-1 px-3 rounded-lg
+                                                @if ($userResult->score < 45) bg-red-200 text-red-800
+                                                @elseif ($userResult->score < 75)
+                                                    bg-yellow-200 text-yellow-800
+                                                @else
+                                                    bg-green-200 text-green-800 @endif
+                                            ">
+                                            Skor: {{ $userResult->score }}/100
                                         </div>
-                                        <button disabled class="px-4 py-2 bg-gray-400 text-white rounded cursor-not-allowed">
-                                            Sudah Dikerjakan
-                                        </button>
+
+                                        @if ($userResult->score < 75)
+                                            {{-- Boleh mengulang --}}
+                                            <a href="{{ route('posttest.show', [
+                                                'folderSlug' => $folder->slug,
+                                                'ebookSlug' => $ebook->slug,
+                                                'session' => $session->id,
+                                            ]) }}"
+                                                class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
+                                                Ulangi Post-Test
+                                            </a>
+                                        @else
+                                            {{-- Tidak boleh mengulang --}}
+                                            <button disabled
+                                                class="px-4 py-2 bg-gray-400 text-white rounded cursor-not-allowed">
+                                                Sudah Dikerjakan
+                                            </button>
+                                        @endif
                                     @else
+                                        {{-- Belum pernah dikerjakan --}}
                                         <a href="{{ route('posttest.show', [
                                             'folderSlug' => $folder->slug,
                                             'ebookSlug' => $ebook->slug,
@@ -160,7 +180,6 @@
                     @endif
                 @endauth
             @endif
-
         </div>
 
     </div>

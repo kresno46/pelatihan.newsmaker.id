@@ -7,6 +7,11 @@
 
         {{-- Search & Actions --}}
         <div class="w-full flex items-center gap-2 mb-5">
+            <!-- Tombol Kembali (khusus mobile) -->
+            <a href="{{ route('dashboard') }}"
+                class="bg-gray-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-600 transition cursor-pointer sm:w-auto">
+                <i class="fa-solid fa-arrow-left text-sm"></i>
+            </a>
             <form action="{{ route('outlookfolder.index') }}" method="GET" class="flex items-center gap-2 flex-grow">
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari Nama Folder..."
                     class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800" />
@@ -19,7 +24,7 @@
 
             @if (Auth::user()->role === 'Admin')
                 <button onclick="document.getElementById('modalUrutkan').classList.remove('hidden')"
-                    class="bg-zinc-200 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-zinc-300 transition"
+                    class="bg-zinc-200 dark:bg-zinc-700 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-zinc-300 dark:hover:bg-zinc-400 transition"
                     title="Ubah Tata Letak">
                     <i class="fa-solid fa-grip"></i>
                 </button>
@@ -31,6 +36,18 @@
                     <span class="hidden sm:block">Tambah Folder</span>
                 </a>
             @endif
+        </div>
+
+        {{-- Category Filter --}}
+        <div class="mb-4 flex flex-wrap gap-2">
+            <a href="{{ route('outlookfolder.index', ['category' => 'daily']) }}"
+                class="px-3 py-1 rounded-full text-sm {{ request('category') == 'daily' || !request('category') ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-700' }}">
+                Daily
+            </a>
+            <a href="{{ route('outlookfolder.index', ['category' => 'weekly']) }}"
+                class="px-3 py-1 rounded-full text-sm {{ request('category') == 'weekly' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-700' }}">
+                Weekly
+            </a>
         </div>
 
         {{-- Grid Cards --}}
@@ -46,7 +63,7 @@
                         </div>
 
                         <div class="flex-1">
-                            <h1 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-2">
+                            <h1 class="text-xl font-semibold text-blue-600 dark:text-blue-400 mb-2">
                                 {{ $folder->folder_name }}
                             </h1>
 
@@ -55,8 +72,15 @@
                             </p>
 
                             <p class="text-gray-600 dark:text-gray-300 text-sm">
-                                <i class="fa-solid fa-envelope-open mr-1"></i>
+                                <i class="fa-solid fa-folder-open mr-1"></i>
                                 {{ $folder->outlooks_count }} Outlook dalam materi ini
+                            </p>
+
+                            <p class="text-gray-600 dark:text-gray-300 text-sm mt-2">
+                                <span
+                                    class="px-2 py-1 rounded-full text-xs {{ $folder->category == 'daily' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100' : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' }}">
+                                    {{ ucfirst($folder->category) }}
+                                </span>
                             </p>
                         </div>
                     </div>
@@ -64,10 +88,10 @@
                     <div class="flex items-stretch gap-2 mt-4">
                         {{-- Tombol Lihat Outlook --}}
                         <a href="{{ route('outlook.index', $folder->slug) }}"
-                            class="w-full px-4 py-1 bg-green-500 text-white rounded-lg text-sm hover:bg-green-600 transition text-center block">
-                            Lihat
+                            class="w-full px-4 py-1 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition text-center block"
+                            title="Lihat">
+                            <i class="fas fa-eye"></i>
                         </a>
-
                         @if (Auth::user()->role === 'Admin')
                             {{-- Tombol Edit Folder --}}
                             <a href="{{ route('outlookfolder.edit', $folder->slug) }}"
@@ -172,7 +196,7 @@
         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mt-6 gap-2">
             @if ($FolderOutlooks->total() > 8)
                 <div class="w-full">
-                    {{ $FolderOutlooks->appends(['search' => request('search')])->links() }}
+                    {{ $FolderOutlooks->appends(['search' => request('search'), 'category' => request('category')])->links() }}
                 </div>
             @else
                 <div class="text-sm text-gray-600 dark:text-gray-300 p-2">

@@ -3,72 +3,91 @@
 @section('namePage', 'Daftar')
 
 @section('content')
-    <form method="POST" action="{{ route('register') }}" class="w-full space-y-5 text-gray-900 dark:text-gray-100">
+    <form method="POST" action="{{ route('register') }}" class="w-full space-y-6 text-gray-900 dark:text-gray-100">
         @csrf
 
-        <!-- Nama Lengkap -->
+        {{-- Nama Lengkap --}}
         <div>
             <x-input-label for="name" :value="__('Nama Lengkap')" class="dark:text-gray-200" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required
-                placeholder="John Doe" autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2 dark:text-red-400" />
+            <x-text-input id="name" name="name" type="text" class="block mt-1 w-full" placeholder="John Doe"
+                :value="old('name')" required autofocus autocomplete="name" />
+            <x-input-error :messages="$errors->get('name')" class="mt-2 text-sm dark:text-red-400" />
         </div>
 
-        <!-- Email -->
+        {{-- Email --}}
         <div>
             <x-input-label for="email" :value="__('Email')" class="dark:text-gray-200" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required
-                placeholder="johndoe@example.com" autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2 dark:text-red-400" />
+            <x-text-input id="email" name="email" type="email" class="block mt-1 w-full"
+                placeholder="email@domain.com" :value="old('email')" required autocomplete="username" />
+            <x-input-error :messages="$errors->get('email')" class="mt-2 text-sm dark:text-red-400" />
         </div>
 
-        <!-- Kata Sandi -->
+        {{-- Role / Perusahaan --}}
+        <div>
+            <x-input-label for="role" :value="__('Perusahaan')" class="dark:text-gray-200" />
+            <select id="role" name="role"
+                class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-indigo-200 dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                required>
+                <option value="" disabled selected>-- Pilih Perusahaan --</option>
+                <option value="Trainer (RFB)" {{ old('role') == 'Trainer (RFB)' ? 'selected' : '' }}>PT Rifan Financindo
+                    Berjangka</option>
+                <option value="Trainer (SGB)" {{ old('role') == 'Trainer (SGB)' ? 'selected' : '' }}>PT Solid Gold Berjangka
+                </option>
+                <option value="Trainer (KPF)" {{ old('role') == 'Trainer (KPF)' ? 'selected' : '' }}>PT Kontak Perkasa
+                    Futures</option>
+                <option value="Trainer (BPF)" {{ old('role') == 'Trainer (BPF)' ? 'selected' : '' }}>PT BestProfit Futures
+                </option>
+                <option value="Trainer (EWF)" {{ old('role') == 'Trainer (EWF)' ? 'selected' : '' }}>PT Equity World Futures
+                </option>
+            </select>
+            <x-input-error :messages="$errors->get('role')" class="mt-2 text-sm dark:text-red-400" />
+        </div>
+
+        {{-- Password --}}
         <div>
             <x-input-label for="password" :value="__('Kata Sandi')" class="dark:text-gray-200" />
             <div class="relative">
-                <x-text-input id="password" class="block mt-1 w-full pr-10" type="password" name="password" required
+                <x-text-input id="password" name="password" type="password" class="block mt-1 w-full pr-10" required
                     autocomplete="new-password" />
                 <button type="button" onclick="togglePassword('password', 'eyeIcon1')"
                     class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 dark:text-gray-400">
                     <i class="fa-solid fa-eye" id="eyeIcon1"></i>
                 </button>
             </div>
-            <x-input-error :messages="$errors->get('password')" class="mt-2 dark:text-red-400" />
+            <x-input-error :messages="$errors->get('password')" class="mt-2 text-sm dark:text-red-400" />
         </div>
 
-        <!-- Konfirmasi Kata Sandi -->
+        {{-- Konfirmasi Password --}}
         <div>
             <x-input-label for="password_confirmation" :value="__('Konfirmasi Kata Sandi')" class="dark:text-gray-200" />
             <div class="relative">
-                <x-text-input id="password_confirmation" class="block mt-1 w-full pr-10" type="password"
-                    name="password_confirmation" required autocomplete="new-password" />
+                <x-text-input id="password_confirmation" name="password_confirmation" type="password"
+                    class="block mt-1 w-full pr-10" required autocomplete="new-password" />
                 <button type="button" onclick="togglePassword('password_confirmation', 'eyeIcon2')"
                     class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 dark:text-gray-400">
                     <i class="fa-solid fa-eye" id="eyeIcon2"></i>
                 </button>
             </div>
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2 dark:text-red-400" />
+            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2 text-sm dark:text-red-400" />
         </div>
 
-        <!-- Tombol Daftar -->
-        <div class="flex items-center justify-end">
+        {{-- Tombol Daftar --}}
+        <div>
             <x-primary-button class="w-full">
                 Daftar
             </x-primary-button>
         </div>
 
-        <!-- Tautan Login -->
-        <div>
-            @if (Route::has('login'))
-                <p class="text-sm text-center text-gray-600 dark:text-gray-400">
-                    Sudah punya akun?
-                    <a href="{{ route('login') }}"
-                        class="underline text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-100">
-                        Masuk
-                    </a>
-                </p>
-            @endif
-        </div>
+        {{-- Tautan Login --}}
+        @if (Route::has('login'))
+            <div class="text-center text-sm text-gray-600 dark:text-gray-400">
+                Sudah punya akun?
+                <a href="{{ route('login') }}"
+                    class="underline text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-200">
+                    Masuk
+                </a>
+            </div>
+        @endif
     </form>
 @endsection
 
@@ -90,17 +109,11 @@
             const icon = document.getElementById(iconId);
             const isPassword = input.type === 'password';
 
-            // Toggle input type
             input.type = isPassword ? 'text' : 'password';
-
-            // Toggle eye icon class
             icon.classList.toggle('fa-eye', !isPassword);
             icon.classList.toggle('fa-eye-slash', isPassword);
-
-            // Add rotation animation
             icon.classList.add('rotate-180');
 
-            // Remove rotation after animation
             setTimeout(() => {
                 icon.classList.remove('rotate-180');
             }, 300);

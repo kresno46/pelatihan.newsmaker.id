@@ -51,6 +51,27 @@
                     @enderror
                 </div>
 
+                {{-- Category --}}
+                <div class="mb-4">
+                    <label for="category" class="block text-sm font-medium mb-1">
+                        Category
+                    </label>
+                    <select id="category" name="category"
+                        class="w-full px-4 py-2 border rounded-md shadow-sm focus:ring dark:bg-gray-800 focus:ring-blue-200 focus:outline-none
+                                  @error('category') border-red-500 @enderror"
+                        required>
+                        <option value="daily"
+                            {{ old('category', $FolderOutlook->category ?? 'daily') == 'daily' ? 'selected' : '' }}>Daily
+                        </option>
+                        <option value="weekly"
+                            {{ old('category', $FolderOutlook->category ?? 'daily') == 'weekly' ? 'selected' : '' }}>Weekly
+                        </option>
+                    </select>
+                    @error('category')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
                 {{-- Description --}}
                 <div class="mb-4">
                     <label for="deskripsi" class="block text-sm font-medium mb-1">

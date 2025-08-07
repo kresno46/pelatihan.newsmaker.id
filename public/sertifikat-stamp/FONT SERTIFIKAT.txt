@@ -1,0 +1,17 @@
+FONT SERTIFIKAT
+
+RFB
+Font : Book Antiaqua Bold
+
+EWF
+Font : Candara Reguler & Bold
+
+KPF
+Font : Montserrat Medium & Semibold
+
+SGB
+Font : Petrov Sans Semibold & Reguler
+
+BPF
+Font : Robot Medium & Reguler
+

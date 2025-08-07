@@ -13,7 +13,11 @@ class FolderOutlookController extends Controller
      */
     public function index(Request $request)
     {
-        $query = FolderOutlook::withCount('outlooks');
+        // Get category from request, default to 'daily' if not specified
+        $category = $request->get('category', 'daily');
+
+        $query = FolderOutlook::withCount('outlooks')
+            ->where('category', $category);
 
         if ($request->filled('search')) {
             $query->where('folder_name', 'like', '%' . $request->search . '%');
@@ -21,7 +25,7 @@ class FolderOutlookController extends Controller
 
         $FolderOutlooks = $query->orderBy('position')
             ->paginate(8)
-            ->appends(['search' => $request->search]);
+            ->appends(['search' => $request->search, 'category' => $category]);
 
         return view('folderoutlook.index', compact('FolderOutlooks'));
     }
@@ -43,6 +47,7 @@ class FolderOutlookController extends Controller
             'cover_folder' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'folder_name' => 'required|string|max:100',
             'deskripsi'   => 'required|string',
+            'category'    => 'required|in:daily,weekly',
         ]);
 
         // Simpan file ke folder publik
@@ -55,6 +60,7 @@ class FolderOutlookController extends Controller
             'folder_name'  => $request->folder_name,
             'deskripsi'    => $request->deskripsi,
             'slug'         => Str::slug($request->folder_name),
+            'category'     => $request->category,
         ]);
 
         return redirect()->route('outlookfolder.index')->with('success', 'Folder berhasil dibuat.');
@@ -79,6 +85,7 @@ class FolderOutlookController extends Controller
             'folder_name' => 'required|string|max:255',
             'deskripsi'   => 'nullable|string',
             'cover_folder' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'category'    => 'required|in:daily,weekly',
         ]);
 
         $folder = FolderOutlook::findOrFail($id);
@@ -87,6 +94,7 @@ class FolderOutlookController extends Controller
             'folder_name' => $request->folder_name,
             'deskripsi'   => $request->deskripsi,
             'slug'        => Str::slug($request->folder_name),
+            'category'    => $request->category,
         ];
 
         if ($request->hasFile('cover_folder')) {

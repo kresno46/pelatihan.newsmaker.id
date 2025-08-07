@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\AbsensiAdminController;
+use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EbookController;
 use App\Http\Controllers\EmailController;
@@ -7,7 +9,10 @@ use App\Http\Controllers\FolderController;
 use App\Http\Controllers\FolderOutlookController;
 use App\Http\Controllers\OutlookController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\JadwalAbsenController;
+use App\Http\Controllers\JadwalAbsensiController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\LaporanSertifikatController;
 use App\Http\Controllers\PostTestController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuizController;
@@ -16,6 +21,7 @@ use App\Http\Controllers\SertifikatController;
 use App\Http\Controllers\SummernoteController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserCleanupController;
+use App\Models\Absensi;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -114,10 +120,38 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::middleware('is_admin:Admin')->group(function () {
         Route::prefix('laporan')->group(function () {
-            Route::get('/', [LaporanController::class, 'index'])->name('laporan.index');
-            Route::get('/{id}/show', [LaporanController::class, 'show'])->name('laporan.show');
-            Route::delete('/{id}', [LaporanController::class, 'destroy'])->name('laporan.destroy');
+            Route::prefix('post-test')->group(function () {
+                Route::get('/', [LaporanController::class, 'index'])->name('laporan.index');
+                Route::get('/{id}/show', [LaporanController::class, 'show'])->name('laporan.show');
+                Route::delete('/{id}', [LaporanController::class, 'destroy'])->name('laporan.destroy');
+            });
+
+            Route::prefix('absensi')->group(function () {
+                Route::get('/', [JadwalAbsensiController::class, 'index'])->name('absensi.index');
+                Route::post('/tambah', [JadwalAbsensiController::class, 'store'])->name('absensi.store');
+                Route::post('/{id}/toggle', [JadwalAbsensiController::class, 'toggle'])->name('absensi.toggle');
+                Route::put('/{id}/update', [JadwalAbsensiController::class, 'update'])->name('absensi.update');
+                Route::delete('/{id}/hapus', [JadwalAbsensiController::class, 'destroy'])->name('absensi.destroy');
+
+                Route::prefix('{idJadwal}')->group(function () {
+                    Route::get('/', [AbsensiAdminController::class, 'indexAdmin'])->name('absensiAdmin.index');
+                    Route::get('/pdf', [AbsensiAdminController::class, 'downloadPdf'])->name('absensi.downloadPdf');
+                    Route::get('/excel', [AbsensiAdminController::class, 'downloadExcel'])->name('absensi.downloadExcel');
+                    Route::delete('/{idAbsensi}/delete', [AbsensiAdminController::class, 'delete'])->name('absensiAdmin.delete');
+                });
+            });
+
+            Route::prefix('sertifikat')->group(function () {
+                Route::get('/', [LaporanSertifikatController::class, 'index'])->name('LaporanSertifikat.index');
+                Route::delete('/{id}/delete', [LaporanSertifikatController::class, 'destroy'])->name('LaporanSertifikat.destroy');
+            });
         });
+    });
+
+    // Absensi
+    Route::prefix('absensi')->group(function () {
+        Route::get('/', [AbsensiController::class, 'indexAbsensi'])->name('AbsensiUser.index');
+        Route::post('/absensi/store', [AbsensiController::class, 'store'])->name('AbsensiUser.store');
     });
 
     // Outlook Routes
