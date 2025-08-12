@@ -6,7 +6,6 @@
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
                     {{ __('Profile') }}
                 </h2>
-
                 <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
                     {{ __('Lengkapi dan perbarui data diri Anda agar informasi selalu akurat.') }}
                 </p>
@@ -22,21 +21,6 @@
     </header>
 
     <div class="w-full bg-white dark:bg-gray-800 shadow rounded-lg p-4 sm:p-8">
-        @php
-            // Array field yang ingin dicek
-            $requiredFields = [
-                'name',
-                'email',
-                'jenis_kelamin',
-                'tempat_lahir',
-                'tanggal_lahir',
-                'warga_negara',
-                'alamat',
-                'no_tlp',
-                'pekerjaan',
-            ];
-        @endphp
-
         <form method="POST" action="{{ route('profile.update') }}">
             @csrf
             @method('PATCH')
@@ -161,6 +145,91 @@
                     @endforeach
                 </select>
                 <x-input-error :messages="$errors->get('pekerjaan')" class="mt-2" />
+            </div>
+
+            {{-- Role --}}
+            @php
+                $roles = [
+                    'Admin' => 'Admin',
+                    'Trainer (RFB)' => 'PT Rifan Financindo Berjangka',
+                    'Trainer (SGB)' => 'PT Solid Gold Berjangka',
+                    'Trainer (KPF)' => 'PT Kontak Perkasa Futures',
+                    'Trainer (BPF)' => 'PT Best Profit Futures',
+                    'Trainer (EWF)' => 'PT Equityworld Futures',
+                ];
+                $selectedRole = old('role', $user->role ?? '');
+            @endphp
+
+            <div class="mt-4">
+                <x-input-label for="role" :value="__('Perusahaan')" />
+                <select id="role" name="role"
+                    class="block mt-1 w-full rounded-md shadow-sm border-gray-300
+               dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50"
+                    disabled>
+                    <option value="">-- Pilih Perusahaan --</option>
+                    @foreach ($roles as $value => $label)
+                        <option value="{{ $value }}" {{ $selectedRole == $value ? 'selected' : '' }}>
+                            {{ $label }}
+                        </option>
+                    @endforeach
+                </select>
+                <x-input-error :messages="$errors->get('role')" class="mt-2" />
+            </div>
+
+
+            {{-- Kantor Cabang --}}
+            @php
+                $kantorCabang = [
+                    'RFB' => [
+                        'Palembang',
+                        'Balikpapan',
+                        'Solo',
+                        'Jakarta DBS Tower',
+                        'Jakarta AXA Tower',
+                        'Medan',
+                        'Semarang',
+                        'Surabaya Pakuwon',
+                        'Surabaya Ciputra',
+                        'Pekanbaru',
+                        'Bandung',
+                        'Yogyakarta',
+                    ],
+                    'SGB' => ['Jakarta', 'Semarang', 'Makassar'],
+                    'KPF' => ['Jakarta', 'Yogyakarta', 'Bali', 'Makassar', 'Bandung', 'Semarang'],
+                    'EWF' => [
+                        'SCC Jakarta',
+                        'Cyber 2 Jakarta',
+                        'Surabaya Trilium',
+                        'Manado',
+                        'Semarang',
+                        'Surabaya Praxis',
+                        'Cirebon',
+                    ],
+                    'BPF' => [
+                        'Equity Tower Jakarta',
+                        'Jambi',
+                        'Jakarta - Pacific Place Mall',
+                        'Pontianak',
+                        'Malang',
+                        'Surabaya',
+                        'Medan',
+                        'Bandung',
+                        'Pekanbaru',
+                        'Banjarmasin',
+                        'Bandar Lampung',
+                        'Semarang',
+                    ],
+                ];
+                $selectedCabang = old('cabang', $user->cabang ?? '');
+            @endphp
+            <div class="mt-4" id="cabang-container" style="display:none;">
+                <x-input-label-append for="cabang" :value="__('Kantor Cabang')" :append="empty($user->cabang) ? '<span class=\'text-red-500\'>*</span>' : ''" />
+                <select id="cabang" name="cabang"
+                    class="block mt-1 w-full rounded-md shadow-sm border-gray-300
+                            dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
+                    <option value="">-- Pilih Kantor Cabang --</option>
+                </select>
+                <x-input-error :messages="$errors->get('cabang')" class="mt-2" />
             </div>
 
             <x-missing-fields-alert :user="$user" />

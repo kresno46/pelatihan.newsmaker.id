@@ -62,21 +62,21 @@
             </div>
         </div>
 
-        <!-- Jumlah User -->
-        <div class="bg-white dark:bg-gray-800 border-l-4 border-purple-500 rounded-lg shadow">
-            <div class="flex items-center p-5">
-                <div class="text-purple-500 px-6 py-5 bg-purple-100 dark:bg-purple-900 rounded-full">
-                    <i class="fa-solid fa-users text-2xl"></i>
-                </div>
-                <div class="ml-4">
-                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Jumlah User</h3>
-                    <p class="text-sm text-gray-600 dark:text-gray-300">{{ $jumlahUser }} User</p>
+        @if (Auth::check() && Auth::user()->role === 'Admin')
+            <!-- Jumlah User -->
+            <div class="bg-white dark:bg-gray-800 border-l-4 border-purple-500 rounded-lg shadow">
+                <div class="flex items-center p-5">
+                    <div class="text-purple-500 px-6 py-5 bg-purple-100 dark:bg-purple-900 rounded-full">
+                        <i class="fa-solid fa-users text-2xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Jumlah User</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">{{ $jumlahUser }} User</p>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Jumlah Admin -->
-        @if (Auth::check() && Auth::user()->role === 'admin')
+            <!-- Jumlah Admin -->
             <div class="bg-white dark:bg-gray-800 border-l-4 border-indigo-500 rounded-lg shadow md:col-span-1">
                 <div class="flex items-center p-5">
                     <div class="text-indigo-500 px-6 py-5 bg-indigo-100 dark:bg-indigo-900 rounded-full">

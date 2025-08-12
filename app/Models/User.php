@@ -30,7 +30,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'no_tlp',
         'pekerjaan',
         'password',
-        'role',
+        'cabang',
     ];
 
     /**

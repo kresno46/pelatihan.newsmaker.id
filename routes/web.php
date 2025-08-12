@@ -149,7 +149,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // Absensi
-    Route::prefix('absensi')->group(function () {
+    Route::prefix('absensi')->middleware('profile.complete')->group(function () {
         Route::get('/', [AbsensiController::class, 'indexAbsensi'])->name('AbsensiUser.index');
         Route::post('/absensi/store', [AbsensiController::class, 'store'])->name('AbsensiUser.store');
     });
