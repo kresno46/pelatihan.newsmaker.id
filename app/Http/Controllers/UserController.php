@@ -56,6 +56,7 @@ class UserController extends Controller
             'alamat' => 'nullable|string',
             'no_tlp' => 'nullable|string',
             'pekerjaan' => 'nullable|string',
+            'cabang' => 'nullable|string'
         ]);
 
         $trainer = User::create([
@@ -70,6 +71,7 @@ class UserController extends Controller
             'alamat' => $validated['alamat'] ?? null,
             'no_tlp' => $validated['no_tlp'] ?? null,
             'pekerjaan' => $validated['pekerjaan'] ?? null,
+            'cabang' => $validated['cabang'] ?? null,
         ]);
 
         return redirect()->route('trainer.index')->with('Alert', 'Trainer ' . $trainer->name . ' berhasil ditambahkan.');
@@ -107,6 +109,7 @@ class UserController extends Controller
             'alamat' => 'nullable|string',
             'no_tlp' => 'nullable|string',
             'pekerjaan' => 'nullable|string',
+            'cabang' => 'nullable|string'
         ]);
 
         $trainer->update([
@@ -120,6 +123,7 @@ class UserController extends Controller
             'alamat' => $validated['alamat'] ?? $trainer->alamat,
             'no_tlp' => $validated['no_tlp'] ?? $trainer->no_tlp,
             'pekerjaan' => $validated['pekerjaan'] ?? $trainer->pekerjaan,
+            'cabang' => $validated['cabang'] ?? $trainer->cabang,
         ]);
 
         return redirect()->route('trainer.index')->with('Alert', 'Trainer ' . $trainer->name . ' berhasil diperbarui.');
