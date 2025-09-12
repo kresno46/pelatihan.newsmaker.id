@@ -48,13 +48,24 @@
                 @foreach ($sessions as $item)
                     <div
                         class="bg-gray-50 dark:bg-gray-900/40 p-5 rounded-lg flex flex-col gap-4 border border-gray-200 dark:border-gray-700">
-                        <div class="w-full">
-                            <h3 class="font-semibold text-gray-900 dark:text-gray-100">
-                                {{ $item->title }}
-                            </h3>
-                            <p class="text-sm text-gray-700 dark:text-gray-300">
-                                <strong>{{ __('Durasi:') }}</strong> {{ $item->duration }} {{ __('menit') }}
-                            </p>
+                        <div class="w-full flex items-center justify-between">
+                            <div>
+                                <h3 class="font-semibold text-gray-900 dark:text-gray-100">
+                                    {{ $item->title }}
+                                </h3>
+                                <p class="text-sm text-gray-700 dark:text-gray-300">
+                                    <strong>{{ __('Durasi:') }}</strong> {{ $item->duration }} {{ __('menit') }}
+                                </p>
+                            </div>
+                            <div>
+                                <p
+                                    class="text-sm font-bold px-5 py-1 rounded-full 
+                                    {{ $item->tipe == 'PATL' ? 'bg-red-500' : '' }} 
+                                    {{ $item->tipe == 'PATD' ? 'bg-green-500' : '' }}">
+                                    <span class="text-white">{{ $item->tipe }}</span>
+                                </p>
+                            </div>
+
                         </div>
 
                         <div class="w-full grid grid-cols-3 gap-2">
