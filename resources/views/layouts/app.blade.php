@@ -32,6 +32,8 @@
         })();
     </script>
 
+    @yield('styles')
+
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -80,33 +82,23 @@
                     </ul>
                 </nav>
 
-                <hr class="border-gray-300 dark:border-gray-700">
+                @if (Auth::user()->role !== 'Admin')
+                    <hr class="border-gray-300 dark:border-gray-700">
 
-                <!-- Navigation - Edukasi -->
-                <nav>
-                    <ul class="flex flex-col space-y-2">
-                        <li class="text-sm text-gray-500 uppercase tracking-wide">Edukasi</li>
-                        <li>
-                            <a href="{{ route('folder.index') }}"
-                                class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                    <!-- Navigation - Edukasi -->
+                    <nav>
+                        <ul class="flex flex-col space-y-2">
+                            <li class="text-sm text-gray-500 uppercase tracking-wide">Edukasi</li>
+                            <li>
+                                <a href="{{ route('folder.index') }}"
+                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                             {{ request()->routeIs('ebook.*') || request()->routeIs('quiz.*') || request()->routeIs('folder.*')
                                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                <i class="fa-solid fa-book"></i>
-                                <span>{{ __('eBook') }}</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('outlookfolder.index') }}"
-                                class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
-                            {{ request()->routeIs('outlook.*') || request()->routeIs('outlookfolder.*')
-                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
-                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                <i class="fa-solid fa-envelope"></i>
-                                <span>{{ __('Outlook') }}</span>
-                            </a>
-                        </li>
-                        @if (Auth::user()->role !== 'Admin')
+                                    <i class="fa-solid fa-book"></i>
+                                    <span>{{ __('eBook') }}</span>
+                                </a>
+                            </li>
                             <li>
                                 <a href="{{ route('AbsensiUser.index') }}"
                                     class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
@@ -117,9 +109,19 @@
                                     <span>{{ __('Absensi') }}</span>
                                 </a>
                             </li>
-                        @endif
-                    </ul>
-                </nav>
+                            <li>
+                                <a href="{{ route('post-test.index') }}"
+                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('posttest.*')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                    <i class="fa-solid fa-clipboard-question"></i>
+                                    <span>{{ __('Post Test') }}</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                @endif
 
                 <hr class="border-gray-300 dark:border-gray-700">
 
@@ -127,15 +129,25 @@
                 @if (Auth::user()->role === 'Admin')
                     <nav>
                         <ul class="flex flex-col space-y-2">
-                            <li class="text-sm text-gray-500 uppercase tracking-wide">Laporan</li>
+                            <li class="text-sm text-gray-500 uppercase tracking-wide">Menu</li>
                             <li>
-                                <a href="{{ route('laporan.index') }}"
+                                <a href="{{ route('folder.index') }}"
                                     class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
-                            {{ request()->routeIs('laporan.*')
+                            {{ request()->routeIs('ebook.*') || request()->routeIs('quiz.*') || request()->routeIs('folder.*')
                                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                    <i class="fa-solid fa-clipboard"></i>
-                                    <span>Post Test</span>
+                                    <i class="fa-solid fa-book"></i>
+                                    <span>{{ __('eBook') }}</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('posttest.index') }}"
+                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('posttest.*')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                    <i class="fa-solid fa-clipboard-question"></i>
+                                    <span>{{ __('Post Test') }}</span>
                                 </a>
                             </li>
                             <li>
@@ -144,7 +156,7 @@
                             {{ request()->routeIs('absensi.*') || request()->routeIs('absensiAdmin.*')
                                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                    <i class="fa-solid fa-users-viewfinder"></i>
+                                    <i class="fa-solid fa-face-smile"></i>
                                     <span>{{ __('Absensi') }}</span>
                                 </a>
                             </li>

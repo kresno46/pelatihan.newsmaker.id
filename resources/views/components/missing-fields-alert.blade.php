@@ -11,6 +11,7 @@
         'alamat' => 'Alamat',
         'no_tlp' => 'Nomor Telepon',
         'pekerjaan' => 'Pekerjaan',
+        'role' => 'Role',
     ];
 
     $missingFields = [];

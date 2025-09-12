@@ -29,8 +29,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'no_id',
         'no_tlp',
         'pekerjaan',
+        'jabatan',
         'password',
-        'role',
+        'cabang',
     ];
 
     /**
@@ -124,5 +125,10 @@ class User extends Authenticatable implements MustVerifyEmail
             'Trainer (EWF)' => 'PT Equity World Futures',
             default => $this->role,
         };
+    }
+
+    public function absensis()
+    {
+        return $this->hasMany(Absensi::class);
     }
 }

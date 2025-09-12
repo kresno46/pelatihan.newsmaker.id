@@ -12,6 +12,7 @@ class CertificateAward extends Model
     protected $fillable = [
         'user_id',
         'batch_number',
+        'post_test_id',
         'average_score',
         'certificate_uuid',
         'awarded_at',

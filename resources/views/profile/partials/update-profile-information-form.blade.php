@@ -6,7 +6,6 @@
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
                     {{ __('Profile') }}
                 </h2>
-
                 <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
                     {{ __('Lengkapi dan perbarui data diri Anda agar informasi selalu akurat.') }}
                 </p>
@@ -22,21 +21,6 @@
     </header>
 
     <div class="w-full bg-white dark:bg-gray-800 shadow rounded-lg p-4 sm:p-8">
-        @php
-            // Array field yang ingin dicek
-            $requiredFields = [
-                'name',
-                'email',
-                'jenis_kelamin',
-                'tempat_lahir',
-                'tanggal_lahir',
-                'warga_negara',
-                'alamat',
-                'no_tlp',
-                'pekerjaan',
-            ];
-        @endphp
-
         <form method="POST" action="{{ route('profile.update') }}">
             @csrf
             @method('PATCH')
@@ -55,6 +39,14 @@
                 <x-text-input id="email" type="email" name="email" class="block mt-1 w-full"
                     :value="old('email', $user->email)" />
                 <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            </div>
+
+            {{-- Jabatan --}}
+            <div class="mt-4">
+                <x-input-label-append for="jabatan" :value="__('Jabatan')" :append="empty($user->jabatan) ? '<span class=\'text-red-500\'>*</span>' : ''" />
+                <x-text-input id="jabatan" type="text" name="jabatan" class="block mt-1 w-full" readonly
+                    :value="old('jabatan', $user->jabatan)" />
+                <x-input-error :messages="$errors->get('jabatan')" class="mt-2" />
             </div>
 
             {{-- Jenis Kelamin --}}
@@ -161,6 +153,35 @@
                     @endforeach
                 </select>
                 <x-input-error :messages="$errors->get('pekerjaan')" class="mt-2" />
+            </div>
+
+            {{-- Role --}}
+            @php
+                $roles = [
+                    'Admin' => 'Admin',
+                    'Trainer (RFB)' => 'PT Rifan Financindo Berjangka',
+                    'Trainer (SGB)' => 'PT Solid Gold Berjangka',
+                    'Trainer (KPF)' => 'PT Kontak Perkasa Futures',
+                    'Trainer (BPF)' => 'PT Best Profit Futures',
+                    'Trainer (EWF)' => 'PT Equityworld Futures',
+                ];
+                $selectedRole = old('role', $user->role ?? '');
+            @endphp
+
+            <div class="mt-4">
+                <x-input-label for="role" :value="__('Perusahaan')" />
+                <select id="role" name="role"
+                    class="block mt-1 w-full rounded-md shadow-sm border-gray-300
+               dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50"
+                    disabled>
+                    <option value="">-- Pilih Perusahaan --</option>
+                    @foreach ($roles as $value => $label)
+                        <option value="{{ $value }}" {{ $selectedRole == $value ? 'selected' : '' }}>
+                            {{ $label }}
+                        </option>
+                    @endforeach
+                </select>
+                <x-input-error :messages="$errors->get('role')" class="mt-2" />
             </div>
 
             <x-missing-fields-alert :user="$user" />

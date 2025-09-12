@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Absensi;
+use App\Models\CertificateAward;
 use App\Models\Ebook;
+use App\Models\FolderEbook;
+use App\Models\JadwalAbsensi;
 use App\Models\PostTestSession;
 use App\Models\PostTestResult;
 use App\Models\User;
@@ -38,11 +42,15 @@ class HomeController extends Controller
         }
 
         // Statistik
-        $jumlahEbook         = Ebook::count();
-        $jumlahSession       = PostTestSession::count();
-        $riwayatUserLogin    = PostTestResult::where('user_id', auth()->id())->count();
-        $jumlahUser          = User::where('role', 'Trainer (Eksternal)')->count();
-        $jumlahAdmin         = User::where('role', 'Admin')->count();
+        $jumlahEbook                = Ebook::count();
+        $jumlahSession              = PostTestSession::count();
+        $riwayatUserLogin           = PostTestResult::where('user_id', auth()->id())->count();
+        $jumlahUser                 = User::where('role', 'Trainer (Eksternal)')->count();
+        $jumlahAdmin                = User::where('role', 'Admin')->count();
+        $jumlahSertifikatSelesai    = CertificateAward::where('user_id', auth()->id())->count();
+        $jumlahPelatihan            = FolderEbook::count();
+        $jumlahAbsensiTerisi        = Absensi::where('user_id', auth()->id())->count();
+        $jumlahJadwalAbsensi        = JadwalAbsensi::count();
 
         return view('dashboard', compact(
             'isIncomplete',
@@ -50,7 +58,11 @@ class HomeController extends Controller
             'jumlahSession',
             'riwayatUserLogin',
             'jumlahUser',
-            'jumlahAdmin'
+            'jumlahAdmin',
+            'jumlahSertifikatSelesai',
+            'jumlahPelatihan',
+            'jumlahAbsensiTerisi',
+            'jumlahJadwalAbsensi'
         ));
     }
 }

@@ -19,6 +19,7 @@ use App\Http\Controllers\QuizController;
 use App\Http\Controllers\RiwayatController;
 use App\Http\Controllers\SertifikatController;
 use App\Http\Controllers\SummernoteController;
+use App\Http\Controllers\TestController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserCleanupController;
 use App\Models\Absensi;
@@ -57,26 +58,43 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
             // 📄 Tampil Detail eBook
             Route::get('/{ebookSlug}', [EbookController::class, 'show'])->name('ebook.show');
-
-            // 📝 Quiz & Post-Test (langsung di bawah {folderSlug}/{ebookSlug})
-            Route::middleware('is_admin:Admin')->group(function () {
-                Route::get('/{ebookSlug}/quiz', [QuizController::class, 'index'])->name('quiz.index');
-                Route::post('/{ebookSlug}/quiz/store', [QuizController::class, 'store'])->name('quiz.store');
-                Route::put('/{ebookSlug}/quiz/{sessionId}/update', [QuizController::class, 'update'])->name('quiz.update');
-                Route::get('/{ebookSlug}/quiz/{sessionId}/add-question', [QuizController::class, 'addQuestionShow'])->name('quiz.add-question-index');
-                Route::post('/{ebookSlug}/quiz/{sessionId}/add-question', [QuizController::class, 'addQuestionStore'])->name('quiz.add-question-store');
-                Route::delete('/{ebookSlug}/quiz/{sessionId}/question/{questionId}', [QuizController::class, 'deleteQuestion'])->name('quiz.delete-question');
-                Route::get('/{ebookSlug}/quiz/{sessionId}/question/{questionId}/edit', [QuizController::class, 'editQuestion'])->name('quiz.edit-question');
-                Route::put('/{ebookSlug}/quiz/{sessionId}/question/{questionId}', [QuizController::class, 'updateQuestion'])->name('quiz.update-question');
-            });
-
-            // 📝 Post-Test (User)
-            Route::post('/{ebookSlug}/post-test/{session}/submit', [PostTestController::class, 'submitQuiz'])->name('posttest.submit');
-            Route::get('/{ebookSlug}/post-test/{session}', [PostTestController::class, 'showQuiz'])->name('posttest.show');
-            Route::get('/{ebookSlug}/post-test/result/{resultId}', [PostTestController::class, 'showResult'])->name('posttest.result');
         });
     });
 
+    Route::prefix('post-test')->middleware('auth', 'is_admin:Admin')->group(function () {
+        // routes sesi yang sudah kamu punya
+        Route::get('/', [QuizController::class, 'index'])->name('posttest.index');
+        Route::get('/tambah', [QuizController::class, 'create'])->name('posttest.create');
+        Route::post('/', [QuizController::class, 'store'])->name('posttest.store');
+
+        Route::get('/{session}/edit', [QuizController::class, 'edit'])->name('posttest.edit');
+        Route::put('/{session}', [QuizController::class, 'update'])->name('posttest.update');
+        Route::delete('/{session}', [QuizController::class, 'destroy'])->name('posttest.destroy');
+
+        // REPORT
+        Route::get('/{session:slug}/report', [QuizController::class, 'report'])->name('posttest.report');
+        // (opsional) export CSV
+        Route::get('/{session:slug}/report/export', [QuizController::class, 'reportExport'])->name('posttest.report.export');
+
+        // === nested: /post-test/{session}/edit/question ===
+        Route::prefix('{session}/edit')->group(function () {
+            Route::post('/question', [PostTestController::class, 'questionStore'])
+                ->name('question.store');
+            Route::put('/question/{question}', [PostTestController::class, 'questionUpdate'])
+                ->name('question.update');
+            Route::delete('/question/{question}', [PostTestController::class, 'questionDestroy'])
+                ->name('question.destroy');
+        });
+    });
+
+    Route::prefix('posttest')->name('post-test.')->middleware('profile.complete')->group(function () {
+        Route::get('/', [TestController::class, 'index'])->name('index');
+        Route::middleware('absensi')->group(function () {
+            Route::get('/{slug}', [TestController::class, 'showQuiz'])->name('show');
+            Route::post('/{slug}/submit', [TestController::class, 'submitQuiz'])->name('submit');
+        });
+        Route::get('/result/{result}', [TestController::class, 'showResult'])->name('result');
+    });
 
     // Summmernote Controller
     Route::middleware('is_admin:Admin', 'profile.complete')->group(function () {
@@ -149,7 +167,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // Absensi
-    Route::prefix('absensi')->group(function () {
+    Route::prefix('absensi')->middleware('profile.complete')->group(function () {
         Route::get('/', [AbsensiController::class, 'indexAbsensi'])->name('AbsensiUser.index');
         Route::post('/absensi/store', [AbsensiController::class, 'store'])->name('AbsensiUser.store');
     });
@@ -190,7 +208,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::get('/sertifikat', [\App\Http\Controllers\SertifikatController::class, 'index'])->name('sertifikat.index');
-    Route::get('/sertifikat/{folderSlug}/download', [\App\Http\Controllers\SertifikatController::class, 'generateCertificate'])->name('sertifikat.download');
+    Route::get('/sertifikat/{id}/download', [\App\Http\Controllers\SertifikatController::class, 'generateCertificate'])->name('sertifikat.download');
 
     Route::prefix('profile')->group(function () {
         Route::get('/', [ProfileController::class, 'edit'])->name('profile.edit');

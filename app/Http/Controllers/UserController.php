@@ -14,7 +14,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $trainer = User::where('role', 'Trainer (Eksternal)')->paginate(10);
+        $trainer = User::where('role', 'Trainer (Eksternal)')->paginate(10)->orderBy('created_at', 'DESC');
         return view('trainer.index', compact('trainer'));
     }
 

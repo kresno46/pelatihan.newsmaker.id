@@ -39,6 +39,7 @@ class ProfileController extends Controller
             'no_id' => ['nullable', 'string', 'max:255'],
             'no_tlp' => ['nullable', 'string', 'max:20'],
             'pekerjaan' => ['nullable', 'string', 'max:255'],
+            'jabatan' => ['nullable', 'in:BC,SBC,SBM,BM'],
         ]);
 
         if ($validator->fails()) {

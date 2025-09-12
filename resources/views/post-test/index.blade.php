@@ -1,136 +1,142 @@
 @extends('layouts.app')
 
-@section('namePage', 'Kuis Attempt: ' . $session->title)
+@section('namePage', 'Post Test')
 
 @section('content')
-    <div class="space-y-5">
-        <div class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow">
-            <h2 class="text-xl font-bold mb-4 text-gray-900 dark:text-white">{{ $session->title }}</h2>
-            <div id="timer" class="text-red-600 dark:text-red-400 font-semibold">
-                Sisa waktu: <span id="countdown"></span>
+    <header class="w-full bg-white dark:bg-gray-800 shadow rounded-lg mb-5 p-4 sm:p-6">
+        <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                    {{ __('Kuis / Post Test') }}
+                </h2>
+                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                    {{ __('Daftar post test yang bisa Anda kerjakan.') }}
+                </p>
             </div>
-        </div>
 
-        <form id="quizForm"
-            action="{{ route('posttest.submit', [
-                'folderSlug' => $folderSlug,
-                'ebookSlug' => $ebook->slug,
-                'session' => $session->id,
-            ]) }}"
-            method="POST" class="space-y-5">
-            @csrf
-            @foreach ($questions as $index => $question)
-                <div class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow">
-                    <div>
-                        <div class="font-medium text-gray-800 dark:text-gray-100">{!! $question->question !!}</div>
-                        @foreach (['A', 'B', 'C', 'D'] as $opt)
-                            @php $opt_text = $question->{'option_' . strtolower($opt)}; @endphp
-                            @if ($opt_text)
-                                <label class="block text-gray-700 dark:text-gray-300">
-                                    <input type="radio" name="answer[{{ $question->id }}]" value="{{ $opt }}"
-                                        required class="mr-2" data-question="{{ $question->id }}">
-                                    {{ $opt }}. {{ $opt_text }}
-                                </label>
-                            @endif
-                        @endforeach
+            <div class="flex items-center">
+                @if (session('success'))
+                    <div x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 5000)"
+                        class="text-xs bg-green-100 dark:bg-green-200 text-green-800 py-1 px-3 rounded-lg mr-3"
+                        aria-live="polite">
+                        {{ session('success') }}
                     </div>
-                </div>
-            @endforeach
-
-            <!-- Tombol untuk buka modal -->
-            <button type="button" onclick="showModal()"
-                class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-4 py-2 rounded w-full">
-                Submit
-            </button>
-        </form>
-    </div>
-
-    <!-- Modal Konfirmasi -->
-    <div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
-            <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Konfirmasi</h3>
-            <p class="text-gray-600 dark:text-gray-300 mb-6">Apakah Anda yakin ingin menyelesaikan kuis ini?</p>
-            <div class="flex justify-end space-x-3">
-                <button type="button" onclick="hideModal()"
-                    class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Batal</button>
-
-                <!-- Tombol submit langsung -->
-                <button type="submit" form="quizForm" onclick="clearData()"
-                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-                    Ya, Selesai
-                </button>
+                @elseif (session('error'))
+                    <div x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 5000)"
+                        class="text-xs bg-red-100 dark:bg-red-200 text-red-800 py-1 px-3 rounded-lg mr-3"
+                        aria-live="polite">
+                        {{ session('error') }}
+                    </div>
+                @endif
             </div>
         </div>
+    </header>
+
+    <div>
+        {{-- Filter Button --}}
+        @php
+            $activeTipe = request('tipe', 'PATD'); // default ke PATD
+        @endphp
+
+        <div class="w-full flex">
+            <a href="{{ route('post-test.index', ['tipe' => 'PATD']) }}"
+                class="py-2 shadow text-center rounded-t-3xl w-full 
+                    {{ $activeTipe === 'PATD' ? 'bg-white font-semibold' : 'bg-gray-300 hover:bg-gray-200 transition-all' }}">
+                PATD
+            </a>
+            <a href="{{ route('post-test.index', ['tipe' => 'PATL']) }}"
+                class="py-2 shadow text-center rounded-t-3xl w-full 
+                    {{ $activeTipe === 'PATL' ? 'bg-white font-semibold' : 'bg-gray-300 hover:bg-gray-200 transition-all' }}">
+                PATL
+            </a>
+        </div>
+
+        {{-- Tabel Data --}}
+        <div class="bg-white shadow dark:bg-gray-800 rounded-b-lg p-4 sm:p-6">
+            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                        <th scope="col" class="px-4 py-3">#</th>
+                        <th scope="col" class="px-4 py-3">Judul</th>
+                        <th scope="col" class="px-4 py-3">Durasi</th>
+                        <th scope="col" class="px-4 py-3">Progress</th>
+                        <th scope="col" class="px-4 py-3">Status</th>
+                        <th scope="col" class="px-4 py-3 text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($tests as $index => $posttest)
+                        <tr class="border-b dark:border-gray-700">
+                            <td class="px-4 py-3">{{ $index + 1 }}</td>
+                            <td class="px-4 py-3 font-medium text-gray-900 dark:text-white">
+                                {{ $posttest->title }}
+                            </td>
+                            <td class="px-4 py-3">{{ $posttest->duration }} menit</td>
+                            <td class="px-4 py-3">
+                                @if ($posttest->progres === 'Belum Dikerjakan')
+                                    <span class="text-yellow-600 font-semibold">Belum Dikerjakan</span>
+                                @elseif ($posttest->progres === 'Nilai di Bawah 75')
+                                    <span class="text-red-600 font-semibold">Nilai di Bawah 75
+                                        ({{ $posttest->score }})
+                                    </span>
+                                @else
+                                    <span class="text-green-600 font-semibold">Selesai ({{ $posttest->score }})</span>
+                                @endif
+                            </td>
+                            <td class="px-4 py-3">
+                                @if ($posttest->status === 'Aktif')
+                                    <div class="bg-green-500 text-center rounded-full py-1 text-sm">
+                                        <span class="text-green-100 font-semibold">Aktif</span>
+                                    </div>
+                                @else
+                                    <div class="bg-red-500 text-center rounded-full py-1 text-sm">
+                                        <span class="text-red-100 font-semibold">Tidak Aktif</span>
+                                    </div>
+                                @endif
+                            </td>
+                            <td class="px-4 py-3 text-center">
+                                @if ($posttest->status === 'Tidak Aktif')
+                                    <div class="flex gap-2">
+                                        <span
+                                            class="inline-block w-full bg-gray-400 text-white text-xs px-3 py-1 rounded cursor-not-allowed">
+                                            Tidak Tersedia
+                                        </span>
+                                        @if ($posttest->progres === 'Selesai')
+                                            <a href="{{ route('post-test.result', $posttest->result_id) }}"
+                                                class="inline-block w-full bg-gray-600 text-white text-xs px-3 py-1 rounded hover:bg-gray-700">
+                                                Lihat Hasil
+                                            </a>
+                                        @endif
+                                    </div>
+                                @else
+                                    @if ($posttest->progres === 'Belum Dikerjakan')
+                                        <a href="{{ route('post-test.show', $posttest->slug) }}"
+                                            class="inline-block w-full bg-blue-600 text-white text-xs px-3 py-1 rounded hover:bg-blue-700">
+                                            Mulai
+                                        </a>
+                                    @elseif ($posttest->progres === 'Nilai di Bawah 75')
+                                        <a href="{{ route('post-test.show', $posttest->slug) }}"
+                                            class="inline-block w-full bg-orange-600 text-white text-xs px-3 py-1 rounded hover:bg-orange-700">
+                                            Ulangi
+                                        </a>
+                                    @else
+                                        <a href="{{ route('post-test.result', $posttest->result_id) }}"
+                                            class="inline-block w-full bg-gray-600 text-white text-xs px-3 py-1 rounded hover:bg-gray-700">
+                                            Lihat Hasil
+                                        </a>
+                                    @endif
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="px-4 py-3 text-center text-gray-500">
+                                Tidak ada post test tersedia.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
-@endsection
-
-@section('scripts')
-    <script>
-        const countdownEl = document.getElementById('countdown');
-        const quizForm = document.getElementById('quizForm');
-        const sessionKey = 'quiz_timer_{{ $session->id }}';
-        const answerKey = 'quiz_answers_{{ $session->id }}';
-        const duration = {{ $session->duration }} * 60;
-        const savedStartTime = localStorage.getItem(sessionKey);
-        const startTime = savedStartTime ? parseInt(savedStartTime) : Date.now();
-
-        // Save start time if not already saved
-        if (!savedStartTime) localStorage.setItem(sessionKey, startTime);
-
-        function updateTimer() {
-            const elapsed = Math.floor((Date.now() - startTime) / 1000);
-            const remaining = duration - elapsed;
-
-            if (remaining <= 0) {
-                countdownEl.textContent = '0m 0s';
-                alert('Waktu habis! Jawaban Anda akan dikirim otomatis.');
-                clearData();
-                quizForm.submit();
-                return;
-            }
-
-            const minutes = Math.floor(remaining / 60);
-            const seconds = remaining % 60;
-            countdownEl.textContent = `${minutes}m ${seconds}s`;
-        }
-
-        setInterval(updateTimer, 1000);
-        updateTimer();
-
-        // Load & Simpan Jawaban
-        const radios = quizForm.querySelectorAll('input[type=radio]');
-        let answers = JSON.parse(localStorage.getItem(answerKey) || '{}');
-
-        radios.forEach(radio => {
-            const qid = radio.dataset.question;
-            if (answers[qid] === radio.value) {
-                radio.checked = true;
-            }
-            radio.addEventListener('change', () => {
-                answers[qid] = radio.value;
-                localStorage.setItem(answerKey, JSON.stringify(answers));
-            });
-        });
-
-        function clearData() {
-            localStorage.removeItem(sessionKey);
-            localStorage.removeItem(answerKey);
-        }
-
-        // Modal Logic
-        function showModal() {
-            document.getElementById('confirmModal').classList.remove('hidden');
-        }
-
-        function hideModal() {
-            document.getElementById('confirmModal').classList.add('hidden');
-        }
-
-        // Cegah submit via Enter
-        quizForm.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-            }
-        });
-    </script>
 @endsection

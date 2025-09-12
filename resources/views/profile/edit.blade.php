@@ -5,9 +5,7 @@
 @section('content')
     <div class="space-y-10">
         @include('profile.partials.update-profile-information-form')
-
         @include('profile.partials.update-password-form')
-
         {{-- @include('profile.partials.delete-user-form') --}}
     </div>
 
@@ -48,31 +46,100 @@
 @endsection
 
 @section('scripts')
+    @php
+        $kantorCabang = [
+            'RFB' => [
+                'Palembang',
+                'Balikpapan',
+                'Solo',
+                'Jakarta DBS Tower',
+                'Jakarta AXA Tower',
+                'Medan',
+                'Semarang',
+                'Surabaya Pakuwon',
+                'Surabaya Ciputra',
+                'Pekanbaru',
+                'Bandung',
+                'Yogyakarta',
+            ],
+            'SGB' => ['Jakarta', 'Semarang', 'Makassar'],
+            'KPF' => ['Jakarta', 'Yogyakarta', 'Bali', 'Makassar', 'Bandung', 'Semarang'],
+            'EWF' => [
+                'SCC Jakarta',
+                'Cyber 2 Jakarta',
+                'Surabaya Trilium',
+                'Manado',
+                'Semarang',
+                'Surabaya Praxis',
+                'Cirebon',
+            ],
+            'BPF' => [
+                'Equity Tower Jakarta',
+                'Jambi',
+                'Jakarta - Pacific Place Mall',
+                'Pontianak',
+                'Malang',
+                'Surabaya',
+                'Medan',
+                'Bandung',
+                'Pekanbaru',
+                'Banjarmasin',
+                'Bandar Lampung',
+                'Semarang',
+            ],
+        ];
+        $selectedCabang = old('cabang', $user->cabang ?? '');
+    @endphp
+
     <script>
-        // Menghitung tanggal maksimum (hari ini - 18 tahun)
-        const today = new Date();
-        const year = today.getFullYear() - 18;
-        const month = (today.getMonth() + 1).toString().padStart(2, '0'); // bulan 2 digit
-        const day = today.getDate().toString().padStart(2, '0');
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set batas maksimum tanggal lahir (minimal 18 tahun)
+            const today = new Date();
+            const year = today.getFullYear() - 18;
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            document.getElementById('tanggal_lahir').max = `${year}-${month}-${day}`;
 
-        const maxDate = `${year}-${month}-${day}`;
+            const dataCabang = @json($kantorCabang);
+            const selectedCabang = @json($selectedCabang);
+            const roleSelect = document.getElementById('role');
+            const cabangContainer = document.getElementById('cabang-container');
+            const cabangSelect = document.getElementById('cabang');
 
-        document.getElementById('tanggal_lahir').max = maxDate;
-    </script>
+            function updateCabangOptions(roleText) {
+                cabangSelect.innerHTML = '<option value="">-- Pilih Kantor Cabang --</option>';
+                let match = roleText.match(/\((.*?)\)/); // Ambil teks dalam kurung
+                if (match && dataCabang[match[1]]) {
+                    dataCabang[match[1]].forEach(c => {
+                        const opt = document.createElement('option');
+                        opt.value = c;
+                        opt.textContent = c;
+                        if (c === selectedCabang) opt.selected = true;
+                        cabangSelect.appendChild(opt);
+                    });
+                    cabangContainer.style.display = 'block';
+                } else {
+                    cabangContainer.style.display = 'none';
+                }
+            }
 
-    @if (session('error'))
-        <script>
+            if (roleSelect && roleSelect.value) {
+                updateCabangOptions(roleSelect.value); // Panggil langsung saat load
+            }
+
+            // Tetap tambahkan event listener kalau suatu saat role bisa diubah
+            roleSelect?.addEventListener('change', function() {
+                updateCabangOptions(this.value);
+            });
+        });
+
+        @if (session('error'))
             function closeIncompleteModal() {
                 document.getElementById('modalIncompleteProfile').classList.add('hidden');
             }
-
-            // Modal akan muncul otomatis saat halaman dimuat jika ada session error
             window.addEventListener('DOMContentLoaded', () => {
-                const modal = document.getElementById('modalIncompleteProfile');
-                if (modal) {
-                    modal.classList.remove('hidden');
-                }
+                document.getElementById('modalIncompleteProfile')?.classList.remove('hidden');
             });
-        </script>
-    @endif
+        @endif
+    </script>
 @endsection
