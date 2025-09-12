@@ -165,7 +165,7 @@
             <div id="editModalContent"
                 class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-md p-6 transform transition-all duration-300 scale-95 opacity-0">
                 <h2 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Edit Sesi</h2>
-                <form id="editForm" action="{{ route('absensi.update', $jadwal->id) }}" method="POST">
+                <form id="editForm" action="{{ route('absensi.update', ':id') }}" method="POST">
                     @csrf
                     @method('PUT')
 
@@ -174,7 +174,7 @@
                         <label for="title" class="block text-sm text-gray-700 dark:text-gray-300">Judul Sesi</label>
                         <input type="text" name="title" id="editTitle"
                             class="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 mt-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                            value="{{ old('title', $jadwal->title) }}" required>
+                            required>
                     </div>
 
                     {{-- Tanggal --}}
@@ -182,20 +182,19 @@
                         <label for="tanggal" class="block text-sm text-gray-700 dark:text-gray-300">Tanggal</label>
                         <input type="date" name="tanggal" id="editTanggal"
                             class="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 mt-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                            value="{{ old('tanggal', $jadwal->tanggal) }}" required>
+                            required>
                     </div>
 
                     {{-- Post Test Session --}}
                     <div class="mb-4">
                         <label for="post_test_session_id" class="block text-sm text-gray-700 dark:text-gray-300">Pilih
                             Sesi Post-Test</label>
-                        <select name="post_test_session_id" id="post_test_session_id"
+                        <select name="post_test_session_id" id="editPostTestSessionId"
                             class="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 mt-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                             required>
                             <option value="">-- Pilih Sesi Post-Test --</option>
                             @foreach ($postTestSessions as $session)
-                                <option value="{{ $session->id }}"
-                                    {{ old('post_test_session_id', $jadwal->post_test_session_id) == $session->id ? 'selected' : '' }}>
+                                <option value="{{ $session->id }}">
                                     {{ $session->title }}
                                 </option>
                             @endforeach
@@ -256,38 +255,5 @@
             content.classList.add('scale-95', 'opacity-0');
             setTimeout(() => modal.classList.add('hidden'), 200);
         }
-
-        function openDeleteModal(id, title) {
-            const modal = document.getElementById('deleteModal');
-            const content = document.getElementById('deleteModalContent');
-            const form = document.getElementById('deleteForm');
-            const titleSpan = document.getElementById('deleteTitle');
-
-            form.action = `/absensi/${id}/hapus`; // Sesuaikan dengan route delete
-            titleSpan.innerText = title;
-
-            modal.classList.remove('hidden');
-            requestAnimationFrame(() => {
-                content.classList.remove('scale-95', 'opacity-0');
-                content.classList.add('scale-100', 'opacity-100');
-            });
-        }
-
-        function closeDeleteModal() {
-            const modal = document.getElementById('deleteModal');
-            const content = document.getElementById('deleteModalContent');
-
-            content.classList.remove('scale-100', 'opacity-100');
-            content.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => modal.classList.add('hidden'), 200);
-        }
-
-        document.getElementById('deleteModal').addEventListener('click', closeDeleteModal);
-        document.getElementById('deleteModalContent').addEventListener('click', function(e) {
-            e.stopPropagation(); // Mencegah modal tertutup saat klik di dalam konten
-        });
-
-        document.getElementById('addModal').addEventListener('click', closeAddModal);
-        document.getElementById('editModal').addEventListener('click', closeEditModal);
     </script>
 @endsection
