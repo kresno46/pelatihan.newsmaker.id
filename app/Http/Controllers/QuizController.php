@@ -25,7 +25,7 @@ class QuizController extends Controller
         $data = $request->validate([
             'title'     => 'required|string|max:255',
             'duration'  => 'required|integer|min:1|max:1440',
-            'status'    => 'required|in:Aktif,Tidak Aktif',
+            'status'    => 'required|in:1,0',
             'tipe'      => 'required|in:PATD, PATL',
         ]);
 
@@ -47,7 +47,7 @@ class QuizController extends Controller
         $data = $request->validate([
             'title'    => 'required|string|max:255',
             'duration' => 'required|integer|min:1|max:1440',
-            'status'   => 'required|in:Aktif,Tidak Aktif',
+            'status'    => 'required|in:1,0',
             'tipe'     => 'required|in:PATD,PATL',
         ]);
 

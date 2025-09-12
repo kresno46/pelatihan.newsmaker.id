@@ -62,17 +62,16 @@
                                     @enderror
                                 </div>
 
-                                <div>
+                                <div class="w-full flex flex-col gap-2">
                                     <label for="status"
                                         class="block font-medium text-gray-900 dark:text-gray-100">Status</label>
                                     <select name="status" id="status"
-                                        class="w-full border rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('status') border-red-500 dark:border-red-400 @enderror">
-                                        <option value="Aktif"
-                                            {{ old('status', $session->status) === 'Aktif' ? 'selected' : '' }}>Aktif
+                                        class="w-full border rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-400 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('status') border-red-500 dark:border-red-400 @enderror">
+                                        <option value="" disabled {{ old('status') ? '' : 'selected' }}>Pilih status
                                         </option>
-                                        <option value="Tidak Aktif"
-                                            {{ old('status', $session->status) === 'Tidak Aktif' ? 'selected' : '' }}>Tidak
-                                            Aktif</option>
+                                        <option value="1" {{ old('status') == '1' ? 'selected' : '' }}>Aktif</option>
+                                        <option value="0" {{ old('status') == '0' ? 'selected' : '' }}>Tidak Aktif
+                                        </option>
                                     </select>
                                     @error('status')
                                         <p class="text-red-600 dark:text-red-400 text-sm mt-1">{{ $message }}</p>
