@@ -178,4 +178,17 @@ class PostTestController extends Controller
 
         return view('post-test.result', compact('session', 'result', 'user'));
     }
+
+    public function toggleStatus($slug)
+    {
+        // Find the post test by its slug
+        $postTest = PostTestSession::where('slug', $slug)->firstOrFail();
+
+        // Toggle the 'status' (Aktif -> Tidak Aktif or vice versa)
+        $postTest->status = !$postTest->status;
+        $postTest->save();
+
+        // Redirect back with a success message
+        return redirect()->route('posttest.index')->with('alert', 'Status updated successfully!');
+    }
 }

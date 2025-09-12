@@ -42,7 +42,7 @@ class TestController extends Controller
         $session = PostTestSession::where('slug', $slug)->with('questions')->firstOrFail();
 
         // Proteksi: cek status
-        if ($session->status === 'Tidak Aktif') {
+        if (!$session->status) { // Status now boolean
             return redirect()->route('post-test.index')
                 ->with('error', 'Post test ini saat ini tidak tersedia.');
         }
@@ -94,7 +94,7 @@ class TestController extends Controller
         $session = PostTestSession::where('slug', $slug)->with('questions')->firstOrFail();
 
         // Proteksi: cek status
-        if ($session->status === 'Tidak Aktif') {
+        if (!$session->status) { // Status now boolean
             return redirect()->route('post-test.index')
                 ->with('error', 'Post test ini saat ini tidak tersedia.');
         }

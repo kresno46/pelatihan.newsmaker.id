@@ -13,6 +13,7 @@ class JadwalAbsensi extends Model
         'title',
         'tanggal',
         'is_open',
+        'post_test_session_id'
     ];
 
     /**

@@ -70,6 +70,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/{session}/edit', [QuizController::class, 'edit'])->name('posttest.edit');
         Route::put('/{session}', [QuizController::class, 'update'])->name('posttest.update');
         Route::delete('/{session}', [QuizController::class, 'destroy'])->name('posttest.destroy');
+        Route::post('/toggle-status/{slug}', [PostTestController::class, 'toggleStatus'])->name('posttest.toggle');
+
 
         // REPORT
         Route::get('/{session:slug}/report', [QuizController::class, 'report'])->name('posttest.report');
@@ -170,41 +172,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('absensi')->middleware('profile.complete')->group(function () {
         Route::get('/', [AbsensiController::class, 'indexAbsensi'])->name('AbsensiUser.index');
         Route::post('/absensi/store', [AbsensiController::class, 'store'])->name('AbsensiUser.store');
-    });
-
-    // Outlook Routes
-    Route::prefix('outlook')->middleware(['auth', 'verified'])->group(function () {
-
-        // 📁 Folder Routes
-        Route::get('/', [FolderOutlookController::class, 'index'])->name('outlookfolder.index');
-
-        Route::middleware('is_admin:Admin')->group(function () {
-            Route::get('/create', [FolderOutlookController::class, 'create'])->name('outlookfolder.create');
-            Route::post('/store', [FolderOutlookController::class, 'store'])->name('outlookfolder.store');
-            Route::get('/{slug}/edit', [FolderOutlookController::class, 'edit'])->name('outlookfolder.edit');
-            Route::put('/{id}', [FolderOutlookController::class, 'update'])->name('outlookfolder.update');
-            Route::delete('/{id}', [FolderOutlookController::class, 'destroy'])->name('outlookfolder.destroy');
-            Route::post('/reorder', [FolderOutlookController::class, 'reorder'])->name('outlookfolder.reorder');
-        });
-
-        // 📚 outlook & Quiz Routes
-        Route::prefix('{slug}')->middleware('profile.complete')->group(function () {
-
-            // 📄 List outlook dalam Folder
-            Route::get('/', [OutlookController::class, 'index'])->name('outlook.index');
-
-            // ➕ Admin - Kelola outlook
-            Route::middleware('is_admin:Admin')->group(function () {
-                Route::get('/create', [OutlookController::class, 'create'])->name('outlook.create');
-                Route::post('/store', [OutlookController::class, 'store'])->name('outlook.store');
-                Route::get('/{outlookSlug}/edit', [OutlookController::class, 'edit'])->name('outlook.edit');
-                Route::put('/{outlookSlug}/update', [OutlookController::class, 'update'])->name('outlook.update');
-                Route::delete('/{outlookSlug}/delete', [OutlookController::class, 'destroy'])->name('outlook.destroy');
-            });
-
-            // 📄 Tampil Detail eBook
-            Route::get('/{outlookSlug}', [OutlookController::class, 'show'])->name('outlook.show');
-        });
     });
 
     Route::get('/sertifikat', [\App\Http\Controllers\SertifikatController::class, 'index'])->name('sertifikat.index');

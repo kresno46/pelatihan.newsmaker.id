@@ -5,7 +5,7 @@
 @section('content')
     <div>
         <div class="p-5 bg-white dark:bg-gray-800 rounded-lg shadow-lg space-y-5">
-            <div class="flex items-center">
+            <div class="flex items-center justify-between w-full">
                 <h3 class="text-xl font-bold text-gray-900 dark:text-white">Daftar Absensi</h3>
 
                 @if (session('Alert'))
@@ -67,6 +67,41 @@
                                     onclick="document.getElementById('modalDelete-{{ $jadwal->id }}').classList.remove('hidden')">
                                     <i class="fa-solid fa-trash-can"></i>
                                 </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="modalDelete-{{ $jadwal->id }}"
+                        class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center px-4">
+                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md">
+                            <div class="px-6 py-5">
+                                <h3 class="text-xl font-bold text-red-500">
+                                    <i class="fa-solid fa-triangle-exclamation mr-2"></i>Konfirmasi Hapus
+                                </h3>
+                            </div>
+
+                            <div class="px-6 py-4 border-t border-b dark:border-gray-700">
+                                <p class="text-gray-700 dark:text-gray-300">
+                                    Apakah Anda yakin ingin menghapus sesi
+                                    "<strong>{{ $jadwal->title }}</strong>"?
+                                    Tindakan ini tidak dapat dibatalkan.
+                                </p>
+                            </div>
+
+                            <div class="flex justify-end gap-3 px-6 py-4">
+                                <button
+                                    onclick="document.getElementById('modalDelete-{{ $jadwal->id }}').classList.add('hidden')"
+                                    class="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded-md dark:bg-gray-600 dark:text-white">
+                                    Batal
+                                </button>
+                                <form action="{{ route('absensi.destroy', $jadwal->id) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
+                                        class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md">
+                                        Hapus
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -132,7 +167,7 @@
                 <h2 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Edit Sesi</h2>
                 <form id="editForm" action="{{ route('absensi.update', $jadwal->id) }}" method="POST">
                     @csrf
-                    @method('PATCH')
+                    @method('PUT')
 
                     {{-- Judul Sesi --}}
                     <div class="mb-4">
@@ -186,6 +221,7 @@
             const modal = document.getElementById('addModal');
             const content = document.getElementById('addModalContent');
             modal.classList.remove('hidden');
+            // Trigger animation
             requestAnimationFrame(() => {
                 content.classList.remove('scale-95', 'opacity-0');
                 content.classList.add('scale-100', 'opacity-100');
@@ -206,7 +242,7 @@
             modal.classList.remove('hidden');
             document.getElementById('editTitle').value = title;
             document.getElementById('editTanggal').value = tanggal;
-            document.getElementById('editForm').action = `/absensi/${id}/update`;
+            document.getElementById('editForm').action = `/laporan/absensi/${id}/update`;
             requestAnimationFrame(() => {
                 content.classList.remove('scale-95', 'opacity-0');
                 content.classList.add('scale-100', 'opacity-100');
@@ -220,5 +256,38 @@
             content.classList.add('scale-95', 'opacity-0');
             setTimeout(() => modal.classList.add('hidden'), 200);
         }
+
+        function openDeleteModal(id, title) {
+            const modal = document.getElementById('deleteModal');
+            const content = document.getElementById('deleteModalContent');
+            const form = document.getElementById('deleteForm');
+            const titleSpan = document.getElementById('deleteTitle');
+
+            form.action = `/absensi/${id}/hapus`; // Sesuaikan dengan route delete
+            titleSpan.innerText = title;
+
+            modal.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            });
+        }
+
+        function closeDeleteModal() {
+            const modal = document.getElementById('deleteModal');
+            const content = document.getElementById('deleteModalContent');
+
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 200);
+        }
+
+        document.getElementById('deleteModal').addEventListener('click', closeDeleteModal);
+        document.getElementById('deleteModalContent').addEventListener('click', function(e) {
+            e.stopPropagation(); // Mencegah modal tertutup saat klik di dalam konten
+        });
+
+        document.getElementById('addModal').addEventListener('click', closeAddModal);
+        document.getElementById('editModal').addEventListener('click', closeEditModal);
     </script>
 @endsection

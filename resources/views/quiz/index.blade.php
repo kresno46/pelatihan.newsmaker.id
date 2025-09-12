@@ -21,11 +21,11 @@
                         aria-live="polite">
                         {{ session('success') }}
                     </div>
-                @elseif (session('status'))
+                @elseif (session('alert'))
                     <div x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 5000)"
                         class="text-xs bg-green-100 dark:bg-green-200 text-green-800 py-1 px-3 rounded-lg mr-3"
                         aria-live="polite">
-                        {{ session('status') }}
+                        {{ session('alert') }}
                     </div>
                 @endif
 
@@ -65,7 +65,6 @@
                                     <span class="text-white">{{ $item->tipe }}</span>
                                 </p>
                             </div>
-
                         </div>
 
                         <div class="w-full grid grid-cols-3 gap-2">
@@ -92,6 +91,21 @@
                                 </button>
                             </form>
                         </div>
+
+                        {{-- Toggle Status Aktif / Tidak Aktif --}}
+                        <form action="{{ route('posttest.toggle', $item->slug) }}" method="POST">
+                            @csrf
+                            <label class="relative inline-block w-12 h-6 cursor-pointer">
+                                <input type="checkbox" name="status" onchange="this.form.submit()" class="sr-only peer"
+                                    {{ $item->status ? 'checked' : '' }}> <!-- If status is true (Aktif), check the box -->
+                                <div
+                                    class="w-full h-full bg-gray-300 dark:bg-gray-600 rounded-full peer-checked:bg-green-500 transition-colors duration-300">
+                                </div>
+                                <div
+                                    class="absolute top-0.5 left-0.5 w-5 h-5 bg-white dark:bg-gray-100 rounded-full transition-transform duration-300 transform peer-checked:translate-x-6">
+                                </div>
+                            </label>
+                        </form>
                     </div>
                 @endforeach
             </div>
@@ -104,4 +118,27 @@
             @endif
         @endif
     </div>
+
+@section('scripts')
+    <script>
+        function toggleStatus(id) {
+            // Send an AJAX request to toggle the status (Aktif / Tidak Aktif)
+            $.ajax({
+                url: '/post-test/toggle-status/' + id, // Set this route in your routes file
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                },
+                success: function(response) {
+                    // Update the UI based on the response
+                    alert(response.message); // You can show a success message or update the UI dynamically
+                },
+                error: function(error) {
+                    console.log(error);
+                    alert('Terjadi kesalahan, silakan coba lagi.');
+                }
+            });
+        }
+    </script>
+@endsection
 @endsection
