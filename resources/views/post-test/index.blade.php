@@ -84,7 +84,8 @@
                                 @endif
                             </td>
                             <td class="px-4 py-3">
-                                @if ($posttest->status === 'Aktif')
+                                @if ($posttest->status)
+                                    <!-- Status is now boolean -->
                                     <div class="bg-green-500 text-center rounded-full py-1 text-sm">
                                         <span class="text-green-100 font-semibold">Aktif</span>
                                     </div>
@@ -95,7 +96,8 @@
                                 @endif
                             </td>
                             <td class="px-4 py-3 text-center">
-                                @if ($posttest->status === 'Tidak Aktif')
+                                @if (!$posttest->status)
+                                    <!-- Status is now boolean -->
                                     <div class="flex gap-2">
                                         <span
                                             class="inline-block w-full bg-gray-400 text-white text-xs px-3 py-1 rounded cursor-not-allowed">

@@ -322,115 +322,151 @@
                         <h2 class="text-lg font-semibold text-gray-800 dark:text-white">NewsMaker23</h2>
                     </div>
 
-                    <hr class="border-gray-300 dark:border-gray-700 mb-4">
+                    <hr class="border-gray-300 dark:border-gray-700">
 
-                    <!-- Main Menu -->
-                    <nav class="mb-4">
-                        <ul class="space-y-2">
-                            <li class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Menu</li>
+                    <!-- Navigation - Main Menu -->
+                    <nav class="my-4">
+                        <ul class="flex flex-col space-y-2">
+                            <li class="text-sm text-gray-500 uppercase tracking-wide">Menu</li>
                             <li>
-                                <a href="{{ route('dashboard') }}" @class([
-                                    'flex items-center space-x-4 px-3 py-2 rounded transition duration-200',
-                                    'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold' => request()->routeIs(
-                                        'dashboard'),
-                                    'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' => !request()->routeIs(
-                                        'dashboard'),
-                                ])>
+                                <a href="{{ route('dashboard') }}"
+                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('dashboard')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
                                     <i class="fas fa-home"></i>
-                                    <span>Beranda</span>
+                                    <span>{{ __('Beranda') }}</span>
                                 </a>
                             </li>
                         </ul>
                     </nav>
 
-                    <hr class="border-gray-300 dark:border-gray-700 mb-4">
+                    @if (Auth::user()->role !== 'Admin')
+                        <hr class="border-gray-300 dark:border-gray-700">
 
-                    <!-- Edukasi -->
-                    <nav class="mb-4">
-                        <ul class="flex flex-col space-y-2">
-                            <li class="text-sm text-gray-500 uppercase tracking-wide">Edukasi</li>
-                            <li>
-                                <a href="{{ route('folder.index') }}"
-                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                        <!-- Navigation - Edukasi -->
+                        <nav class="my-4">
+                            <ul class="flex flex-col space-y-2">
+                                <li class="text-sm text-gray-500 uppercase tracking-wide">Edukasi</li>
+                                <li>
+                                    <a href="{{ route('folder.index') }}"
+                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                             {{ request()->routeIs('ebook.*') || request()->routeIs('quiz.*') || request()->routeIs('folder.*')
                                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                    <i class="fa-solid fa-book"></i>
-                                    <span>{{ __('eBook') }}</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{{ route('outlookfolder.index') }}"
-                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
-                            {{ request()->routeIs('outlook.*') || request()->routeIs('outlookfolder.*')
+                                        <i class="fa-solid fa-book"></i>
+                                        <span>{{ __('eBook') }}</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('AbsensiUser.index') }}"
+                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('AbsensiUser.*')
                                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                    <i class="fa-solid fa-envelope"></i>
-                                    <span>{{ __('Outlook') }}</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
-
-                    @if (Auth::user()->role === 'Admin')
-                        <hr class="border-gray-300 dark:border-gray-700 mb-4">
-
-                        <!-- Laporan -->
-                        <nav class="mb-4">
-                            <ul class="space-y-2">
-                                <li class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Laporan
-                                </li>
-                                <li>
-                                    <a href="{{ route('laporan.index') }}" @class([
-                                        'flex items-center space-x-4 px-3 py-2 rounded transition duration-200',
-                                        'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold' => request()->routeIs(
-                                            'laporan.*'),
-                                        'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' => !request()->routeIs(
-                                            'laporan.*'),
-                                    ])>
-                                        <i class="fa-solid fa-clipboard"></i>
-                                        <span>Post Test</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </nav>
-
-                        <!-- Manajemen -->
-                        <nav>
-                            <ul class="space-y-2">
-                                <li class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Manajemen
-                                </li>
-                                <li>
-                                    <a href="{{ route('admin.index') }}" @class([
-                                        'flex items-center space-x-4 px-3 py-2 rounded transition duration-200',
-                                        'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold' => request()->routeIs(
-                                            'admin.*'),
-                                        'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' => !request()->routeIs(
-                                            'admin.*'),
-                                    ])>
-                                        <i class="fa-solid fa-user"></i>
-                                        <span>Admin</span>
+                                        <i class="fa-solid fa-users-viewfinder"></i>
+                                        <span>{{ __('Absensi') }}</span>
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('trainer.index') }}" @class([
-                                        'flex items-center space-x-4 px-3 py-2 rounded transition duration-200',
-                                        'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold' => request()->routeIs(
-                                            'trainer.*'),
-                                        'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' => !request()->routeIs(
-                                            'trainer.*'),
-                                    ])>
-                                        <i class="fa-solid fa-user"></i>
-                                        <span>User</span>
+                                    <a href="{{ route('post-test.index') }}"
+                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('posttest.*')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                        <i class="fa-solid fa-clipboard-question"></i>
+                                        <span>{{ __('Post Test') }}</span>
                                     </a>
                                 </li>
                             </ul>
                         </nav>
                     @endif
 
-                    <hr class="border-gray-300 dark:border-gray-700 mb-4">
+                    <hr class="border-gray-300 dark:border-gray-700">
 
-                    <nav>
+                    <!-- Navigation - Laporan -->
+                    @if (Auth::user()->role === 'Admin')
+                        <nav class="my-4">
+                            <ul class="flex flex-col space-y-2">
+                                <li class="text-sm text-gray-500 uppercase tracking-wide">Menu</li>
+                                <li>
+                                    <a href="{{ route('folder.index') }}"
+                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('ebook.*') || request()->routeIs('quiz.*') || request()->routeIs('folder.*')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                        <i class="fa-solid fa-book"></i>
+                                        <span>{{ __('eBook') }}</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('posttest.index') }}"
+                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('posttest.*')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                        <i class="fa-solid fa-clipboard-question"></i>
+                                        <span>{{ __('Post Test') }}</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('absensi.index') }}"
+                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('absensi.*') || request()->routeIs('absensiAdmin.*')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                        <i class="fa-solid fa-face-smile"></i>
+                                        <span>{{ __('Absensi') }}</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('LaporanSertifikat.index') }}"
+                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('LaporanSertifikat.*')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                        <i class="fa-solid fa-certificate"></i>
+                                        <span>{{ __('Sertifikat') }}</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+
+                        <hr class="border-gray-300 dark:border-gray-700">
+                    @endif
+
+                    <!-- Navigation - Manajemen -->
+                    @if (Auth::user()->role === 'Admin')
+                        <nav class="my-4">
+                            <ul class="flex flex-col space-y-2">
+                                <li class="text-sm text-gray-500 uppercase tracking-wide">Manajemen</li>
+                                <li>
+                                    <a href="{{ route('admin.index') }}"
+                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('admin.*')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                        <i class="fa-solid fa-user"></i>
+                                        <span>Admin</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('trainer.index') }}"
+                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('trainer.*')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                        <i class="fa-solid fa-user"></i>
+                                        <span>User</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+
+                        <hr class="border-gray-300 dark:border-gray-700">
+                    @endif
+
+                    <nav class="my-4">
                         <ul class="flex flex-col space-y-2">
                             <li>
                                 <a href="{{ route('profile.edit') }}"
@@ -442,13 +478,13 @@
                                     <span>Profile</span>
                                 </a>
                             </li>
-                            @if (Auth::user()->role != 'Admin')
+                            @if (Auth::user()->role !== 'Admin')
                                 <li>
                                     <a href="{{ route('sertifikat.index') }}"
                                         class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
-                                    {{ request()->routeIs('sertifikat.*')
-                                        ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
-                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                            {{ request()->routeIs('sertifikat.*')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
                                         <i class="fa-solid fa-certificate"></i>
                                         <span>Sertifikat</span>
                                     </a>
@@ -456,9 +492,9 @@
                                 <li>
                                     <a href="{{ route('riwayat.index') }}"
                                         class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
-                                    {{ request()->routeIs('riwayat.*')
-                                        ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
-                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                            {{ request()->routeIs('riwayat.*')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
                                         <i class="fa-solid fa-clock-rotate-left"></i>
                                         <span>Riwayat Saya</span>
                                     </a>
