@@ -15,16 +15,9 @@ class PostTestResult extends Model
         'session_id',
         'user_id',
         'score',
-        'ebook_id',
         'title',
         'duration',
     ];
-
-    // Relasi ke Ebook
-    public function ebook()
-    {
-        return $this->belongsTo(Ebook::class);
-    }
 
     public function session()
     {

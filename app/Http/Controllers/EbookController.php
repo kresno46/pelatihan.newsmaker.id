@@ -82,9 +82,7 @@ class EbookController extends Controller
     {
         $folder = FolderEbook::where('slug', $folderSlug)->firstOrFail();
 
-        $ebook = Ebook::with(['postTestSessions.results' => function ($query) {
-            $query->where('user_id', auth()->id());
-        }])->where('slug', $ebookSlug)->firstOrFail();
+        $ebook = Ebook::firstOrFail();
 
         return view('ebook.show', compact('ebook', 'folder'));
     }

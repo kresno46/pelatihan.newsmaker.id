@@ -17,18 +17,7 @@ class ProfileController extends Controller
     {
         $user = $request->user();
 
-        // Daftar kantor cabang
-        $kantorCabang = [
-            'RFB' => ['Palembang', 'Balikpapan', 'Solo', 'Jakarta DBS Tower', 'Jakarta AXA Tower', 'Medan', 'Semarang', 'Surabaya Pakuwon', 'Surabaya Ciputra', 'Pekanbaru', 'Bandung', 'Yogyakarta'],
-            'SGB' => ['Jakarta', 'Semarang', 'Makassar'],
-            'KPF' => ['Jakarta', 'Yogyakarta', 'Bali', 'Makassar', 'Bandung', 'Semarang'],
-            'EWF' => ['SCC Jakarta', 'Cyber 2 Jakarta', 'Surabaya Trilium', 'Manado', 'Semarang', 'Surabaya Praxis', 'Cirebon'],
-            'BPF' => ['Equity Tower Jakarta', 'Jambi', 'Jakarta - Pacific Place Mall', 'Pontianak', 'Malang', 'Surabaya', 'Medan', 'Bandung', 'Pekanbaru', 'Banjarmasin', 'Bandar Lampung', 'Semarang'],
-        ];
-
-        $selectedCabang = old('cabang', $user->cabang ?? '');
-
-        return view('profile.edit', compact('user', 'kantorCabang', 'selectedCabang'));
+        return view('profile.edit', compact('user'));
     }
 
     /**
@@ -50,16 +39,7 @@ class ProfileController extends Controller
             'no_id' => ['nullable', 'string', 'max:255'],
             'no_tlp' => ['nullable', 'string', 'max:20'],
             'pekerjaan' => ['nullable', 'string', 'max:255'],
-            'cabang' => [
-                function ($attribute, $value, $fail) use ($request) {
-                    // Wajib isi cabang kalau role adalah trainer
-                    if (str_starts_with($request->role, 'Trainer') && empty($value)) {
-                        $fail('Kantor cabang wajib diisi untuk role trainer.');
-                    }
-                },
-                'nullable',
-                'string',
-            ],
+            'jabatan' => ['nullable', 'in:BC,SBC,SBM,BM'],
         ]);
 
         if ($validator->fails()) {

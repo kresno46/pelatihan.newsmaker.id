@@ -63,7 +63,7 @@
         </div>
 
         <div class="text-center mt-10">
-            <a href="{{ route('ebook.show', [$folderSlug, $ebookSlug]) }}"
+            <a href="{{ route('post-test.index') }}"
                 class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2 rounded-lg transition-all">
                 ← Kembali ke Halaman Ebook
             </a>

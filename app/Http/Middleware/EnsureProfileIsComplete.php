@@ -31,8 +31,7 @@ class EnsureProfileIsComplete
             !$user->warga_negara ||
             !$user->no_tlp ||
             !$user->pekerjaan ||
-            !$user->role ||
-            !$user->cabang
+            !$user->role
         ) {
             return redirect()->route('profile.edit')
                 ->with('error', 'Silakan lengkapi profil Anda terlebih dahulu sebelum mengakses fitur ini.');

@@ -41,6 +41,14 @@
                 <x-input-error :messages="$errors->get('email')" class="mt-2" />
             </div>
 
+            {{-- Jabatan --}}
+            <div class="mt-4">
+                <x-input-label-append for="jabatan" :value="__('Jabatan')" :append="empty($user->jabatan) ? '<span class=\'text-red-500\'>*</span>' : ''" />
+                <x-text-input id="jabatan" type="text" name="jabatan" class="block mt-1 w-full" readonly
+                    :value="old('jabatan', $user->jabatan)" />
+                <x-input-error :messages="$errors->get('jabatan')" class="mt-2" />
+            </div>
+
             {{-- Jenis Kelamin --}}
             @php
                 $jenisKelaminList = ['Pria', 'Wanita'];
@@ -174,62 +182,6 @@
                     @endforeach
                 </select>
                 <x-input-error :messages="$errors->get('role')" class="mt-2" />
-            </div>
-
-
-            {{-- Kantor Cabang --}}
-            @php
-                $kantorCabang = [
-                    'RFB' => [
-                        'Palembang',
-                        'Balikpapan',
-                        'Solo',
-                        'Jakarta DBS Tower',
-                        'Jakarta AXA Tower',
-                        'Medan',
-                        'Semarang',
-                        'Surabaya Pakuwon',
-                        'Surabaya Ciputra',
-                        'Pekanbaru',
-                        'Bandung',
-                        'Yogyakarta',
-                    ],
-                    'SGB' => ['Jakarta', 'Semarang', 'Makassar'],
-                    'KPF' => ['Jakarta', 'Yogyakarta', 'Bali', 'Makassar', 'Bandung', 'Semarang'],
-                    'EWF' => [
-                        'SCC Jakarta',
-                        'Cyber 2 Jakarta',
-                        'Surabaya Trilium',
-                        'Manado',
-                        'Semarang',
-                        'Surabaya Praxis',
-                        'Cirebon',
-                    ],
-                    'BPF' => [
-                        'Equity Tower Jakarta',
-                        'Jambi',
-                        'Jakarta - Pacific Place Mall',
-                        'Pontianak',
-                        'Malang',
-                        'Surabaya',
-                        'Medan',
-                        'Bandung',
-                        'Pekanbaru',
-                        'Banjarmasin',
-                        'Bandar Lampung',
-                        'Semarang',
-                    ],
-                ];
-                $selectedCabang = old('cabang', $user->cabang ?? '');
-            @endphp
-            <div class="mt-4" id="cabang-container" style="display:none;">
-                <x-input-label-append for="cabang" :value="__('Kantor Cabang')" :append="empty($user->cabang) ? '<span class=\'text-red-500\'>*</span>' : ''" />
-                <select id="cabang" name="cabang"
-                    class="block mt-1 w-full rounded-md shadow-sm border-gray-300
-                            dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
-                    <option value="">-- Pilih Kantor Cabang --</option>
-                </select>
-                <x-input-error :messages="$errors->get('cabang')" class="mt-2" />
             </div>
 
             <x-missing-fields-alert :user="$user" />

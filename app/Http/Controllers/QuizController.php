@@ -2,185 +2,186 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Ebook;
+use App\Models\PostTestResult;
 use App\Models\PostTestSession;
-use App\Models\PostTest;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class QuizController extends Controller
 {
-    /**
-     * Tampilkan halaman kuis berdasarkan folder dan ebook slug.
-     *
-     * @param  string  $folderSlug
-     * @param  string  $ebookSlug
-     * @return \Illuminate\View\View
-     */
-    public function index($folderSlug, $ebookSlug)
+    public function index()
     {
-        $ebook = Ebook::where('slug', $ebookSlug)->firstOrFail();
-        $quiz = PostTestSession::where('ebook_id', $ebook->id)->latest()->first();
-
-        $questions = $quiz ? PostTest::where('session_id', $quiz->id)->get()->map(function ($item) {
-            return [
-                'id'             => $item->id,
-                'question'       => $item->question,
-                'option_a'       => $item->option_a,
-                'option_b'       => $item->option_b,
-                'option_c'       => $item->option_c,
-                'option_d'       => $item->option_d,
-                'correct_option' => strtoupper($item->correct_option),
-            ];
-        })->toArray() : null;
-
-        return view('quiz.index', compact('folderSlug', 'ebookSlug', 'quiz', 'questions'));
+        $sessions = PostTestSession::withCount('questions')->latest()->paginate(10);
+        return view('quiz.index', compact('sessions'));
     }
 
-    /**
-     * Simpan sesi post test baru berdasarkan ebook.
-     */
-    public function store(Request $request, $folderSlug, $ebookSlug)
+    public function create()
     {
-        $ebook = Ebook::where('slug', $ebookSlug)->firstOrFail();
-
-        $validator = Validator::make($request->all(), [
-            'title'    => 'required|string|max:100',
-            'duration' => 'required|integer|min:1',
-        ]);
-
-        if ($validator->fails()) {
-            return Redirect::back()->withErrors($validator)->withInput();
-        }
-
-        PostTestSession::create([
-            'title'    => $request->title,
-            'duration' => $request->duration,
-            'ebook_id' => $ebook->id,
-        ]);
-
-        return redirect()->route('quiz.index', [$folderSlug, $ebookSlug])->with('success', 'Sesi post test berhasil dibuat.');
+        return view('quiz.create');
     }
 
-    /**
-     * Update sesi post test.
-     */
-    public function update(Request $request, $folderSlug, $ebookSlug, $sessionId)
+    public function store(Request $request)
     {
-        $session = PostTestSession::findOrFail($sessionId);
-
-        $validator = Validator::make($request->all(), [
-            'title'    => 'required|string|max:100',
-            'duration' => 'required|integer|min:1',
+        $data = $request->validate([
+            'title'     => 'required|string|max:255',
+            'duration'  => 'required|integer|min:1|max:1440',
+            'status'    => 'required|in:Aktif,Tidak Aktif',
+            'tipe'      => 'required|in:PATD, PATL',
         ]);
 
-        if ($validator->fails()) {
-            return Redirect::back()->withErrors($validator)->withInput();
-        }
+        $session = PostTestSession::create($data); // slug dibuat otomatis di model
 
-        $session->update([
-            'title'    => $request->title,
-            'duration' => $request->duration,
-        ]);
-
-        return redirect()->route('quiz.index', [$folderSlug, $ebookSlug])->with('success', 'Sesi post test berhasil diperbarui.');
+        return redirect()
+            ->route('posttest.edit', $session) // route model binding pakai slug
+            ->with('success', 'Sesi berhasil dibuat. Silakan tambahkan soal.');
     }
 
-    /**
-     * Tampilkan form tambah pertanyaan.
-     */
-    public function addQuestionShow($folderSlug, $ebookSlug, $sessionId)
+    public function edit(PostTestSession $session)
     {
-        $session = PostTestSession::findOrFail($sessionId);
+        $session->load(['questions' => fn($q) => $q->orderBy('created_at')]);
+        return view('quiz.edit', compact('session'));
+    }
 
-        return view('quiz.add-question', [
-            'folderSlug' => $folderSlug,
-            'ebookSlug'  => $ebookSlug,
-            'session'    => $session,
+    public function update(Request $request, PostTestSession $session)
+    {
+        $data = $request->validate([
+            'title'    => 'required|string|max:255',
+            'duration' => 'required|integer|min:1|max:1440',
+            'status'   => 'required|in:Aktif,Tidak Aktif',
+            'tipe'     => 'required|in:PATD,PATL',
+        ]);
+
+        $session->update($data);
+
+        return redirect()
+            ->route('posttest.edit', $session)
+            ->with('success', 'Sesi berhasil diperbarui.');
+    }
+
+    public function destroy(PostTestSession $session)
+    {
+        $session->delete();
+        return redirect()->route('posttest.index')->with('success', 'Sesi berhasil dihapus.');
+    }
+
+    public function report(Request $request, PostTestSession $session)
+    {
+        // Map role → nama perusahaan (harus sinkron dengan accessor di User)
+        $roleToCompany = [
+            'Trainer (RFB)' => 'PT Rifan Financindo Berjangka',
+            'Trainer (SGB)' => 'PT Solid Gold Berjangka',
+            'Trainer (KPF)' => 'PT Kontak Perkasa Futures',
+            'Trainer (BPF)' => 'PT Best Profit Futures',
+            'Trainer (EWF)' => 'PT Equity World Futures',
+        ];
+
+        $q         = trim($request->input('q', ''));
+        $sort      = $request->input('sort', 'latest');       // latest|oldest|highest|lowest
+        $perPage   = (int) $request->input('per_page', 12) ?: 12;
+        $company   = trim((string) $request->input('company', '')); // filter berdasarkan NAMA PERUSAHAAN
+
+        // Konversi filter perusahaan → kode role (karena query ke kolom users.role)
+        $roleFilter = array_search($company, $roleToCompany, true) ?: null;
+
+        // Query hasil
+        $results = $session->results()
+            ->with(['user:id,name,email,role'])   // <-- pastikan 'role' dibawa agar accessor bisa jalan
+            ->when($q !== '', function ($qr) use ($q) {
+                $qr->whereHas('user', function ($u) use ($q) {
+                    $u->where('name', 'like', "%{$q}%")
+                        ->orWhere('email', 'like', "%{$q}%");
+                });
+            })
+            ->when($roleFilter, function ($qr) use ($roleFilter) {
+                $qr->whereHas('user', fn($u) => $u->where('role', $roleFilter));
+            })
+            ->when($sort === 'highest', fn($qr) => $qr->orderByDesc('score'))
+            ->when($sort === 'lowest',  fn($qr) => $qr->orderBy('score'))
+            ->when($sort === 'oldest',  fn($qr) => $qr->orderBy('created_at'))
+            ->when($sort === 'latest',  fn($qr) => $qr->orderByDesc('created_at'))
+            ->paginate($perPage)
+            ->withQueryString();
+
+        // Agregat (ikuti filter company bila ada)
+        $aggregates = $session->results()
+            ->when($roleFilter, fn($qr) => $qr->whereHas('user', fn($u) => $u->where('role', $roleFilter)))
+            ->selectRaw('COUNT(*) AS total, AVG(score) AS avg_score, MAX(score) AS max_score, MIN(score) AS min_score')
+            ->first();
+
+        // Rekap per perusahaan (group by users.role, lalu map ke nama perusahaan)
+        $rawRoleCounts = $session->results()
+            ->leftJoin('users', 'users.id', '=', 'post_test_results.user_id')
+            ->when($q !== '', function ($qr) use ($q) {
+                $qr->where(function ($w) use ($q) {
+                    $w->where('users.name', 'like', "%{$q}%")
+                        ->orWhere('users.email', 'like', "%{$q}%");
+                });
+            })
+            ->selectRaw('COALESCE(users.role, "TanpaRole") AS role_key, COUNT(*) AS total')
+            ->groupBy('role_key')
+            ->pluck('total', 'role_key');
+
+        // Normalisasi ke nama perusahaan
+        $companies = array_values($roleToCompany); // opsi dropdown
+        $byCompany = collect($roleToCompany)->mapWithKeys(function ($companyName, $roleKey) use ($rawRoleCounts) {
+            return [$companyName => (int) ($rawRoleCounts[$roleKey] ?? 0)];
+        });
+        $noRoleCount = (int) ($rawRoleCounts['TanpaRole'] ?? 0);
+
+        return view('quiz.report', [
+            'session'     => $session,
+            'results'     => $results,
+            'aggregates'  => $aggregates,
+            'filters'     => [
+                'q'        => $q,
+                'sort'     => $sort,
+                'per_page' => $perPage,
+                'company'  => $company, // kirim nama perusahaan yg sedang difilter
+            ],
+            'companies'   => $companies,   // opsi dropdown perusahaan
+            'byCompany'   => $byCompany,   // rekap per perusahaan (nama → total)
+            'noRoleCount' => $noRoleCount, // jumlah tanpa role
         ]);
     }
 
-    /**
-     * Simpan pertanyaan baru.
-     */
-    public function addQuestionStore(Request $request, $folderSlug, $ebookSlug, $sessionId)
+    public function reportExport(Request $request, PostTestSession $session)
     {
-        $session = PostTestSession::findOrFail($sessionId);
+        // (Kalau kamu sudah migrasi ke XLSX pakai Laravel Excel, ganti implementasi ini)
+        $filename = 'posttest-report-' . $session->slug . '-' . now()->format('Ymd_His') . '.csv';
 
-        $validator = Validator::make($request->all(), [
-            'question'       => 'required|string',
-            'option_a'       => 'required|string|max:255',
-            'option_b'       => 'required|string|max:255',
-            'option_c'       => 'nullable|string|max:255',
-            'option_d'       => 'nullable|string|max:255',
-            'correct_option' => 'required|in:A,B,C,D',
-        ]);
+        $q         = trim($request->input('q', ''));
+        $roleParam = trim((string) $request->input('role_pt', ''));
+        $rolesPT   = ['Trainer (RFB)', 'Trainer (SGB)', 'Trainer (KPF)', 'Trainer (BPF)', 'Trainer (EWF)'];
+        $roleFilter = in_array($roleParam, $rolesPT, true) ? $roleParam : null;
 
-        if ($validator->fails()) {
-            return Redirect::back()->withErrors($validator)->withInput();
-        }
+        $rows = $session->results()
+            ->with(['user:id,name,email,role_pt'])
+            ->when($q !== '', function ($qr) use ($q) {
+                $qr->whereHas('user', function ($u) use ($q) {
+                    $u->where('name', 'like', "%{$q}%")
+                        ->orWhere('email', 'like', "%{$q}%");
+                });
+            })
+            ->when($roleFilter, function ($qr) use ($roleFilter) {
+                $qr->whereHas('user', fn($u) => $u->where('role_pt', $roleFilter));
+            })
+            ->orderByDesc('created_at')
+            ->get(['id', 'user_id', 'score', 'created_at']);
 
-        PostTest::create([
-            'question'       => $request->question,
-            'option_a'       => $request->option_a,
-            'option_b'       => $request->option_b,
-            'option_c'       => $request->option_c,
-            'option_d'       => $request->option_d,
-            'correct_option' => $request->correct_option,
-            'session_id'     => $session->id,
-        ]);
-
-        return redirect()->route('quiz.index', [$folderSlug, $ebookSlug])->with('Alert', 'Pertanyaan berhasil ditambahkan.');
-    }
-
-    /**
-     * Hapus pertanyaan.
-     */
-    public function deleteQuestion($folderSlug, $ebookSlug, $sessionId, $questionId)
-    {
-        $question = PostTest::where('session_id', $sessionId)->where('id', $questionId)->firstOrFail();
-        $question->delete();
-
-        return redirect()->route('quiz.index', [$folderSlug, $ebookSlug])->with('Alert', 'Pertanyaan berhasil dihapus.');
-    }
-
-    /**
-     * Tampilkan form edit pertanyaan.
-     */
-    public function editQuestion($folderSlug, $ebookSlug, $sessionId, $questionId)
-    {
-        $session = PostTestSession::findOrFail($sessionId);
-        $question = PostTest::where('session_id', $sessionId)->where('id', $questionId)->firstOrFail();
-
-        return view('quiz.edit-question', compact('folderSlug', 'ebookSlug', 'session', 'question'));
-    }
-
-    /**
-     * Update pertanyaan.
-     */
-    public function updateQuestion(Request $request, $folderSlug, $ebookSlug, $sessionId, $questionId)
-    {
-        $request->validate([
-            'question'       => 'required|string',
-            'option_a'       => 'required|string|max:255',
-            'option_b'       => 'required|string|max:255',
-            'option_c'       => 'required|string|max:255',
-            'option_d'       => 'required|string|max:255',
-            'correct_option' => 'required|in:A,B,C,D',
-        ]);
-
-        $question = PostTest::where('session_id', $sessionId)->where('id', $questionId)->firstOrFail();
-
-        $question->update([
-            'question'       => $request->question,
-            'option_a'       => $request->option_a,
-            'option_b'       => $request->option_b,
-            'option_c'       => $request->option_c,
-            'option_d'       => $request->option_d,
-            'correct_option' => $request->correct_option,
-        ]);
-
-        return redirect()->route('quiz.index', [$folderSlug, $ebookSlug])->with('Alert', 'Pertanyaan berhasil diperbarui.');
+        return response()->streamDownload(function () use ($rows) {
+            $out = fopen('php://output', 'w');
+            fputcsv($out, ['No', 'Nama', 'Email', 'RolePT', 'Skor', 'Dikirim pada']);
+            foreach ($rows as $i => $r) {
+                fputcsv($out, [
+                    $i + 1,
+                    optional($r->user)->name,
+                    optional($r->user)->email,
+                    optional($r->user)->role_pt,
+                    $r->score,
+                    optional($r->created_at)->format('Y-m-d H:i:s'),
+                ]);
+            }
+            fclose($out);
+        }, $filename, ['Content-Type' => 'text/csv; charset=UTF-8']);
     }
 }
