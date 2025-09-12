@@ -14,7 +14,11 @@ class UserController extends Controller
      */
     public function index()
     {
-        $trainer = User::where('role', 'Trainer (Eksternal)')->paginate(10)->orderBy('created_at', 'DESC');
+        // Panggil orderBy sebelum paginate
+        $trainer = User::where('role', '!=', 'Admin')  // Ambil semua user yang bukan Admin
+            ->orderBy('created_at', 'DESC') // Urutkan berdasarkan created_at
+            ->paginate(10);
+
         return view('trainer.index', compact('trainer'));
     }
 
@@ -27,7 +31,6 @@ class UserController extends Controller
 
         return view('trainer.show', compact('trainer'));
     }
-
 
     /**
      * Tampilkan form tambah Trainer.
@@ -53,6 +56,7 @@ class UserController extends Controller
             'alamat' => 'nullable|string',
             'no_tlp' => 'nullable|string',
             'pekerjaan' => 'nullable|string',
+            'cabang' => 'nullable|string'
         ]);
 
         $trainer = User::create([
@@ -67,6 +71,7 @@ class UserController extends Controller
             'alamat' => $validated['alamat'] ?? null,
             'no_tlp' => $validated['no_tlp'] ?? null,
             'pekerjaan' => $validated['pekerjaan'] ?? null,
+            'cabang' => $validated['cabang'] ?? null,
         ]);
 
         return redirect()->route('trainer.index')->with('Alert', 'Trainer ' . $trainer->name . ' berhasil ditambahkan.');
@@ -104,7 +109,7 @@ class UserController extends Controller
             'alamat' => 'nullable|string',
             'no_tlp' => 'nullable|string',
             'pekerjaan' => 'nullable|string',
-            'password' => 'nullable|string|min:6|confirmed',
+            'cabang' => 'nullable|string'
         ]);
 
         $trainer->update([
@@ -118,6 +123,7 @@ class UserController extends Controller
             'alamat' => $validated['alamat'] ?? $trainer->alamat,
             'no_tlp' => $validated['no_tlp'] ?? $trainer->no_tlp,
             'pekerjaan' => $validated['pekerjaan'] ?? $trainer->pekerjaan,
+            'cabang' => $validated['cabang'] ?? $trainer->cabang,
         ]);
 
         return redirect()->route('trainer.index')->with('Alert', 'Trainer ' . $trainer->name . ' berhasil diperbarui.');

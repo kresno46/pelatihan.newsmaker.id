@@ -43,7 +43,6 @@
 
                 <div class="mb-4">
                     <p class="text-sm text-gray-500 dark:text-gray-400">Status Verifikasi Email</p>
-
                     <p>
                         <span>{{ $trainer->email_verified_at ? \Carbon\Carbon::parse($trainer->email_verified_at)->format('d M Y H:i    ') : '' }}</span>
                         {{ is_null($trainer->email_verified_at) ? '' : ' ──── ' }} <span
@@ -62,8 +61,29 @@
                 </div>
 
                 <div class="mb-4">
-                    <p class="text-sm text-gray-500 dark:text-gray-400">No. Identitas</p>
-                    <p class="text-lg font-semibold">{{ $trainer->no_id ?? '-' }}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Jabatan</p>
+                    <p class="text-lg font-semibold">
+                        @switch($trainer->jabatan)
+                            @case('BC')
+                                Business Consultant
+                            @break
+
+                            @case('SBC')
+                                SBC
+                            @break
+
+                            @case('BSM')
+                                BSM
+                            @break
+
+                            @case('BM')
+                                BM
+                            @break
+
+                            @default
+                                -
+                        @endswitch
+                    </p>
                 </div>
 
                 <div class="mb-4">
@@ -74,6 +94,13 @@
                 <div class="mb-4">
                     <p class="text-sm text-gray-500 dark:text-gray-400">Pekerjaan</p>
                     <p class="text-lg font-semibold">{{ $trainer->pekerjaan ?? '-' }}</p>
+                </div>
+
+                <div class="mb-4">
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Cabang</p>
+                    <p class="text-lg font-semibold">
+                        {{ $trainer->cabang }}
+                    </p>
                 </div>
 
                 <div class="mb-4">
@@ -93,13 +120,10 @@
         </div>
 
         <div class="mt-8 flex justify-end gap-4">
-            {{-- Kirim Verifikasi --}}
-            {{-- <a href="{{ route('trainer.verify', $trainer->id) }}" --}}
             <a href="{{ route('trainer.edit', $trainer->id) }}"
                 class="px-5 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-lg shadow">
                 Edit
             </a>
-            {{-- Kembali --}}
             <a href="{{ route('trainer.index') }}"
                 class="px-5 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold rounded-lg shadow dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500">
                 Kembali

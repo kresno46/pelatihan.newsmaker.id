@@ -17,7 +17,23 @@ class ProfileController extends Controller
     {
         $user = $request->user();
 
-        return view('profile.edit', compact('user'));
+        // Tentukan cabang berdasarkan role
+        $branches = $this->getBranchesByRole($user->role);
+
+        return view('profile.edit', compact('user', 'branches'));
+    }
+
+    private function getBranchesByRole($role)
+    {
+        $branches = [
+            'Trainer (SGB)' => ['Semarang', 'Makassar'],
+            'Trainer (RFB)' => ['Medan', 'Palembang', 'Semarang', 'Jakarta', 'Surabaya', 'Pekanbaru', 'Bandung', 'Solo', 'Yogyakarta', 'Balikpapan', 'Surabaya II'],
+            'Trainer (EWF)' => ['Surabaya Trillium', 'Manado', 'Jakarta', 'Semarang', 'Surabaya Praxis', 'Cirebon'],
+            'Trainer (BPF)' => ['Jambi', 'Jakarta – Pacific Place Mall', 'Pontianak', 'Malang', 'Surabaya', 'Medan', 'Bandung', 'Pekanbaru', 'Banjarmasin', 'Bandar Lampung', 'Semarang'],
+            'Trainer (KPF)' => ['Yogyakarta', 'Bali', 'Makassar', 'Bandung', 'Semarang'],
+        ];
+
+        return $branches[$role] ?? [];
     }
 
     /**
@@ -29,17 +45,17 @@ class ProfileController extends Controller
 
         // Validasi data manual
         $validator = Validator::make($request->all(), [
-            'name' => ['nullable', 'string', 'max:255'],
-            'email' => ['nullable', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'name' => ['nullable', 'string', 'max:50'],
+            'email' => ['nullable', 'email', 'max:50', Rule::unique('users')->ignore($user->id)],
             'jenis_kelamin' => ['nullable', 'in:Pria,Wanita'],
-            'tempat_lahir' => ['nullable', 'string', 'max:255'],
+            'tempat_lahir' => ['nullable', 'string', 'max:20'],
             'tanggal_lahir' => ['nullable', 'date'],
-            'warga_negara' => ['nullable', 'string', 'max:255'],
+            'warga_negara' => ['nullable', 'string', 'max:50'],
             'alamat' => ['nullable', 'string'],
-            'no_id' => ['nullable', 'string', 'max:255'],
             'no_tlp' => ['nullable', 'string', 'max:20'],
-            'pekerjaan' => ['nullable', 'string', 'max:255'],
+            'pekerjaan' => ['nullable', 'string', 'max:50'],
             'jabatan' => ['nullable', 'in:BC,SBC,SBM,BM'],
+            'cabang' => ['nullable', 'string'],
         ]);
 
         if ($validator->fails()) {

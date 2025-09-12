@@ -12,6 +12,7 @@
         'no_tlp' => 'Nomor Telepon',
         'pekerjaan' => 'Pekerjaan',
         'role' => 'Role',
+        'cabang' => 'cabang',
     ];
 
     $missingFields = [];

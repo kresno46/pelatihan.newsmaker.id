@@ -30,7 +30,6 @@
                         <th class="px-4 py-3 rounded-l-lg">#</th>
                         <th class="px-4 py-3">Nama</th>
                         <th class="px-4 py-3">Perusahaan</th>
-                        <th class="px-4 py-3">Materi</th>
                         <th class="px-4 py-3">Nilai</th>
                         <th class="px-4 py-3">Tanggal</th>
                         <th class="px-4 py-3 rounded-r-lg">Aksi</th>
@@ -65,8 +64,6 @@
                             <td class="px-4 py-3 text-gray-900 dark:text-gray-100 font-semibold">{{ $index + 1 }}</td>
                             <td class="px-4 py-3 text-gray-900 dark:text-gray-100">{{ $item->user->name ?? '-' }}</td>
                             <td class="px-4 py-3 text-gray-900 dark:text-gray-100">{{ $perusahaan }}</td>
-                            <td class="px-4 py-3 text-gray-900 dark:text-gray-100">{{ $item->folder->folder_name ?? '-' }}
-                            </td>
                             <td class="px-4 py-3 text-gray-900 dark:text-gray-100">{{ $item->average_score }}/100</td>
                             <td class="px-4 py-3 text-gray-900 dark:text-gray-100">
                                 {{ \Carbon\Carbon::parse($item->awarded_at)->translatedFormat('d F Y, H:i') }}
@@ -76,7 +73,6 @@
                                     onclick="showDetailModal(
                                         '{{ $item->user->name }}',
                                         '{{ $perusahaan }}',
-                                        '{{ $item->folder->folder_name }}',
                                         '{{ $item->average_score }}',
                                         '{{ $item->certificate_uuid }}',
                                         '{{ \Carbon\Carbon::parse($item->awarded_at)->translatedFormat('d F Y, H:i') }}'
@@ -125,9 +121,6 @@
                     <p><strong>Perusahaan:</strong> <span id="detailCompany"></span></p>
                 </div>
                 <div class="bg-gray-200 p-5 rounded-lg">
-                    <p><strong>Materi:</strong> <span id="detailMateri"></span></p>
-                </div>
-                <div class="bg-gray-200 p-5 rounded-lg">
                     <p><strong>Nilai:</strong> <span id="detailScore"></span></p>
                 </div>
                 <div class="bg-gray-200 p-5 rounded-lg">
@@ -173,10 +166,9 @@
 
 @section('scripts')
     <script>
-        function showDetailModal(name, company, materi, score, uuid, date) {
+        function showDetailModal(name, company, score, uuid, date) {
             document.getElementById('detailName').textContent = name;
             document.getElementById('detailCompany').textContent = company;
-            document.getElementById('detailMateri').textContent = materi;
             document.getElementById('detailScore').textContent = score + '/100';
             document.getElementById('detailUuid').textContent = uuid;
             document.getElementById('detailDate').textContent = date;

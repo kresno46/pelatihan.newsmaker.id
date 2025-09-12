@@ -18,6 +18,7 @@ class PostTestSession extends Model
         'duration',
         'tipe',
         'status',
+        'post_test_session_id',
     ];
 
     /**
