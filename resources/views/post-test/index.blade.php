@@ -75,8 +75,8 @@
                             <td class="px-4 py-3">
                                 @if ($posttest->progres === 'Belum Dikerjakan')
                                     <span class="text-yellow-600 font-semibold">Belum Dikerjakan</span>
-                                @elseif ($posttest->progres === 'Nilai di Bawah 75')
-                                    <span class="text-red-600 font-semibold">Nilai di Bawah 75
+                                @elseif ($posttest->progres === 'Nilai di Bawah 60')
+                                    <span class="text-red-600 font-semibold">Nilai di Bawah 60
                                         ({{ $posttest->score }})
                                     </span>
                                 @else
@@ -116,7 +116,7 @@
                                             class="inline-block w-full bg-blue-600 text-white text-xs px-3 py-1 rounded hover:bg-blue-700">
                                             Mulai
                                         </a>
-                                    @elseif ($posttest->progres === 'Nilai di Bawah 75')
+                                    @elseif ($posttest->progres === 'Nilai di Bawah 60')
                                         {{-- <a href="{{ route('post-test.show', $posttest->slug) }}"
                                             class="inline-block w-full bg-orange-600 text-white text-xs px-3 py-1 rounded hover:bg-orange-700">
                                             Ulangi

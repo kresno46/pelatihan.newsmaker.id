@@ -70,7 +70,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * @param int $minAvg Nilai rata-rata minimum untuk dapat sertifikat
      * @return int Jumlah batch sertifikat yang bisa diperoleh
      */
-    public function earnedCertificateBatches($minAvg = 75): int
+    public function earnedCertificateBatches($minAvg = 60): int
     {
         $results = PostTestResult::where('user_id', $this->id)
             ->groupBy('ebook_id')

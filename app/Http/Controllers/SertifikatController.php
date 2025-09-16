@@ -30,7 +30,7 @@ class SertifikatController extends Controller
         $averageScore = round($userResults->avg('score'), 2);
 
         // Tentukan apakah user bisa mendapatkan sertifikat
-        $canDownload = $averageScore >= 75;
+        $canDownload = $averageScore >= 60;
 
         // Ambil data penghargaan (sertifikat) jika ada
         $awards = CertificateAward::where('user_id', $user->id)->get();
@@ -49,8 +49,8 @@ class SertifikatController extends Controller
             ->firstOrFail();
 
         // Pastikan nilai lebih dari 75 untuk sertifikat
-        if ($postTestResult->score < 75) {
-            return back()->with('error', 'Nilai rata-rata minimal 75 diperlukan untuk mendapatkan sertifikat.');
+        if ($postTestResult->score < 60) {
+            return back()->with('error', 'Nilai rata-rata minimal 60 diperlukan untuk mendapatkan sertifikat.');
         }
 
         // Ambil title dari session yang terkait

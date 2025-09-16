@@ -21,8 +21,8 @@ class TestController extends Controller
 
             if (!$result) {
                 $test->progres = 'Belum Dikerjakan';
-            } elseif ($result->score < 75) {
-                $test->progres = 'Nilai di Bawah 75';
+            } elseif ($result->score < 60) {
+                $test->progres = 'Nilai di Bawah 60';
             } else {
                 $test->progres = 'Selesai';
             }
@@ -55,7 +55,7 @@ class TestController extends Controller
             ->latest()
             ->first();
 
-        if ($existingResult && $existingResult->score >= 75) {
+        if ($existingResult && $existingResult->score >= 60) {
             return redirect()->route('dashboard')
                 ->with('info', 'Anda sudah mengerjakan post test ini dan mendapatkan nilai yang cukup.');
         }
@@ -107,13 +107,13 @@ class TestController extends Controller
             ->latest()
             ->first();
 
-        if ($latestResult && $latestResult->score >= 75) {
+        if ($latestResult && $latestResult->score >= 60) {
             return redirect()->route('dashboard')
                 ->with('info', 'Anda sudah mengerjakan post test ini dengan nilai yang cukup.');
         }
 
         // Hapus nilai lama jika ada (dan skor < 75)
-        if ($latestResult && $latestResult->score < 75) {
+        if ($latestResult && $latestResult->score < 60) {
             $latestResult->delete();
         }
 
