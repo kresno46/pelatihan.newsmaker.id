@@ -22,7 +22,7 @@
             width: 100%;
             height: 100vh;
             border-collapse: collapse;
-            margin-left: 20px;
+            /* margin-left: 20px; */
         }
 
         td {
