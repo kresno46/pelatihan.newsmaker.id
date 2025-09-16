@@ -20,7 +20,7 @@
 
         table.layout {
             width: 100%;
-            height: 100%;
+            height: 100vh;
             border-collapse: collapse;
             margin-left: 20px;
         }
@@ -32,7 +32,7 @@
         }
 
         .content {
-            padding-top: 100px;
+            padding-top: 260px;
         }
 
         .content .header {
@@ -51,7 +51,6 @@
 
         .description {
             font-size: 20px;
-            margin-bottom: 20px;
         }
 
         .level-title {
@@ -62,7 +61,6 @@
         .date-sign {
             font-size: 14px;
             text-align: center;
-            padding-top: 50px;
             padding-bottom: 40px;
         }
 
