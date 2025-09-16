@@ -61,6 +61,7 @@
         .date-sign {
             font-size: 14px;
             text-align: center;
+            padding-top: 50px;
             padding-bottom: 40px;
         }
 
