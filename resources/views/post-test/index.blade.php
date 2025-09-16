@@ -117,10 +117,10 @@
                                             Mulai
                                         </a>
                                     @elseif ($posttest->progres === 'Nilai di Bawah 75')
-                                        <a href="{{ route('post-test.show', $posttest->slug) }}"
+                                        {{-- <a href="{{ route('post-test.show', $posttest->slug) }}"
                                             class="inline-block w-full bg-orange-600 text-white text-xs px-3 py-1 rounded hover:bg-orange-700">
                                             Ulangi
-                                        </a>
+                                        </a> --}}
                                     @else
                                         <a href="{{ route('post-test.result', $posttest->result_id) }}"
                                             class="inline-block w-full bg-gray-600 text-white text-xs px-3 py-1 rounded hover:bg-gray-700">
