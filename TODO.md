@@ -1,0 +1,4 @@
+- [x] Create migration to alter users table role enum to include all roles
+- [x] Add 'role' to fillable in User model
+- [x] Run migration to apply changes
+- [ ] Test user registration with different roles to confirm fix
