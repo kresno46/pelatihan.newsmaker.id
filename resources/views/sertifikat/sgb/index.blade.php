@@ -132,115 +132,125 @@
 <html lang="id">
 
 <head>
-    <meta charset="UTF-8">
-    <style>
-        @page {
-            size: A4 landscape;
-            margin: 0;
-        }
+  <meta charset="UTF-8">
+  <style>
+    @page {
+      size: A4 landscape;
+      margin: 0;
+    }
 
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Times New Roman', Times, serif;
-            background-image: url('{{ public_path('sertifikat-stamp/SGB/SGB.png') }}');
-            background-size: cover;
-            background-position: center;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Times New Roman', Times, serif;
+      background-image: url('{{ public_path('sertifikat-stamp/SGB/SGB.png') }}');
+      background-size: cover;
+      background-position: center;
+      width: 100%;
+      height: 100vh;
+      position: relative;
+    }
 
-        .content {
-            text-align: center;
-            padding-top: 200px; /* disesuaikan agar pas */
-        }
+    .header {
+      position: absolute;
+      top: 160px;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      font-size: 20px;
+    }
 
-        .header {
-            font-size: 20px;
-            margin-bottom: 10px;
-        }
+    .name {
+      position: absolute;
+      top: 210px;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      font-size: 34px;
+      font-weight: bold;
+      border-bottom: 1px solid #000;
+      display: inline-block;
+      padding: 0 30px;
+    }
 
-        .name {
-            font-size: 34px;
-            font-weight: bold;
-            border-bottom: 1px solid #000;
-            display: inline-block;
-            padding: 0 30px;
-            margin: 15px 0;
-        }
+    .description {
+      position: absolute;
+      top: 280px;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      font-size: 20px;
+    }
 
-        .description {
-            font-size: 20px;
-            margin: 10px 0;
-        }
+    .level-title {
+      position: absolute;
+      top: 320px;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+    }
 
-        .level-title {
-            font-size: 22px;
-            font-weight: bold;
-        }
+    .date-sign {
+      position: absolute;
+      bottom: 80px;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      font-size: 14px;
+    }
 
-        .date-sign {
-            font-size: 14px;
-            text-align: center;
-            padding-bottom: 30px;
-        }
+    .date {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
 
-        .date {
-            font-size: 18px;
-            margin-bottom: 10px;
-        }
+    .stamp {
+      width: 100px;
+      margin: 10px 0;
+    }
 
-        .stamp {
-            width: 100px;
-            margin: 10px 0;
-        }
+    .ttd {
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
 
-        .ttd {
-            font-size: 18px;
-            font-weight: bold;
-            margin-top: 10px;
-        }
+    .title {
+      font-size: 16px;
+      margin-top: 5px;
+    }
 
-        .title {
-            font-size: 16px;
-            margin-top: 5px;
-        }
+    .cert-id {
+      font-size: 12px;
+      color: #555;
+      text-align: center;
+      margin-top: 10px;
+    }
 
-        .cert-id {
-            font-size: 12px;
-            color: #555;
-            text-align: center;
-            margin-top: 10px;
-        }
-
-        .signature-line {
-            width: 200px;
-            border: 1px solid #000;
-            margin: 5px auto;
-        }
-    </style>
+    .signature-line {
+      width: 200px;
+      border: 1px solid #000;
+      margin: 5px auto;
+    }
+  </style>
 </head>
 
 <body>
+  <p class="header">DIBERIKAN KEPADA:</p>
+  <p class="name">{{ $name }}</p>
+  <p class="description">Telah mengikuti:</p>
+  <p class="level-title">{{ $levelTitle }}</p>
 
-    <div class="content">
-        <p class="header">DIBERIKAN KEPADA:</p>
-        <p class="name">{{ $name }}</p>
-        <p class="description">Telah mengikuti:</p>
-        <p class="level-title">{{ $levelTitle }}</p>
-    </div>
-
-    <div class="date-sign">
-        <p class="date">Jakarta, {{ $date }}</p>
-        <img class="stamp" src="{{ public_path('sertifikat-stamp/SGB/STAMP-SGB.png') }}" alt="Stamp">
-        <p class="ttd">IRIAWAN WIDADI</p>
-        <hr class="signature-line">
-        <p class="title">Direktur Utama</p>
-        <div class="cert-id">ID Sertifikat: {{ $uuid }}</div>
-    </div>
-
+  <div class="date-sign">
+    <p class="date">Jakarta, {{ $date }}</p>
+    <img class="stamp" src="{{ public_path('sertifikat-stamp/SGB/STAMP-SGB.png') }}" alt="Stamp">
+    <p class="ttd">IRIAWAN WIDADI</p>
+    <hr class="signature-line">
+    <p class="title">Direktur Utama</p>
+    <div class="cert-id">ID Sertifikat: {{ $uuid }}</div>
+  </div>
 </body>
 
 </html>
