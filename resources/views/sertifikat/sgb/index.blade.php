@@ -154,10 +154,10 @@
 
         .content {
             text-align: center;
-            padding-top: 180px; /* dikurangi biar muat */
+            padding-top: 200px; /* disesuaikan agar pas */
         }
 
-        .content .header {
+        .header {
             font-size: 20px;
             margin-bottom: 10px;
         }
@@ -168,26 +168,28 @@
             border-bottom: 1px solid #000;
             display: inline-block;
             padding: 0 30px;
-            margin: 10px 0;
+            margin: 15px 0;
         }
 
         .description {
             font-size: 20px;
+            margin: 10px 0;
         }
 
         .level-title {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: bold;
         }
 
         .date-sign {
             font-size: 14px;
             text-align: center;
-            padding-bottom: 30px; /* biar ga nabrak bawah */
+            padding-bottom: 30px;
         }
 
         .date {
             font-size: 18px;
+            margin-bottom: 10px;
         }
 
         .stamp {
