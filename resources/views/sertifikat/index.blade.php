@@ -31,7 +31,7 @@
         <div class="flex flex-col gap-3">
             @forelse ($userResults as $postTest)
                 <div
-                    class="border {{ $postTest->score >= 75 ? 'border-green-500' : 'border-red-500' }} px-5 py-3 rounded-lg {{ $postTest->score >= 75 ? 'bg-green-50' : 'bg-red-50' }} mb-3">
+                    class="border {{ $postTest->score >= 60 ? 'border-green-500' : 'border-red-500' }} px-5 py-3 rounded-lg {{ $postTest->score >= 75 ? 'bg-green-50' : 'bg-red-50' }} mb-3">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="font-semibold text-gray-900 dark:text-white">
@@ -42,11 +42,11 @@
                             <div class="text-sm rounded-full">
                                 {{ $postTest->score }}/100
                             </div>
-                            @if ($postTest->score >= 75)
+                            @if ($postTest->score >= 60)
                                 <a href="{{ route('sertifikat.download', $postTest->id) }}"
                                     class="text-green-600 hover:text-green-700 font-semibold">Download Sertifikat</a>
                             @else
-                                <span class="italic text-red-500">Nilai kurang dari 75</span>
+                                <span class="italic text-red-500">Nilai kurang dari 60</span>
                             @endif
                         </div>
                     </div>
