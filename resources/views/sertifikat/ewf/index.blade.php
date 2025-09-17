@@ -113,7 +113,7 @@
             <td>
                 <div class="date-sign">
                     <p class="date">Jakarta, {{ $date }}</p>
-                    <img class="stamp" src="{{ public_path('sertifikat-stamp/EWF/STAMP-EWF.png') }}" alt="Stamp">
+                    <img class="stamp" src="{{ public_path('sertifikat-stamp/EWF/STAMPEWF.png') }}" alt="Stamp">
                     <p class="ttd">DEDDY REYNOLD LAGONAH</p>
                     <hr class="signature-line">
                     <p class="title">Direktur Utama</p>
