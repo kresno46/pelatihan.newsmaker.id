@@ -44,11 +44,11 @@
                     {{ $activeTipe === 'PATD' ? 'bg-white font-semibold' : 'bg-gray-300 hover:bg-gray-200 transition-all' }}">
                 PATD
             </a>
-            <a href="{{ route('post-test.index', ['tipe' => 'PATL']) }}"
+            {{-- <a href="{{ route('post-test.index', ['tipe' => 'PATL']) }}"
                 class="py-2 shadow text-center rounded-t-3xl w-full 
                     {{ $activeTipe === 'PATL' ? 'bg-white font-semibold' : 'bg-gray-300 hover:bg-gray-200 transition-all' }}">
                 PATL
-            </a>
+            </a> --}}
         </div>
 
         {{-- Tabel Data --}}
