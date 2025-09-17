@@ -21,10 +21,17 @@ class SertifikatController extends Controller
             ->where('user_id', $user->id)
             ->get();
 
-        if ($userResults->isEmpty()) {
-            return view('sertifikat.index', ['message' => 'Belum ada post-test yang Anda kerjakan.']);
+       if ($userResults->isEmpty()) {
+            return view('sertifikat.index', [
+                'userResults' => collect(), // kirim collection kosong
+                'message' => 'Belum ada post-test yang Anda kerjakan.',
+                'totalResults' => 0,
+                'averageScore' => 0,
+                'canDownload' => false,
+                'awards' => collect(),
+            ]);
         }
-
+        
         // Hitung jumlah post-test dan rata-rata skor
         $totalResults = $userResults->count();
         $averageScore = round($userResults->avg('score'), 2);
