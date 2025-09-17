@@ -41,11 +41,27 @@
                 <x-input-error :messages="$errors->get('email')" class="mt-2" />
             </div>
 
-            {{-- Jabatan --}}
+            {{-- Jabatan
             <div class="mt-4">
                 <x-input-label-append for="jabatan" :value="__('Jabatan')" :append="empty($user->jabatan) ? '<span class=\'text-red-500\'>*</span>' : ''" />
                 <x-text-input id="jabatan" type="text" name="jabatan" class="block mt-1 w-full" readonly
                     :value="old('jabatan', $user->jabatan)" />
+                <x-input-error :messages="$errors->get('jabatan')" class="mt-2" />
+            </div> --}}
+
+            {{-- Jabatan --}}
+            <div class="mt-4">
+                <x-input-label-append for="jabatan" :value="__('Jabatan')" :append="empty($user->jabatan) ? '<span class=\'text-red-500\'>*</span>' : ''" />
+                
+                <select id="jabatan" name="jabatan" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                    <option value="">-- Pilih Jabatan --</option>
+                    @foreach (['BC', 'SBC', 'SBM', 'BM'] as $jabatan)
+                        <option value="{{ $jabatan }}" {{ old('jabatan', $user->jabatan) === $jabatan ? 'selected' : '' }}>
+                            {{ $jabatan }}
+                        </option>
+                    @endforeach
+                </select>
+
                 <x-input-error :messages="$errors->get('jabatan')" class="mt-2" />
             </div>
 
