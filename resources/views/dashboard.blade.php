@@ -69,14 +69,14 @@
                     'color' => 'red',
                     'route' => 'post-test.index',
                 ],
-                [
-                    'title' => 'Kuis Dikerjakan',
-                    'value' => $riwayatUserLogin,
-                    'suffix' => ' Kuis',
-                    'icon' => 'fa-solid fa-check',
-                    'color' => 'green',
-                    'route' => 'riwayat.index',
-                ],
+                // [
+                //     'title' => 'Kuis Dikerjakan',
+                //     'value' => $riwayatUserLogin,
+                //     'suffix' => ' Kuis',
+                //     'icon' => 'fa-solid fa-check',
+                //     'color' => 'green',
+                //     'route' => 'riwayat.index',
+                // ],
                 [
                     'title' => 'Sertifikat di download',
                     'value' => $jumlahSertifikatSelesai,
