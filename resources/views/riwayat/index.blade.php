@@ -4,6 +4,11 @@
 
 @section('content')
     <div class="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md">
+        <a href="{{ route('dashboard') }}"
+                class="bg-gray-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-600 transition cursor-pointer sm:w-auto">
+                <i class="fa-solid fa-arrow-left text-sm"></i>
+            </a>
+            <br><br>
         <h2 class="text-3xl font-bold mb-6 text-center text-gray-800 dark:text-white">📚 Riwayat Post Test Anda</h2>
 
         @if ($results->isEmpty())

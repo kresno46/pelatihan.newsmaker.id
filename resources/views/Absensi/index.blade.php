@@ -5,6 +5,11 @@
 @section('content')
     <div class="p-5 bg-white dark:bg-gray-800 rounded-lg shadow-lg space-y-5">
         <div class="flex items-center justify-between">
+            <!-- Tombol Kembali (khusus mobile) -->
+            <a href="{{ route('dashboard') }}"
+                class="bg-gray-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-600 transition cursor-pointer sm:w-auto">
+                <i class="fa-solid fa-arrow-left text-sm"></i>
+            </a>
             <h3 class="text-xl font-bold text-gray-900 dark:text-white">Daftar Sesi Absensi</h3>
             @if (session('Alert'))
                 <div class="rounded-full bg-green-300/50 dark:bg-green-300 px-4 py-1" x-data="{ show: true }" x-show="show"

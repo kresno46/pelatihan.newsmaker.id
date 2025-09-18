@@ -39,6 +39,10 @@
         @endphp
 
         <div class="w-full flex">
+            <a href="{{ route('dashboard') }}"
+                class="bg-gray-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-600 transition cursor-pointer sm:w-auto">
+                <i class="fa-solid fa-arrow-left text-sm"></i>
+            </a>
             <a href="{{ route('post-test.index', ['tipe' => 'PATD']) }}"
                 class="py-2 shadow text-center rounded-t-3xl w-full 
                     {{ $activeTipe === 'PATD' ? 'bg-white font-semibold' : 'bg-gray-300 hover:bg-gray-200 transition-all' }}">

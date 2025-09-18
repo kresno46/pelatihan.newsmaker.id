@@ -319,7 +319,13 @@
                             class="bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 hover:bg-gray-300  text-gray-700 dark:text-white py-2 px-3 rounded-lg text-sm border-2 border-gray-300 dark:border-gray-700 transition-all">
                             ✕
                         </button>
-                        <h2 class="text-lg font-semibold text-gray-800 dark:text-white">NewsMaker23</h2>
+                        {{-- <h2 class="text-lg font-semibold text-gray-800 dark:text-white">NewsMaker23</h2> --}}
+                        <a href="{{ route('dashboard') }}">
+                            <img src="{{ asset('assets/NewsMaker-23-logo.png') }}" alt="NewsMaker 23"
+                            class="block dark:hidden h-20" />
+                            <img src="{{ asset('assets/NewsMaker-23-logo-white.png') }}" alt="NewsMaker 23"
+                            class="hidden dark:block h-20" />
+                        </a>
                     </div>
 
                     <hr class="border-gray-300 dark:border-gray-700">
