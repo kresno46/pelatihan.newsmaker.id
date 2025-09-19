@@ -231,14 +231,14 @@
                                 </a>
                             </li>
                             <li>
-                                {{-- <a href="{{ route('riwayat.index') }}"
+                                <a href="{{ route('riwayat.index') }}"
                                     class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                             {{ request()->routeIs('riwayat.*')
                                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
                                     <i class="fa-solid fa-clock-rotate-left"></i>
                                     <span>Riwayat Saya</span>
-                                </a> --}}
+                                </a>
                             </li>
                         @endif
                     </ul>
