@@ -163,7 +163,11 @@
                                     {{ $r->score }}
                                 </td>
                                 <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-                                    {{ $r->score >= 60 ? 'Lulus' : 'Tidak Lulus' }}
+                                    @if($r->score >= 60)
+                                        <span class="text-green-600 font-semibold">{{ 'Lulus' }}</span>
+                                    @else
+                                        <span class="text-red-600 font-semibold">{{ 'Tidak Lulus' }}</span>
+                                    @endif
                                 </td>
                                 <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
                                     {{ optional($r->created_at)->format('Y-m-d H:i') }}
