@@ -170,17 +170,16 @@ class QuizController extends Controller
 
         return response()->streamDownload(function () use ($rows) {
             $out = fopen('php://output', 'w');
-            fputcsv($out, ['No', 'Nama', 'Email', 'Role', 'Cabang', 'Skor', 'Dikirim pada']);
+            fputcsv($out, ['No', 'Nama', 'Perusahaan', 'Cabang', 'Skor', 'Tanggal'], ';');
             foreach ($rows as $i => $r) {
                 fputcsv($out, [
                     $i + 1,
                     optional($r->user)->name,
-                    optional($r->user)->email,
-                    optional($r->user)->role,
+                    optional($r->user)->nama_perusahaan,
                     optional($r->user)->cabang,
                     $r->score,
-                    optional($r->created_at)->format('Y-m-d H:i:s'),
-                ]);
+                    optional($r->created_at)->format('Y-m-d H:i'),
+                ], ';');
             }
             fclose($out);
         }, $filename, ['Content-Type' => 'text/csv; charset=UTF-8']);
