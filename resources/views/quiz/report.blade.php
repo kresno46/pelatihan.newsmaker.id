@@ -52,6 +52,8 @@
                     <option value="highest" {{ $sort === 'highest' ? 'selected' : '' }}>{{ __('Skor Tertinggi') }}
                     </option>
                     <option value="lowest" {{ $sort === 'lowest' ? 'selected' : '' }}>{{ __('Skor Terendah') }}</option>
+                    <option value="lulus_first" {{ $sort === 'lulus_first' ? 'selected' : '' }}>Lulus Dahulu</option>
+                    <option value="tidak_lulus_first" {{ $sort === 'tidak_lulus_first' ? 'selected' : '' }}>Tidak Lulus Dahulu</option>
                 </select>
             </div>
 
@@ -136,6 +138,9 @@
                                 {{ __('Skor') }}</th>
                             <th
                                 class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Status</th>
+                            <th
+                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 {{ __('Tanggal') }}</th>
                         </tr>
                     </thead>
@@ -156,6 +161,9 @@
                                 </td>
                                 <td class="px-4 py-3 text-sm font-semibold text-gray-900 dark:text-gray-100">
                                     {{ $r->score }}
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                                    {{ $r->score >= 60 ? 'Lulus' : 'Tidak Lulus' }}
                                 </td>
                                 <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
                                     {{ optional($r->created_at)->format('Y-m-d H:i') }}

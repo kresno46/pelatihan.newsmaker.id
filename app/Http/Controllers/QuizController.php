@@ -99,6 +99,8 @@ class QuizController extends Controller
             ->when($sort === 'lowest',  fn($qr) => $qr->orderBy('score'))
             ->when($sort === 'oldest',  fn($qr) => $qr->orderBy('created_at'))
             ->when($sort === 'latest',  fn($qr) => $qr->orderByDesc('created_at'))
+            ->when($sort === 'lulus_first', fn($qr) => $qr->orderByRaw('CASE WHEN score >= 60 THEN 1 ELSE 0 END DESC'))
+            ->when($sort === 'tidak_lulus_first', fn($qr) => $qr->orderByRaw('CASE WHEN score >= 60 THEN 1 ELSE 0 END ASC'))
             ->paginate($perPage)
             ->withQueryString();
 
@@ -170,7 +172,7 @@ class QuizController extends Controller
 
         return response()->streamDownload(function () use ($rows) {
             $out = fopen('php://output', 'w');
-            fputcsv($out, ['No', 'Nama', 'Perusahaan', 'Cabang', 'Skor', 'Tanggal'], ';');
+            fputcsv($out, ['No', 'Nama', 'Perusahaan', 'Cabang', 'Skor', 'Status', 'Tanggal'], ';');
             foreach ($rows as $i => $r) {
                 fputcsv($out, [
                     $i + 1,
@@ -178,6 +180,7 @@ class QuizController extends Controller
                     optional($r->user)->nama_perusahaan,
                     optional($r->user)->cabang,
                     $r->score,
+                    $r->score >= 60 ? 'Lulus' : 'Tidak Lulus',
                     optional($r->created_at)->format('Y-m-d H:i'),
                 ], ';');
             }
