@@ -24,10 +24,10 @@ class HomeController extends Controller
             'jenis_kelamin',
             'tempat_lahir',
             'tanggal_lahir',
-            'warga_negara',
+            // 'warga_negara',
             'alamat',
             'no_tlp',
-            'pekerjaan',
+            // 'pekerjaan',
         ];
 
         $isIncomplete = false;

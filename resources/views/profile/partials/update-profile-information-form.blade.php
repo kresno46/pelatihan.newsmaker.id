@@ -105,12 +105,12 @@
             </div>
 
             {{-- Warga Negara --}}
-            <div class="mt-4">
+            {{-- <div class="mt-4">
                 <x-input-label-append for="warga_negara" :value="__('Warga Negara')" :append="empty($user->warga_negara) ? '<span class=\'text-red-500\'>*</span>' : ''" />
                 <x-text-input id="warga_negara" type="text" name="warga_negara" class="block mt-1 w-full"
                     :value="old('warga_negara', $user->warga_negara)" />
                 <x-input-error :messages="$errors->get('warga_negara')" class="mt-2" />
-            </div>
+            </div> --}}
 
             {{-- Alamat --}}
             <div class="mt-4">
@@ -130,7 +130,7 @@
             </div>
 
             {{-- Pekerjaan --}}
-            @php
+            {{-- @php
                 $pekerjaanList = [
                     'Pelajar/Mahasiswa',
                     'PNS',
@@ -169,7 +169,7 @@
                     @endforeach
                 </select>
                 <x-input-error :messages="$errors->get('pekerjaan')" class="mt-2" />
-            </div>
+            </div> --}}
 
             {{-- Role --}}
             @php
