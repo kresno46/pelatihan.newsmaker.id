@@ -85,7 +85,7 @@ class QuizController extends Controller
 
         // Query hasil
         $results = $session->results()
-            ->with(['user:id,name,email,role'])   // <-- pastikan 'role' dibawa agar accessor bisa jalan
+            ->with(['user:id,name,email,role,cabang'])   // <-- pastikan 'role' dibawa agar accessor bisa jalan
             ->when($q !== '', function ($qr) use ($q) {
                 $qr->whereHas('user', function ($u) use ($q) {
                     $u->where('name', 'like', "%{$q}%")
@@ -155,7 +155,7 @@ class QuizController extends Controller
         $roleFilter = in_array($roleParam, $rolesPT, true) ? $roleParam : null;
 
         $rows = $session->results()
-            ->with(['user:id,name,email,role_pt'])
+            ->with(['user:id,name,email,role,cabang'])
             ->when($q !== '', function ($qr) use ($q) {
                 $qr->whereHas('user', function ($u) use ($q) {
                     $u->where('name', 'like', "%{$q}%")
@@ -163,20 +163,21 @@ class QuizController extends Controller
                 });
             })
             ->when($roleFilter, function ($qr) use ($roleFilter) {
-                $qr->whereHas('user', fn($u) => $u->where('role_pt', $roleFilter));
+                $qr->whereHas('user', fn($u) => $u->where('role', $roleFilter));
             })
             ->orderByDesc('created_at')
             ->get(['id', 'user_id', 'score', 'created_at']);
 
         return response()->streamDownload(function () use ($rows) {
             $out = fopen('php://output', 'w');
-            fputcsv($out, ['No', 'Nama', 'Email', 'RolePT', 'Skor', 'Dikirim pada']);
+            fputcsv($out, ['No', 'Nama', 'Email', 'Role', 'Cabang', 'Skor', 'Dikirim pada']);
             foreach ($rows as $i => $r) {
                 fputcsv($out, [
                     $i + 1,
                     optional($r->user)->name,
                     optional($r->user)->email,
-                    optional($r->user)->role_pt,
+                    optional($r->user)->role,
+                    optional($r->user)->cabang,
                     $r->score,
                     optional($r->created_at)->format('Y-m-d H:i:s'),
                 ]);
