@@ -86,28 +86,33 @@ class QuizController extends Controller
         // Query hasil
         $results = $session->results()
             ->with(['user:id,name,email,role,cabang,jabatan'])   // <-- pastikan 'role' dibawa agar accessor bisa jalan
+            ->leftJoin('users', 'post_test_results.user_id', '=', 'users.id')
             ->when($q !== '', function ($qr) use ($q) {
-                $qr->whereHas('user', function ($u) use ($q) {
-                    $u->where('name', 'like', "%{$q}%")
-                        ->orWhere('email', 'like', "%{$q}%");
+                $qr->where(function ($w) use ($q) {
+                    $w->where('users.name', 'like', "%{$q}%")
+                        ->orWhere('users.email', 'like', "%{$q}%");
                 });
             })
             ->when($roleFilter, function ($qr) use ($roleFilter) {
-                $qr->whereHas('user', fn($u) => $u->where('role', $roleFilter));
+                $qr->where('users.role', $roleFilter);
             })
-            ->when($sort === 'highest', fn($qr) => $qr->orderByDesc('score'))
-            ->when($sort === 'lowest',  fn($qr) => $qr->orderBy('score'))
-            ->when($sort === 'oldest',  fn($qr) => $qr->orderBy('created_at'))
-            ->when($sort === 'latest',  fn($qr) => $qr->orderByDesc('created_at'))
-            ->when($sort === 'lulus_first', fn($qr) => $qr->orderByRaw('CASE WHEN score >= 60 THEN 1 ELSE 0 END DESC'))
-            ->when($sort === 'tidak_lulus_first', fn($qr) => $qr->orderByRaw('CASE WHEN score >= 60 THEN 1 ELSE 0 END ASC'))
+            ->when($sort === 'highest', fn($qr) => $qr->orderByDesc('post_test_results.score'))
+            ->when($sort === 'lowest',  fn($qr) => $qr->orderBy('post_test_results.score'))
+            ->when($sort === 'oldest',  fn($qr) => $qr->orderBy('post_test_results.created_at'))
+            ->when($sort === 'latest',  fn($qr) => $qr->orderByDesc('post_test_results.created_at'))
+            ->when($sort === 'lulus_first', fn($qr) => $qr->orderByRaw('CASE WHEN post_test_results.score >= 60 THEN 1 ELSE 0 END DESC'))
+            ->when($sort === 'tidak_lulus_first', fn($qr) => $qr->orderByRaw('CASE WHEN post_test_results.score >= 60 THEN 1 ELSE 0 END ASC'))
+            ->when($sort === 'cabang_asc', fn($qr) => $qr->orderBy('users.cabang', 'asc'))
+            ->when($sort === 'cabang_desc', fn($qr) => $qr->orderBy('users.cabang', 'desc'))
+            ->select('post_test_results.*')
             ->paginate($perPage)
             ->withQueryString();
 
         // Agregat (ikuti filter company bila ada)
         $aggregates = $session->results()
-            ->when($roleFilter, fn($qr) => $qr->whereHas('user', fn($u) => $u->where('role', $roleFilter)))
-            ->selectRaw('COUNT(*) AS total, AVG(score) AS avg_score, MAX(score) AS max_score, MIN(score) AS min_score')
+            ->leftJoin('users', 'post_test_results.user_id', '=', 'users.id')
+            ->when($roleFilter, fn($qr) => $qr->where('users.role', $roleFilter))
+            ->selectRaw('COUNT(*) AS total, AVG(post_test_results.score) AS avg_score, MAX(post_test_results.score) AS max_score, MIN(post_test_results.score) AS min_score')
             ->first();
 
         // Rekap per perusahaan (group by users.role, lalu map ke nama perusahaan)
