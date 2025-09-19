@@ -60,7 +60,7 @@
                 @php $per = (int)($filters['per_page'] ?? request('per_page', 12)); @endphp
                 <select name="per_page"
                     class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
-                    @foreach ([10, 12, 15, 20, 30, 50] as $n)
+                    @foreach ([10, 12, 15, 20, 30, 50, 100, 200] as $n)
                         <option value="{{ $n }}" {{ $per === $n ? 'selected' : '' }}>{{ $n }}
                         </option>
                     @endforeach
