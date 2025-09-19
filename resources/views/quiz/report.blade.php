@@ -110,6 +110,17 @@
         </div>
     </div>
 
+    {{-- Tombol Hapus Semua Tidak Lulus --}}
+    <div class="mb-4">
+        <form action="{{ route('posttest.report.deleteAllFailed', ['session' => $session->slug]) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus semua hasil post test yang tidak lulus?');">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded">
+                Hapus Semua Tidak Lulus
+            </button>
+        </form>
+    </div>
+
     {{-- Tabel Hasil --}}
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden">
         @if ($results->isEmpty())
@@ -144,6 +155,9 @@
                                 Status</th>
                             <th
                                 class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Aksi</th>
+                            <th
+                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 {{ __('Tanggal') }}</th>
                         </tr>
                     </thead>
@@ -169,15 +183,24 @@
                                     {{ $r->score }}
                                 </td>
                                 <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-                                    @if($r->score >= 60)
-                                        <span class="text-green-600 font-semibold">{{ 'Lulus' }}</span>
-                                    @else
-                                        <span class="text-red-600 font-semibold">{{ 'Tidak Lulus' }}</span>
-                                    @endif
-                                </td>
-                                <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-                                    {{ optional($r->created_at)->format('Y-m-d H:i') }}
-                                </td>
+                                @if($r->score >= 60)
+                                    <span class="text-green-600 font-semibold">{{ 'Lulus' }}</span>
+                                @else
+                                    <span class="text-red-600 font-semibold">{{ 'Tidak Lulus' }}</span>
+                                @endif
+                            </td>
+                            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                                @if($r->score < 60)
+                                <form action="{{ route('posttest.report.delete', ['session' => $session->slug, 'result' => $r->id]) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus hasil post test user ini?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-red-600 hover:text-red-800 font-semibold">Hapus</button>
+                                </form>
+                                @endif
+                            </td>
+                            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                                {{ optional($r->created_at)->format('Y-m-d H:i') }}
+                            </td>
                             </tr>
                         @endforeach
                     </tbody>

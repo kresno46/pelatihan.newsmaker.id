@@ -146,6 +146,30 @@ class QuizController extends Controller
         ]);
     }
 
+    public function deleteResult(PostTestSession $session, PostTestResult $result)
+    {
+        // Ensure the result belongs to the session
+        if ($result->session_id !== $session->id) {
+            abort(404);
+        }
+
+        // Only allow deleting if score < 60
+        if ($result->score >= 60) {
+            return back()->with('error', 'Tidak dapat menghapus hasil yang lulus.');
+        }
+
+        $result->delete();
+
+        return back()->with('success', 'Hasil post test berhasil dihapus.');
+    }
+
+    public function deleteAllFailed(PostTestSession $session)
+    {
+        $deletedCount = $session->results()->where('score', '<', 60)->delete();
+
+        return back()->with('success', "Berhasil menghapus {$deletedCount} hasil post test yang tidak lulus.");
+    }
+
     public function reportExport(Request $request, PostTestSession $session)
     {
         // (Kalau kamu sudah migrasi ke XLSX pakai Laravel Excel, ganti implementasi ini)
