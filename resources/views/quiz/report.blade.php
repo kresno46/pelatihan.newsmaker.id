@@ -23,8 +23,8 @@
                     {{ __('Kembali') }}
                 </a>
 
-                {{-- Export bawa filter q & sort agar konsisten --}}
-                <a href="{{ route('posttest.report.export', $session->slug) }}?q={{ request('q') }}&sort={{ request('sort') }}"
+                {{-- Export bawa filter q & sort & company agar konsisten --}}
+                <a href="{{ route('posttest.report.export', $session->slug) }}?q={{ request('q') }}&sort={{ request('sort') }}&company={{ request('company') }}"
                     class="px-3 py-2 text-sm rounded bg-green-500 hover:bg-green-600 text-white transition">
                     {{ __('Export CSV') }}
                 </a>
