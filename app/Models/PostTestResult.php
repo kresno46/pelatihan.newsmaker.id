@@ -14,6 +14,7 @@ class PostTestResult extends Model
     protected $fillable = [
         'session_id',
         'user_id',
+        'ebook_id',
         'score',
         'title',
         'duration',
@@ -27,5 +28,10 @@ class PostTestResult extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function ebook()
+    {
+        return $this->belongsTo(Ebook::class, 'ebook_id');
     }
 }

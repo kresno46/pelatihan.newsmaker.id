@@ -13,6 +13,7 @@ class PostTestSession extends Model
     protected $table = 'post_test_sessions';
 
     protected $fillable = [
+        'ebook_id',
         'title',
         'slug',
         'duration',
@@ -37,6 +38,11 @@ class PostTestSession extends Model
     public function jadwalAbsensis()
     {
         return $this->hasMany(JadwalAbsensi::class, 'post_test_session_id');
+    }
+
+    public function ebook()
+    {
+        return $this->belongsTo(Ebook::class, 'ebook_id');
     }
 
     /**
