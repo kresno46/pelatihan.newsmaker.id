@@ -85,7 +85,7 @@ class QuizController extends Controller
 
         // Query hasil
         $results = $session->results()
-            ->with(['user:id,name,email,role,cabang'])   // <-- pastikan 'role' dibawa agar accessor bisa jalan
+            ->with(['user:id,name,email,role,cabang,jabatan'])   // <-- pastikan 'role' dibawa agar accessor bisa jalan
             ->when($q !== '', function ($qr) use ($q) {
                 $qr->whereHas('user', function ($u) use ($q) {
                     $u->where('name', 'like', "%{$q}%")
@@ -157,7 +157,7 @@ class QuizController extends Controller
         $roleFilter = in_array($roleParam, $rolesPT, true) ? $roleParam : null;
 
         $rows = $session->results()
-            ->with(['user:id,name,email,role,cabang'])
+            ->with(['user:id,name,email,role,cabang,jabatan'])
             ->when($q !== '', function ($qr) use ($q) {
                 $qr->whereHas('user', function ($u) use ($q) {
                     $u->where('name', 'like', "%{$q}%")
@@ -172,13 +172,14 @@ class QuizController extends Controller
 
         return response()->streamDownload(function () use ($rows) {
             $out = fopen('php://output', 'w');
-            fputcsv($out, ['No', 'Nama', 'Perusahaan', 'Cabang', 'Skor', 'Status', 'Tanggal'], ';');
+            fputcsv($out, ['No', 'Nama', 'Perusahaan', 'Cabang', 'Jabatan', 'Skor', 'Status', 'Tanggal'], ';');
             foreach ($rows as $i => $r) {
                 fputcsv($out, [
                     $i + 1,
                     optional($r->user)->name,
                     optional($r->user)->nama_perusahaan,
                     optional($r->user)->cabang,
+                    optional($r->user)->jabatan,
                     $r->score,
                     $r->score >= 60 ? 'Lulus' : 'Tidak Lulus',
                     optional($r->created_at)->format('Y-m-d H:i'),
