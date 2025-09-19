@@ -102,6 +102,9 @@
                                         Role</th>
                                     <th
                                         class="px-6 py-3 text-start text-xs font-medium text-gray-700 dark:text-neutral-300 uppercase">
+                                        Cabang</th>
+                                    <th
+                                        class="px-6 py-3 text-start text-xs font-medium text-gray-700 dark:text-neutral-300 uppercase">
                                         Waktu Absensi</th>
                                     <th
                                         class="px-6 py-3 text-end text-xs font-medium text-gray-700 dark:text-neutral-300 uppercase">
@@ -120,6 +123,9 @@
                                             {{ $item->user->nama_perusahaan }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">
+                                            {{ $item->user->cabang ?? '-' }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">
                                             {{ \Carbon\Carbon::parse($item->waktu_absen)->locale('id')->translatedFormat('l, d F Y - H:i') }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
@@ -131,7 +137,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="4"
+                                        <td colspan="5"
                                             class="px-6 py-4 text-center text-sm text-gray-500 dark:text-neutral-400">
                                             Tidak ada data absensi.
                                         </td>
