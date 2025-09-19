@@ -12,12 +12,21 @@ class UserController extends Controller
     /**
      * Tampilkan semua user dengan role Trainer (Eksternal).
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Panggil orderBy sebelum paginate
-        $trainer = User::where('role', '!=', 'Admin')  // Ambil semua user yang bukan Admin
-            ->orderBy('created_at', 'DESC') // Urutkan berdasarkan created_at
-            ->paginate(10);
+        $query = User::where('role', '!=', 'Admin');  // Ambil semua user yang bukan Admin
+
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('email', 'like', '%' . $search . '%')
+                  ->orWhere('cabang', 'like', '%' . $search . '%')
+                  ->orWhere('role', 'like', '%' . $search . '%');
+            });
+        }
+
+        $trainer = $query->orderBy('created_at', 'DESC')->paginate(10);
 
         return view('trainer.index', compact('trainer'));
     }
