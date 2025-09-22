@@ -299,8 +299,9 @@
 
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-                                <button type="submit"
-                                    class="w-full text-left px-4 py-2 text-white bg-red-600 hover:bg-red-700">
+                                <button type="button"
+                                        onclick="window.location.href='https://www.newsmaker.id/'"
+                                        class="w-full text-left px-4 py-2 text-white bg-red-600 hover:bg-red-700">
                                     Keluar
                                 </button>
                             </form>
