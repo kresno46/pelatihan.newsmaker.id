@@ -114,7 +114,7 @@
                 <div class="date-sign">
                     <p class="date">Jakarta, {{ $date }}</p>
                     <img class="stamp" src="{{ public_path('sertifikat-stamp/RFB/STAMP-RFB.png') }}" alt="Stamp">
-                    <p class="ttd">Muhammad Barkah</p>
+                    <p class="ttd">MUHAMMAD BARKAH</p>
                     <hr class="signature-line">
                     <p class="title">Direktur Utama</p>
                     <div class="cert-id">ID Sertifikat: {{ $uuid }}</div>

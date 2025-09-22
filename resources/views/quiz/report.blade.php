@@ -23,8 +23,8 @@
                     {{ __('Kembali') }}
                 </a>
 
-                {{-- Export bawa filter q & sort agar konsisten --}}
-                <a href="{{ route('posttest.report.export', $session->slug) }}?q={{ request('q') }}&sort={{ request('sort') }}"
+                {{-- Export bawa filter q & sort & company agar konsisten --}}
+                <a href="{{ route('posttest.report.export', $session->slug) }}?q={{ request('q') }}&sort={{ request('sort') }}&company={{ request('company') }}"
                     class="px-3 py-2 text-sm rounded bg-green-500 hover:bg-green-600 text-white transition">
                     {{ __('Export CSV') }}
                 </a>
@@ -52,6 +52,10 @@
                     <option value="highest" {{ $sort === 'highest' ? 'selected' : '' }}>{{ __('Skor Tertinggi') }}
                     </option>
                     <option value="lowest" {{ $sort === 'lowest' ? 'selected' : '' }}>{{ __('Skor Terendah') }}</option>
+                    <option value="lulus_first" {{ $sort === 'lulus_first' ? 'selected' : '' }}>Lulus Dahulu</option>
+                    <option value="tidak_lulus_first" {{ $sort === 'tidak_lulus_first' ? 'selected' : '' }}>Tidak Lulus Dahulu</option>
+                    <option value="cabang_asc" {{ $sort === 'cabang_asc' ? 'selected' : '' }}>Cabang A-Z</option>
+                    <option value="cabang_desc" {{ $sort === 'cabang_desc' ? 'selected' : '' }}>Cabang Z-A</option>
                 </select>
             </div>
 
@@ -60,7 +64,7 @@
                 @php $per = (int)($filters['per_page'] ?? request('per_page', 12)); @endphp
                 <select name="per_page"
                     class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
-                    @foreach ([10, 12, 15, 20, 30, 50] as $n)
+                    @foreach ([10, 12, 15, 20, 30, 50, 100, 200] as $n)
                         <option value="{{ $n }}" {{ $per === $n ? 'selected' : '' }}>{{ $n }}
                         </option>
                     @endforeach
@@ -108,6 +112,17 @@
         </div>
     </div>
 
+    {{-- Tombol Hapus Semua Tidak Lulus --}}
+    <div class="mb-4">
+        <form action="{{ route('posttest.report.deleteAllFailed', ['session' => $session->slug]) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus semua hasil post test yang tidak lulus?');">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded">
+                Hapus Semua Tidak Lulus
+            </button>
+        </form>
+    </div>
+
     {{-- Tabel Hasil --}}
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden">
         @if ($results->isEmpty())
@@ -127,10 +142,22 @@
                                 {{ __('Nama') }}</th>
                             <th
                                 class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                Email</th>
+                                Perusahaan</th>
+                            <th
+                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Cabang</th>
+                            <th
+                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Jabatan</th>
                             <th
                                 class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 {{ __('Skor') }}</th>
+                            <th
+                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Status</th>
+                            <th
+                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Aksi</th>
                             <th
                                 class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 {{ __('Tanggal') }}</th>
@@ -148,12 +175,34 @@
                                 <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
                                     {{ $r->user->nama_perusahaan }}
                                 </td>
+                                <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                                    {{ $r->user->cabang }}
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                                    {{ $r->user->jabatan }}
+                                </td>
                                 <td class="px-4 py-3 text-sm font-semibold text-gray-900 dark:text-gray-100">
                                     {{ $r->score }}
                                 </td>
                                 <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-                                    {{ optional($r->created_at)->format('Y-m-d H:i') }}
-                                </td>
+                                @if($r->score >= 60)
+                                    <span class="text-green-600 font-semibold">{{ 'Lulus' }}</span>
+                                @else
+                                    <span class="text-red-600 font-semibold">{{ 'Tidak Lulus' }}</span>
+                                @endif
+                            </td>
+                            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                                @if($r->score < 60)
+                                <form action="{{ route('posttest.report.delete', ['session' => $session->slug, 'result' => $r->id]) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus hasil post test user ini?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-red-600 hover:text-red-800 font-semibold">Hapus</button>
+                                </form>
+                                @endif
+                            </td>
+                            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                                {{ optional($r->created_at)->format('Y-m-d H:i') }}
+                            </td>
                             </tr>
                         @endforeach
                     </tbody>

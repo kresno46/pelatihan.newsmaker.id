@@ -62,7 +62,7 @@ class AbsensiAdminController extends Controller
 
     public function downloadExcel($idJadwal)
     {
-        $absensiList = Absensi::where('jadwal_id', $idJadwal)->get();
+        $absensiList = Absensi::with('user')->where('jadwal_id', $idJadwal)->get();
         $jadwal = JadwalAbsensi::findOrFail($idJadwal);
 
         $judul = Str::slug($jadwal->title, '_'); // Ubah jadi format file-friendly
@@ -76,7 +76,7 @@ class AbsensiAdminController extends Controller
     public function downloadPdf($idJadwal)
     {
         $jadwal = JadwalAbsensi::findOrFail($idJadwal);
-        $absensiList = Absensi::where('jadwal_id', $idJadwal)->get();
+        $absensiList = Absensi::with('user')->where('jadwal_id', $idJadwal)->get();
 
         $judul = Str::slug($jadwal->title, '_');
         $tanggal = Carbon::now()->format('Ymd_His');

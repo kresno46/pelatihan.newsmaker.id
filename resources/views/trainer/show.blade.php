@@ -36,10 +36,10 @@
                     </p>
                 </div>
 
-                <div class="mb-4">
+                {{-- <div class="mb-4">
                     <p class="text-sm text-gray-500 dark:text-gray-400">Warga Negara</p>
                     <p class="text-lg font-semibold">{{ $trainer->warga_negara ?? '-' }}</p>
-                </div>
+                </div> --}}
 
                 <div class="mb-4">
                     <p class="text-sm text-gray-500 dark:text-gray-400">Status Verifikasi Email</p>
@@ -91,10 +91,10 @@
                     <p class="text-lg font-semibold">{{ $trainer->no_tlp ?? '-' }}</p>
                 </div>
 
-                <div class="mb-4">
+                {{-- <div class="mb-4">
                     <p class="text-sm text-gray-500 dark:text-gray-400">Pekerjaan</p>
                     <p class="text-lg font-semibold">{{ $trainer->pekerjaan ?? '-' }}</p>
-                </div>
+                </div> --}}
 
                 <div class="mb-4">
                     <p class="text-sm text-gray-500 dark:text-gray-400">Cabang</p>

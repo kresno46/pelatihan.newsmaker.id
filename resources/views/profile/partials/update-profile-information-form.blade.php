@@ -41,11 +41,28 @@
                 <x-input-error :messages="$errors->get('email')" class="mt-2" />
             </div>
 
-            {{-- Jabatan --}}
+            {{-- Jabatan
             <div class="mt-4">
                 <x-input-label-append for="jabatan" :value="__('Jabatan')" :append="empty($user->jabatan) ? '<span class=\'text-red-500\'>*</span>' : ''" />
                 <x-text-input id="jabatan" type="text" name="jabatan" class="block mt-1 w-full" readonly
                     :value="old('jabatan', $user->jabatan)" />
+                <x-input-error :messages="$errors->get('jabatan')" class="mt-2" />
+            </div> --}}
+
+            {{-- Jabatan --}}
+            <div class="mt-4">
+                <x-input-label-append for="jabatan" :value="__('Jabatan')" :append="empty($user->jabatan) ? '<span class=\'text-red-500\'>*</span>' : ''" />
+                
+                <select id="jabatan" name="jabatan" class="block mt-1 w-full rounded-md shadow-sm border-gray-300
+                            dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
+                    <option value="">-- Pilih Jabatan --</option>
+                    @foreach (['BC', 'SBC', 'SBM', 'BM'] as $jabatan)
+                        <option value="{{ $jabatan }}" {{ old('jabatan', $user->jabatan) === $jabatan ? 'selected' : '' }}>
+                            {{ $jabatan }}
+                        </option>
+                    @endforeach
+                </select>
+
                 <x-input-error :messages="$errors->get('jabatan')" class="mt-2" />
             </div>
 
@@ -89,12 +106,12 @@
             </div>
 
             {{-- Warga Negara --}}
-            <div class="mt-4">
+            {{-- <div class="mt-4">
                 <x-input-label-append for="warga_negara" :value="__('Warga Negara')" :append="empty($user->warga_negara) ? '<span class=\'text-red-500\'>*</span>' : ''" />
                 <x-text-input id="warga_negara" type="text" name="warga_negara" class="block mt-1 w-full"
                     :value="old('warga_negara', $user->warga_negara)" />
                 <x-input-error :messages="$errors->get('warga_negara')" class="mt-2" />
-            </div>
+            </div> --}}
 
             {{-- Alamat --}}
             <div class="mt-4">
@@ -114,7 +131,7 @@
             </div>
 
             {{-- Pekerjaan --}}
-            @php
+            {{-- @php
                 $pekerjaanList = [
                     'Pelajar/Mahasiswa',
                     'PNS',
@@ -153,7 +170,7 @@
                     @endforeach
                 </select>
                 <x-input-error :messages="$errors->get('pekerjaan')" class="mt-2" />
-            </div>
+            </div> --}}
 
             {{-- Role --}}
             @php

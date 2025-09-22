@@ -85,27 +85,34 @@ class QuizController extends Controller
 
         // Query hasil
         $results = $session->results()
-            ->with(['user:id,name,email,role'])   // <-- pastikan 'role' dibawa agar accessor bisa jalan
+            ->with(['user:id,name,email,role,cabang,jabatan'])   // <-- pastikan 'role' dibawa agar accessor bisa jalan
+            ->leftJoin('users', 'post_test_results.user_id', '=', 'users.id')
             ->when($q !== '', function ($qr) use ($q) {
-                $qr->whereHas('user', function ($u) use ($q) {
-                    $u->where('name', 'like', "%{$q}%")
-                        ->orWhere('email', 'like', "%{$q}%");
+                $qr->where(function ($w) use ($q) {
+                    $w->where('users.name', 'like', "%{$q}%")
+                        ->orWhere('users.email', 'like', "%{$q}%");
                 });
             })
             ->when($roleFilter, function ($qr) use ($roleFilter) {
-                $qr->whereHas('user', fn($u) => $u->where('role', $roleFilter));
+                $qr->where('users.role', $roleFilter);
             })
-            ->when($sort === 'highest', fn($qr) => $qr->orderByDesc('score'))
-            ->when($sort === 'lowest',  fn($qr) => $qr->orderBy('score'))
-            ->when($sort === 'oldest',  fn($qr) => $qr->orderBy('created_at'))
-            ->when($sort === 'latest',  fn($qr) => $qr->orderByDesc('created_at'))
+            ->when($sort === 'highest', fn($qr) => $qr->orderByDesc('post_test_results.score'))
+            ->when($sort === 'lowest',  fn($qr) => $qr->orderBy('post_test_results.score'))
+            ->when($sort === 'oldest',  fn($qr) => $qr->orderBy('post_test_results.created_at'))
+            ->when($sort === 'latest',  fn($qr) => $qr->orderByDesc('post_test_results.created_at'))
+            ->when($sort === 'lulus_first', fn($qr) => $qr->orderByRaw('CASE WHEN post_test_results.score >= 60 THEN 1 ELSE 0 END DESC'))
+            ->when($sort === 'tidak_lulus_first', fn($qr) => $qr->orderByRaw('CASE WHEN post_test_results.score >= 60 THEN 1 ELSE 0 END ASC'))
+            ->when($sort === 'cabang_asc', fn($qr) => $qr->orderBy('users.cabang', 'asc'))
+            ->when($sort === 'cabang_desc', fn($qr) => $qr->orderBy('users.cabang', 'desc'))
+            ->select('post_test_results.*')
             ->paginate($perPage)
             ->withQueryString();
 
         // Agregat (ikuti filter company bila ada)
         $aggregates = $session->results()
-            ->when($roleFilter, fn($qr) => $qr->whereHas('user', fn($u) => $u->where('role', $roleFilter)))
-            ->selectRaw('COUNT(*) AS total, AVG(score) AS avg_score, MAX(score) AS max_score, MIN(score) AS min_score')
+            ->leftJoin('users', 'post_test_results.user_id', '=', 'users.id')
+            ->when($roleFilter, fn($qr) => $qr->where('users.role', $roleFilter))
+            ->selectRaw('COUNT(*) AS total, AVG(post_test_results.score) AS avg_score, MAX(post_test_results.score) AS max_score, MIN(post_test_results.score) AS min_score')
             ->first();
 
         // Rekap per perusahaan (group by users.role, lalu map ke nama perusahaan)
@@ -144,42 +151,85 @@ class QuizController extends Controller
         ]);
     }
 
+    public function deleteResult(PostTestSession $session, PostTestResult $result)
+    {
+        // Ensure the result belongs to the session
+        if ($result->session_id !== $session->id) {
+            abort(404);
+        }
+
+        // Only allow deleting if score < 60
+        if ($result->score >= 60) {
+            return back()->with('error', 'Tidak dapat menghapus hasil yang lulus.');
+        }
+
+        $result->delete();
+
+        return back()->with('success', 'Hasil post test berhasil dihapus.');
+    }
+
+    public function deleteAllFailed(PostTestSession $session)
+    {
+        $deletedCount = $session->results()->where('score', '<', 60)->delete();
+
+        return back()->with('success', "Berhasil menghapus {$deletedCount} hasil post test yang tidak lulus.");
+    }
+
     public function reportExport(Request $request, PostTestSession $session)
     {
         // (Kalau kamu sudah migrasi ke XLSX pakai Laravel Excel, ganti implementasi ini)
         $filename = 'posttest-report-' . $session->slug . '-' . now()->format('Ymd_His') . '.csv';
 
         $q         = trim($request->input('q', ''));
-        $roleParam = trim((string) $request->input('role_pt', ''));
-        $rolesPT   = ['Trainer (RFB)', 'Trainer (SGB)', 'Trainer (KPF)', 'Trainer (BPF)', 'Trainer (EWF)'];
-        $roleFilter = in_array($roleParam, $rolesPT, true) ? $roleParam : null;
+        $sort      = $request->input('sort', 'latest');       // latest|oldest|highest|lowest
+        $company   = trim((string) $request->input('company', '')); // filter berdasarkan NAMA PERUSAHAAN
+
+        // Konversi filter perusahaan → kode role (karena query ke kolom users.role)
+        $roleFilter = array_search($company, [
+            'Trainer (RFB)' => 'PT Rifan Financindo Berjangka',
+            'Trainer (SGB)' => 'PT Solid Gold Berjangka',
+            'Trainer (KPF)' => 'PT Kontak Perkasa Futures',
+            'Trainer (BPF)' => 'PT Best Profit Futures',
+            'Trainer (EWF)' => 'PT Equity World Futures',
+        ], true) ?: null;
 
         $rows = $session->results()
-            ->with(['user:id,name,email,role_pt'])
+            ->with(['user:id,name,email,role,cabang,jabatan'])
+            ->leftJoin('users', 'post_test_results.user_id', '=', 'users.id')
             ->when($q !== '', function ($qr) use ($q) {
-                $qr->whereHas('user', function ($u) use ($q) {
-                    $u->where('name', 'like', "%{$q}%")
-                        ->orWhere('email', 'like', "%{$q}%");
+                $qr->where(function ($w) use ($q) {
+                    $w->where('users.name', 'like', "%{$q}%")
+                        ->orWhere('users.email', 'like', "%{$q}%");
                 });
             })
             ->when($roleFilter, function ($qr) use ($roleFilter) {
-                $qr->whereHas('user', fn($u) => $u->where('role_pt', $roleFilter));
+                $qr->where('users.role', $roleFilter);
             })
-            ->orderByDesc('created_at')
-            ->get(['id', 'user_id', 'score', 'created_at']);
+            ->when($sort === 'highest', fn($qr) => $qr->orderByDesc('post_test_results.score'))
+            ->when($sort === 'lowest',  fn($qr) => $qr->orderBy('post_test_results.score'))
+            ->when($sort === 'oldest',  fn($qr) => $qr->orderBy('post_test_results.created_at'))
+            ->when($sort === 'latest',  fn($qr) => $qr->orderByDesc('post_test_results.created_at'))
+            ->when($sort === 'lulus_first', fn($qr) => $qr->orderByRaw('CASE WHEN post_test_results.score >= 60 THEN 1 ELSE 0 END DESC'))
+            ->when($sort === 'tidak_lulus_first', fn($qr) => $qr->orderByRaw('CASE WHEN post_test_results.score >= 60 THEN 1 ELSE 0 END ASC'))
+            ->when($sort === 'cabang_asc', fn($qr) => $qr->orderBy('users.cabang', 'asc'))
+            ->when($sort === 'cabang_desc', fn($qr) => $qr->orderBy('users.cabang', 'desc'))
+            ->select('post_test_results.*')
+            ->get();
 
         return response()->streamDownload(function () use ($rows) {
             $out = fopen('php://output', 'w');
-            fputcsv($out, ['No', 'Nama', 'Email', 'RolePT', 'Skor', 'Dikirim pada']);
+            fputcsv($out, ['No', 'Nama', 'Perusahaan', 'Cabang', 'Jabatan', 'Skor', 'Status', 'Tanggal'], ';');
             foreach ($rows as $i => $r) {
                 fputcsv($out, [
                     $i + 1,
                     optional($r->user)->name,
-                    optional($r->user)->email,
-                    optional($r->user)->role_pt,
+                    optional($r->user)->nama_perusahaan,
+                    optional($r->user)->cabang,
+                    optional($r->user)->jabatan,
                     $r->score,
-                    optional($r->created_at)->format('Y-m-d H:i:s'),
-                ]);
+                    $r->score >= 60 ? 'Lulus' : 'Tidak Lulus',
+                    optional($r->created_at)->format('Y-m-d H:i'),
+                ], ';');
             }
             fclose($out);
         }, $filename, ['Content-Type' => 'text/csv; charset=UTF-8']);

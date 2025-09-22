@@ -90,7 +90,7 @@ class PostTestController extends Controller
             ->latest()
             ->first();
 
-        if ($existingResult && $existingResult->score >= 75) {
+        if ($existingResult && $existingResult->score >= 60) {
             return redirect()->route('dashboard')
                 ->with('info', 'Anda sudah mengerjakan post test ini dan mendapatkan nilai yang cukup.');
         }
@@ -135,13 +135,13 @@ class PostTestController extends Controller
             ->latest()
             ->first();
 
-        if ($latestResult && $latestResult->score >= 75) {
+        if ($latestResult && $latestResult->score >= 60) {
             return redirect()->route('dashboard')
                 ->with('info', 'Anda sudah mengerjakan post test ini dengan nilai yang cukup.');
         }
 
         // Hapus nilai lama jika ada (dan skor < 75)
-        if ($latestResult && $latestResult->score < 75) {
+        if ($latestResult && $latestResult->score < 60) {
             $latestResult->delete();
         }
 

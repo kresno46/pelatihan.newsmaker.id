@@ -77,6 +77,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/{session:slug}/report', [QuizController::class, 'report'])->name('posttest.report');
         // (opsional) export CSV
         Route::get('/{session:slug}/report/export', [QuizController::class, 'reportExport'])->name('posttest.report.export');
+        Route::delete('/{session:slug}/report/delete-all-failed', [QuizController::class, 'deleteAllFailed'])->name('posttest.report.deleteAllFailed');
+        Route::delete('/{session:slug}/report/{result}', [QuizController::class, 'deleteResult'])->name('posttest.report.delete');
 
         // === nested: /post-test/{session}/edit/question ===
         Route::prefix('{session}/edit')->group(function () {

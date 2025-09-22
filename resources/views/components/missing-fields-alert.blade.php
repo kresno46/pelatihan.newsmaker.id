@@ -7,10 +7,10 @@
         'jenis_kelamin' => 'Jenis Kelamin',
         'tempat_lahir' => 'Tempat Lahir',
         'tanggal_lahir' => 'Tanggal Lahir',
-        'warga_negara' => 'Warga Negara',
+        // 'warga_negara' => 'Warga Negara',
         'alamat' => 'Alamat',
         'no_tlp' => 'Nomor Telepon',
-        'pekerjaan' => 'Pekerjaan',
+        // 'pekerjaan' => 'Pekerjaan',
         'role' => 'Role',
         'cabang' => 'cabang',
     ];

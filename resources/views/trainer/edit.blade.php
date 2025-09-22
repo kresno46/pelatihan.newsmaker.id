@@ -77,13 +77,13 @@
                     class="mt-1 block w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
             </div>
 
-            <div class="mb-4">
+            {{-- <div class="mb-4">
                 <label for="warga_negara" class="block text-sm font-medium text-gray-700 dark:text-white">Warga
                     Negara</label>
                 <input type="text" name="warga_negara" id="warga_negara"
                     value="{{ old('warga_negara', $trainer->warga_negara) }}"
                     class="mt-1 block w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-            </div>
+            </div> --}}
 
             <div class="mb-4">
                 <label for="alamat" class="block text-sm font-medium text-gray-700 dark:text-white">Alamat</label>
@@ -103,7 +103,7 @@
                     class="mt-1 block w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
             </div>
 
-            <div class="mb-6">
+            {{-- <div class="mb-6">
                 <label for="pekerjaan" class="block text-sm font-medium text-gray-700 dark:text-white">Pekerjaan</label>
                 <select name="pekerjaan" id="pekerjaan"
                     class="mt-1 block w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
@@ -114,7 +114,7 @@
                         </option>
                     @endforeach
                 </select>
-            </div>
+            </div> --}}
 
             <div class="mb-4">
                 <label for="password" class="block text-sm font-medium text-gray-700 dark:text-white">Password Baru

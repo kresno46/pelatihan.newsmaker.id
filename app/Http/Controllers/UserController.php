@@ -12,12 +12,21 @@ class UserController extends Controller
     /**
      * Tampilkan semua user dengan role Trainer (Eksternal).
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Panggil orderBy sebelum paginate
-        $trainer = User::where('role', '!=', 'Admin')  // Ambil semua user yang bukan Admin
-            ->orderBy('created_at', 'DESC') // Urutkan berdasarkan created_at
-            ->paginate(10);
+        $query = User::where('role', '!=', 'Admin');  // Ambil semua user yang bukan Admin
+
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('email', 'like', '%' . $search . '%')
+                  ->orWhere('cabang', 'like', '%' . $search . '%')
+                  ->orWhere('role', 'like', '%' . $search . '%');
+            });
+        }
+
+        $trainer = $query->orderBy('created_at', 'DESC')->paginate(10);
 
         return view('trainer.index', compact('trainer'));
     }
@@ -52,10 +61,10 @@ class UserController extends Controller
             'jenis_kelamin' => 'nullable|string',
             'tempat_lahir' => 'nullable|string',
             'tanggal_lahir' => 'nullable|date',
-            'warga_negara' => 'nullable|string',
+            // 'warga_negara' => 'nullable|string',
             'alamat' => 'nullable|string',
             'no_tlp' => 'nullable|string',
-            'pekerjaan' => 'nullable|string',
+            // 'pekerjaan' => 'nullable|string',
             'cabang' => 'nullable|string'
         ]);
 
@@ -67,10 +76,10 @@ class UserController extends Controller
             'jenis_kelamin' => $validated['jenis_kelamin'] ?? null,
             'tempat_lahir' => $validated['tempat_lahir'] ?? null,
             'tanggal_lahir' => $validated['tanggal_lahir'] ?? null,
-            'warga_negara' => $validated['warga_negara'] ?? null,
+            // 'warga_negara' => $validated['warga_negara'] ?? null,
             'alamat' => $validated['alamat'] ?? null,
             'no_tlp' => $validated['no_tlp'] ?? null,
-            'pekerjaan' => $validated['pekerjaan'] ?? null,
+            // 'pekerjaan' => $validated['pekerjaan'] ?? null,
             'cabang' => $validated['cabang'] ?? null,
         ]);
 
@@ -105,10 +114,10 @@ class UserController extends Controller
             'jenis_kelamin' => 'nullable|string',
             'tempat_lahir' => 'nullable|string',
             'tanggal_lahir' => 'nullable|date',
-            'warga_negara' => 'nullable|string',
+            // 'warga_negara' => 'nullable|string',
             'alamat' => 'nullable|string',
             'no_tlp' => 'nullable|string',
-            'pekerjaan' => 'nullable|string',
+            // 'pekerjaan' => 'nullable|string',
             'cabang' => 'nullable|string'
         ]);
 
@@ -119,10 +128,10 @@ class UserController extends Controller
             'jenis_kelamin' => $validated['jenis_kelamin'] ?? $trainer->jenis_kelamin,
             'tempat_lahir' => $validated['tempat_lahir'] ?? $trainer->tempat_lahir,
             'tanggal_lahir' => $validated['tanggal_lahir'] ?? $trainer->tanggal_lahir,
-            'warga_negara' => $validated['warga_negara'] ?? $trainer->warga_negara,
+            // 'warga_negara' => $validated['warga_negara'] ?? $trainer->warga_negara,
             'alamat' => $validated['alamat'] ?? $trainer->alamat,
             'no_tlp' => $validated['no_tlp'] ?? $trainer->no_tlp,
-            'pekerjaan' => $validated['pekerjaan'] ?? $trainer->pekerjaan,
+            // 'pekerjaan' => $validated['pekerjaan'] ?? $trainer->pekerjaan,
             'cabang' => $validated['cabang'] ?? $trainer->cabang,
         ]);
 

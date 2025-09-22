@@ -28,9 +28,9 @@ class EnsureProfileIsComplete
             !$user->tanggal_lahir ||
             !$user->alamat ||
             !$user->jenis_kelamin ||
-            !$user->warga_negara ||
+            // !$user->warga_negara ||
             !$user->no_tlp ||
-            !$user->pekerjaan ||
+            // !$user->pekerjaan ||
             !$user->role ||
             !$user->cabang
         ) {

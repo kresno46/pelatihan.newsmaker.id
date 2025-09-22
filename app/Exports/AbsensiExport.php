@@ -22,7 +22,7 @@ class AbsensiExport implements FromCollection, WithHeadings, WithMapping
 
     public function headings(): array
     {
-        return ['Nama', 'Perusahaan', 'Waktu Absen'];
+        return ['Nama', 'Perusahaan', 'Cabang', 'Waktu Absen'];
     }
 
     public function map($absensi): array
@@ -30,6 +30,7 @@ class AbsensiExport implements FromCollection, WithHeadings, WithMapping
         return [
             $absensi->user->name ?? '-',
             $this->getNamaPerusahaan($absensi->user->role ?? '-'),
+            $absensi->user->cabang ?? '-',
             $absensi->waktu_absen
                 ? \Carbon\Carbon::parse($absensi->waktu_absen)->format('d F Y, H:i')
                 : '-',

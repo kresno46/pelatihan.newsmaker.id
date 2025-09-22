@@ -114,7 +114,7 @@
                 <div class="date-sign">
                     <p class="date">Jakarta, {{ $date }}</p>
                     <img class="stamp" src="{{ public_path('sertifikat-stamp/BPF/STAMP-BPF.png') }}" alt="Stamp">
-                    <p class="ttd">DEDDY REYNOLD LAGONAH</p>
+                    <p class="ttd">NURWANTO</p>
                     <hr class="signature-line">
                     <p class="title">Direktur Utama</p>
                     <div class="cert-id">ID Sertifikat: {{ $uuid }}</div>

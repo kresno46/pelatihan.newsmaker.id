@@ -50,10 +50,10 @@ class ProfileController extends Controller
             'jenis_kelamin' => ['nullable', 'in:Pria,Wanita'],
             'tempat_lahir' => ['nullable', 'string', 'max:20'],
             'tanggal_lahir' => ['nullable', 'date'],
-            'warga_negara' => ['nullable', 'string', 'max:50'],
+            // 'warga_negara' => ['nullable', 'string', 'max:50'],
             'alamat' => ['nullable', 'string'],
             'no_tlp' => ['nullable', 'string', 'max:20'],
-            'pekerjaan' => ['nullable', 'string', 'max:50'],
+            // 'pekerjaan' => ['nullable', 'string', 'max:50'],
             'jabatan' => ['nullable', 'in:BC,SBC,SBM,BM'],
             'cabang' => ['nullable', 'string'],
         ]);

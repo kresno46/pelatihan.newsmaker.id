@@ -39,16 +39,20 @@
         @endphp
 
         <div class="w-full flex">
+            <a href="{{ route('dashboard') }}"
+                class="bg-gray-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-600 transition cursor-pointer sm:w-auto">
+                <i class="fa-solid fa-arrow-left text-sm"></i>
+            </a>
             <a href="{{ route('post-test.index', ['tipe' => 'PATD']) }}"
-                class="py-2 shadow text-center rounded-t-3xl w-full 
-                    {{ $activeTipe === 'PATD' ? 'bg-white font-semibold' : 'bg-gray-300 hover:bg-gray-200 transition-all' }}">
+                class="py-2 shadow text-center rounded-t-3xl w-full
+                    {{ $activeTipe === 'PATD' ? 'bg-white dark:bg-gray-800 font-semibold' : 'bg-gray-300 dark:bg-gray-600 hover:bg-gray-200 dark:hover:bg-gray-500 transition-all' }}">
                 PATD
             </a>
-            <a href="{{ route('post-test.index', ['tipe' => 'PATL']) }}"
+            {{-- <a href="{{ route('post-test.index', ['tipe' => 'PATL']) }}"
                 class="py-2 shadow text-center rounded-t-3xl w-full 
                     {{ $activeTipe === 'PATL' ? 'bg-white font-semibold' : 'bg-gray-300 hover:bg-gray-200 transition-all' }}">
                 PATL
-            </a>
+            </a> --}}
         </div>
 
         {{-- Tabel Data --}}
@@ -75,8 +79,8 @@
                             <td class="px-4 py-3">
                                 @if ($posttest->progres === 'Belum Dikerjakan')
                                     <span class="text-yellow-600 font-semibold">Belum Dikerjakan</span>
-                                @elseif ($posttest->progres === 'Nilai di Bawah 75')
-                                    <span class="text-red-600 font-semibold">Nilai di Bawah 75
+                                @elseif ($posttest->progres === 'Nilai di Bawah 60')
+                                    <span class="text-red-600 font-semibold">Nilai di Bawah 60
                                         ({{ $posttest->score }})
                                     </span>
                                 @else
@@ -116,11 +120,11 @@
                                             class="inline-block w-full bg-blue-600 text-white text-xs px-3 py-1 rounded hover:bg-blue-700">
                                             Mulai
                                         </a>
-                                    @elseif ($posttest->progres === 'Nilai di Bawah 75')
-                                        <a href="{{ route('post-test.show', $posttest->slug) }}"
+                                    @elseif ($posttest->progres === 'Nilai di Bawah 60')
+                                        {{-- <a href="{{ route('post-test.show', $posttest->slug) }}"
                                             class="inline-block w-full bg-orange-600 text-white text-xs px-3 py-1 rounded hover:bg-orange-700">
                                             Ulangi
-                                        </a>
+                                        </a> --}}
                                     @else
                                         <a href="{{ route('post-test.result', $posttest->result_id) }}"
                                             class="inline-block w-full bg-gray-600 text-white text-xs px-3 py-1 rounded hover:bg-gray-700">

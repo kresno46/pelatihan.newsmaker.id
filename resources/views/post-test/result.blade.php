@@ -8,8 +8,8 @@
         <div class="text-center mb-10">
             <h2 class="text-4xl font-bold text-gray-800 dark:text-white">📊 Hasil Post Test</h2>
             <p class="text-gray-500 dark:text-gray-400 mt-2 text-lg">Detail lengkap hasil pengerjaan Anda</p>
-            @if ($result->score < 75)
-                <p class="text-red-600 font-semibold">Nilai Anda kurang dari 75. Silakan ulangi post test ini.</p>
+            @if ($result->score < 60)
+                <p class="text-red-600 font-semibold">Nilai Anda kurang dari 60. Silakan Remedial PATD Gelombang Berikutnya😭.</p>
             @endif
         </div>
 

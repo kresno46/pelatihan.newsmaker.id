@@ -5,7 +5,7 @@
 @section('content')
     <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-lg">
         <div class="flex items-center justify-between mb-5">
-            <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Daftar Admin</h1>
+            <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Daftar User</h1>
 
             <div class="flex items-center gap-4">
                 @if (session('Alert'))
@@ -15,10 +15,14 @@
                     </div>
                 @endif
 
-                <a href="{{ route('trainer.create') }}"
-                    class="inline-block px-4 py-2 bg-blue-500 text-white text-xs rounded hover:bg-blue-600">
-                    Tambah Admin
-                </a>
+                <form method="GET" action="{{ route('trainer.index') }}" class="flex items-center gap-2">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari trainer..."
+                        class="px-3 py-2 border border-gray-300 rounded text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    <button type="submit"
+                        class="px-4 py-2 bg-blue-500 text-white text-xs rounded hover:bg-blue-600">
+                        Cari
+                    </button>
+                </form>
             </div>
         </div>
 
@@ -32,6 +36,8 @@
                         <th class="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-200">#</th>
                         <th class="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-200">Nama</th>
                         <th class="px-6 py-3 text-center text-sm font-medium text-gray-700 dark:text-gray-200">Email</th>
+                        <th class="px-6 py-3 text-center text-sm font-medium text-gray-700 dark:text-gray-200">Perusahaan</th>
+                        <th class="px-6 py-3 text-center text-sm font-medium text-gray-700 dark:text-gray-200">Cabang</th>
                         <th class="px-6 py-3 text-center text-sm font-medium text-gray-700 dark:text-gray-200">Akun
                             Terverifikasi</th>
                         <th class="px-6 py-3 text-center text-sm font-medium text-gray-700 dark:text-gray-200">Tanggal
@@ -50,6 +56,12 @@
                             </td>
                             <td class="px-6 py-4 text-sm text-center text-gray-800 dark:text-gray-100">
                                 {{ $item->email }}
+                            </td>
+                            <td class="px-6 py-4 text-sm text-center text-gray-800 dark:text-gray-100">
+                                {{ $item->namaPerusahaan ?? '-' }}
+                            </td>
+                            <td class="px-6 py-4 text-sm text-center text-gray-800 dark:text-gray-100">
+                                {{ $item->cabang ?? '-' }}
                             </td>
                             <td class="px-6 py-4 text-sm text-center">
                                 @if ($item->email_verified_at == null)
@@ -85,7 +97,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td class="px-6 py-4 text-sm text-gray-800 dark:text-gray-100 text-center" colspan="6">
+                            <td class="px-6 py-4 text-sm text-gray-800 dark:text-gray-100 text-center" colspan="8">
                                 Belum ada admin
                             </td>
                         </tr>
