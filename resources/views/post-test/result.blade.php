@@ -37,7 +37,7 @@
             <div class="bg-gray-50 dark:bg-gray-800 p-5 rounded-lg shadow-sm">
                 @php
                     $correct = round(($result->score / 100) * $session->questions->count());
-                    $pass = $result->score >= 70;
+                    $pass = $result->score >= 60;
                 @endphp
                 <p class="text-gray-500 dark:text-gray-400">✅ <span class="font-semibold">Jawaban Benar</span></p>
                 <p class="text-gray-800 dark:text-white text-lg">{{ $correct }} dari {{ $session->questions->count() }}
