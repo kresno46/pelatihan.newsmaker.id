@@ -19,6 +19,14 @@ class Ebook extends Model
         'cover',
         'file',
         'folder_id',
+        'api_id',
+        'api_data',
+        'synced_at',
+    ];
+
+    protected $casts = [
+        'api_data' => 'array',
+        'synced_at' => 'datetime',
     ];
 
     public function postTestSessions()
@@ -73,5 +81,48 @@ class Ebook extends Model
         }
 
         return $slug;
+    }
+
+    /**
+     * Scope untuk ebook yang sudah di-sync dari API
+     */
+    public function scopeSyncedFromApi($query)
+    {
+        return $query->whereNotNull('api_id');
+    }
+
+    /**
+     * Scope untuk ebook yang perlu di-sync
+     */
+    public function scopeNeedsSync($query)
+    {
+        return $query->where(function ($q) {
+            $q->whereNull('synced_at')
+              ->orWhere('synced_at', '<', now()->subHours(1));
+        });
+    }
+
+    /**
+     * Check if ebook is from API
+     */
+    public function isFromApi()
+    {
+        return !is_null($this->api_id);
+    }
+
+    /**
+     * Get API data attribute
+     */
+    public function getApiDataAttribute($value)
+    {
+        return $value ? json_decode($value, true) : null;
+    }
+
+    /**
+     * Set API data attribute
+     */
+    public function setApiDataAttribute($value)
+    {
+        $this->attributes['api_data'] = $value ? json_encode($value) : null;
     }
 }

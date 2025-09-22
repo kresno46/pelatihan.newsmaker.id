@@ -6,16 +6,31 @@ use App\Models\Ebook;
 use App\Models\FolderEbook;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\Services\EbookApiService;
 
 class EbookController extends Controller
 {
+    protected $apiService;
+
+    public function __construct(EbookApiService $apiService)
+    {
+        $this->apiService = $apiService;
+    }
+
     /**
      * Tampilkan daftar eBook dalam folder.
      */
     public function index(Request $request, $folderSlug)
     {
         $folder = FolderEbook::where('slug', $folderSlug)->firstOrFail();
-        $query = Ebook::where('folder_id', $folder->id);
+
+        // Sync ebooks for this folder from API
+        if ($folder->isFromApi()) {
+            $this->apiService->syncEbooksToDatabaseBySlug($folderSlug, $folder->id);
+        }
+
+        // Get ebooks from database (synced from API)
+        $query = Ebook::where('folder_id', $folder->id)->whereNotNull('api_id');
 
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
@@ -31,48 +46,24 @@ class EbookController extends Controller
 
     /**
      * Tampilkan form tambah eBook.
+     * DISABLED: Admin input disabled, but method kept for compatibility
      */
     public function create($folderSlug)
     {
-        $folder = FolderEbook::where('slug', $folderSlug)->firstOrFail();
-        return view('ebook.create', compact('folder'));
+        // This method is disabled but kept for compatibility
+        // Admin input is disabled as requested
+        abort(403, 'Admin input untuk ebook dinonaktifkan. Data diambil dari API.');
     }
 
     /**
      * Simpan eBook baru.
+     * DISABLED: Admin input disabled, but method kept for compatibility
      */
     public function store(Request $request, $folderSlug)
     {
-        $folder = FolderEbook::where('slug', $folderSlug)->firstOrFail();
-
-        $request->validate([
-            'title'     => 'required|max:100|unique:ebooks,title',
-            'deskripsi' => 'required',
-            'cover'     => 'required|mimes:jpg,jpeg,png|max:2048',
-            'file'      => 'required|mimes:pdf|max:10240',
-        ]);
-
-        $ebookSlug = Str::slug($request->title) . '-' . time();
-
-        // Upload Cover
-        $coverName = time() . '_' . $request->file('cover')->getClientOriginalName();
-        $request->file('cover')->move(public_path('uploads/cover'), $coverName);
-
-        // Upload File Ebook
-        $fileName = time() . '_' . $request->file('file')->getClientOriginalName();
-        $request->file('file')->move(public_path('uploads/ebook'), $fileName);
-
-        // Simpan Data
-        Ebook::create([
-            'folder_id' => $folder->id,
-            'title'     => $request->title,
-            'slug'      => $ebookSlug,
-            'deskripsi' => $request->deskripsi,
-            'cover'     => 'uploads/cover/' . $coverName,
-            'file'      => 'uploads/ebook/' . $fileName,
-        ]);
-
-        return redirect()->route('ebook.index', $folderSlug)->with('success', 'Ebook berhasil ditambahkan!');
+        // This method is disabled but kept for compatibility
+        // Admin input is disabled as requested
+        abort(403, 'Admin input untuk ebook dinonaktifkan. Data diambil dari API.');
     }
 
     /**
@@ -81,81 +72,81 @@ class EbookController extends Controller
     public function show($folderSlug, $ebookSlug)
     {
         $folder = FolderEbook::where('slug', $folderSlug)->firstOrFail();
-
-        $ebook = Ebook::firstOrFail();
+        $ebook = Ebook::where('slug', $ebookSlug)->where('folder_id', $folder->id)->firstOrFail();
 
         return view('ebook.show', compact('ebook', 'folder'));
     }
 
     /**
      * Tampilkan form edit eBook.
+     * DISABLED: Admin input disabled, but method kept for compatibility
      */
     public function edit($folderSlug, $ebookSlug)
     {
-        $folder = FolderEbook::where('slug', $folderSlug)->firstOrFail();
-        $ebook = Ebook::where('folder_id', $folder->id)->where('slug', $ebookSlug)->firstOrFail();
-
-        return view('ebook.edit', compact('ebook', 'folder'));
+        // This method is disabled but kept for compatibility
+        // Admin input is disabled as requested
+        abort(403, 'Admin input untuk ebook dinonaktifkan. Data diambil dari API.');
     }
 
     /**
      * Update eBook.
+     * DISABLED: Admin input disabled, but method kept for compatibility
      */
     public function update(Request $request, $folderSlug, $ebookSlug)
     {
-        $folder = FolderEbook::where('slug', $folderSlug)->firstOrFail();
-        $ebook = Ebook::where('folder_id', $folder->id)->where('slug', $ebookSlug)->firstOrFail();
-
-        $request->validate([
-            'title'     => 'required|max:100|unique:ebooks,title,' . $ebook->id,
-            'deskripsi' => 'required',
-            'cover'     => 'nullable|mimes:jpg,jpeg,png|max:2048',
-            'file'      => 'nullable|mimes:pdf|max:10240',
-        ]);
-
-        if ($request->hasFile('cover')) {
-            if (file_exists(public_path($ebook->cover))) {
-                unlink(public_path($ebook->cover));
-            }
-            $coverName = time() . '_' . $request->file('cover')->getClientOriginalName();
-            $request->file('cover')->move(public_path('uploads/cover'), $coverName);
-            $ebook->cover = 'uploads/cover/' . $coverName;
-        }
-
-        if ($request->hasFile('file')) {
-            if (file_exists(public_path($ebook->file))) {
-                unlink(public_path($ebook->file));
-            }
-            $fileName = time() . '_' . $request->file('file')->getClientOriginalName();
-            $request->file('file')->move(public_path('uploads/ebook'), $fileName);
-            $ebook->file = 'uploads/ebook/' . $fileName;
-        }
-
-        $ebook->title     = $request->title;
-        $ebook->slug      = Str::slug($request->title) . '-' . time();
-        $ebook->deskripsi = $request->deskripsi;
-        $ebook->save();
-
-        return redirect()->route('ebook.show', [$folderSlug, $ebook->slug])->with('success', 'Ebook berhasil diperbarui!');
+        // This method is disabled but kept for compatibility
+        // Admin input is disabled as requested
+        abort(403, 'Admin input untuk ebook dinonaktifkan. Data diambil dari API.');
     }
 
     /**
      * Hapus eBook.
+     * DISABLED: Admin input disabled, but method kept for compatibility
      */
     public function destroy($folderSlug, $ebookSlug)
     {
-        $folder = FolderEbook::where('slug', $folderSlug)->firstOrFail();
-        $ebook = Ebook::where('folder_id', $folder->id)->where('slug', $ebookSlug)->firstOrFail();
+        // This method is disabled but kept for compatibility
+        // Admin input is disabled as requested
+        abort(403, 'Admin input untuk ebook dinonaktifkan. Data diambil dari API.');
+    }
 
-        if (file_exists(public_path($ebook->cover))) {
-            unlink(public_path($ebook->cover));
+    /**
+     * Download eBook PDF.
+     */
+    public function download($folderSlug, $ebookSlug)
+    {
+        try {
+            $folder = FolderEbook::where('slug', $folderSlug)->firstOrFail();
+            $ebook = Ebook::where('slug', $ebookSlug)->where('folder_id', $folder->id)->firstOrFail();
+
+            // If ebook is from API, redirect to the API file URL
+            if ($ebook->isFromApi() && !empty($ebook->file)) {
+                $apiBaseUrl = 'https://ebook.newsmaker.id/';
+                $fileUrl = $apiBaseUrl . ltrim($ebook->file, '/');
+
+                // Log the download attempt
+                \Log::info('Ebook download attempt', [
+                    'ebook_id' => $ebook->id,
+                    'ebook_title' => $ebook->title,
+                    'file_url' => $fileUrl,
+                    'user_agent' => request()->userAgent(),
+                    'ip' => request()->ip()
+                ]);
+
+                return redirect()->away($fileUrl);
+            }
+
+            // Fallback for local files or if API file is not available
+            abort(404, 'File tidak tersedia untuk diunduh.');
+
+        } catch (\Exception $e) {
+            \Log::error('Ebook download error', [
+                'folder_slug' => $folderSlug,
+                'ebook_slug' => $ebookSlug,
+                'error' => $e->getMessage()
+            ]);
+
+            abort(404, 'File tidak ditemukan.');
         }
-        if (file_exists(public_path($ebook->file))) {
-            unlink(public_path($ebook->file));
-        }
-
-        $ebook->delete();
-
-        return redirect()->route('ebook.index', $folderSlug)->with('success', 'Ebook berhasil dihapus!');
     }
 }

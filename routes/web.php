@@ -39,6 +39,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/{folderSlug}/edit', [FolderController::class, 'edit'])->name('folder.edit');
             Route::put('/{folderSlug}', [FolderController::class, 'update'])->name('folder.update');
             Route::delete('/{folderSlug}', [FolderController::class, 'destroy'])->name('folder.destroy');
+            // Manual sync from API
+            Route::post('/sync-from-api', [FolderController::class, 'syncFromApi'])->name('folder.sync');
         });
 
         // 📚 Ebook & Quiz Routes
@@ -58,6 +60,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
             // 📄 Tampil Detail eBook
             Route::get('/{ebookSlug}', [EbookController::class, 'show'])->name('ebook.show');
+
+            // 📥 Download eBook PDF
+            Route::get('/{ebookSlug}/download', [EbookController::class, 'download'])->name('ebook.download');
         });
     });
 
