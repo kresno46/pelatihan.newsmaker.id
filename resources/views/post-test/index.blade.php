@@ -44,8 +44,8 @@
                 <i class="fa-solid fa-arrow-left text-sm"></i>
             </a>
             <a href="{{ route('post-test.index', ['tipe' => 'PATD']) }}"
-                class="py-2 shadow text-center rounded-t-3xl w-full 
-                    {{ $activeTipe === 'PATD' ? 'bg-white font-semibold' : 'bg-gray-300 hover:bg-gray-200 transition-all' }}">
+                class="py-2 shadow text-center rounded-t-3xl w-full
+                    {{ $activeTipe === 'PATD' ? 'bg-white dark:bg-gray-800 font-semibold' : 'bg-gray-300 dark:bg-gray-600 hover:bg-gray-200 dark:hover:bg-gray-500 transition-all' }}">
                 PATD
             </a>
             {{-- <a href="{{ route('post-test.index', ['tipe' => 'PATL']) }}"
