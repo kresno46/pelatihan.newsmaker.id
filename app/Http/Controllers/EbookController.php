@@ -117,10 +117,13 @@ class EbookController extends Controller
 {
     try {
         $folder = FolderEbook::where('slug', $folderSlug)->firstOrFail();
-        $ebook = Ebook::where('slug', $ebookSlug)
-            ->where('folder_id', $folder->id)
-            ->firstOrFail();
-
+       $ebook = Ebook::where(function($q) use ($ebookSlug) {
+        $q->where('slug', $ebookSlug)
+          ->orWhere('slug', 'like', $ebookSlug . '%');
+        })
+        ->where('folder_id', $folder->id)
+        ->firstOrFail();
+        
         if ($ebook->download_url) {
             return redirect()->away($ebook->download_url);
         }
