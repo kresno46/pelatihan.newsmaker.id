@@ -56,6 +56,31 @@ class SyncEbookApi extends Command
             return Command::FAILURE;
         }
 
+        $this->info('🔄 Syncing slugs from API data...');
+
+            $ebooks = \App\Models\Ebook::whereNotNull('api_data')->get();
+            $fixed = 0;
+            $skipped = 0;
+
+            foreach ($ebooks as $ebook) {
+                $apiData = $ebook->api_data;
+
+                if (isset($apiData['slug']) && !empty($apiData['slug'])) {
+                    if ($ebook->slug !== $apiData['slug']) {
+                        $old = $ebook->slug;
+                        $ebook->slug = $apiData['slug'];
+                        $ebook->save();
+
+                        $this->line("✔️ Ebook ID {$ebook->id} slug updated: '{$old}' ➝ '{$ebook->slug}'");
+                        $fixed++;
+                    } else {
+                        $skipped++;
+                    }
+                }
+            }
+
+            $this->info("✅ Slug sync finished. {$fixed} updated, {$skipped} already correct.");
+            
         // Get sync statistics
         $folders = \App\Models\FolderEbook::syncedFromApi()->withCount('ebooks')->get();
         $totalEbooks = \App\Models\Ebook::syncedFromApi()->count();
