@@ -215,7 +215,7 @@ class EbookApiService
                         'deskripsi' => $apiEbook['description'] ?? $apiEbook['deskripsi'] ?? '',
                         'cover' => $apiEbook['cover'] ?? '/default-cover.jpg',
                         'file' => $apiEbook['file'] ?? '',
-                        'api_data' => !empty($apiEbook) ? json_encode($apiEbook, JSON_UNESCAPED_UNICODE) : '{}',
+                        'api_data'  => $apiEbook,  // ✅ simpan array langsung
                         'synced_at' => now(),
                     ]
                 );
