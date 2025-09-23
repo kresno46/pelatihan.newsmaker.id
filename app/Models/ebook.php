@@ -49,12 +49,17 @@ class Ebook extends Model
 
         // Buat slug saat creating
         static::creating(function ($ebook) {
+            // Kalau dari API dan slug sudah ada → biarin aja
+            if ($ebook->isFromApi() && !empty($ebook->slug)) {
+                return;
+            }
+
             $ebook->slug = static::generateUniqueSlug($ebook->title);
         });
 
-        // Buat slug baru saat updating, hanya jika title berubah
+        // Buat slug baru saat updating, hanya kalau title berubah DAN bukan data API
         static::updating(function ($ebook) {
-            if ($ebook->isDirty('title')) {
+            if ($ebook->isDirty('title') && !$ebook->isFromApi()) {
                 $ebook->slug = static::generateUniqueSlug($ebook->title, $ebook->id);
             }
         });
