@@ -71,7 +71,7 @@ class EbookApiService
                         'count' => count($data),
                         'api_url' => "{$this->apiBaseUrl}/folders/{$folderId}/ebooks"
                     ]);
-
+                    $ebooks = $data['data'] ?? $data;
                     return $data;
                 }
 
@@ -116,7 +116,7 @@ class EbookApiService
                         'count' => count($ebooks),
                         'api_url' => "{$this->apiBaseUrl}/ebooks/folder/{$folderSlug}"
                     ]);
-
+                     $ebooks = $data['data'] ?? $data;
                     return $ebooks;
                 }
 
@@ -266,7 +266,7 @@ class EbookApiService
                         'deskripsi' => $apiEbook['deskripsi'] ?? $apiEbook['description'] ?? '',
                         'cover' => $apiEbook['cover'] ?? '/default-cover.jpg',
                         'file' => $apiEbook['file'] ?? '',
-                        'api_data' => !empty($apiEbook) ? json_encode($apiEbook, JSON_UNESCAPED_UNICODE) : '{}',
+                        'api_data' => $apiEbook,
                         'synced_at' => now(),
                     ]
                 );
