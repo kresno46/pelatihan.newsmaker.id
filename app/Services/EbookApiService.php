@@ -155,20 +155,27 @@ class EbookApiService
             $syncedCount = 0;
 
             foreach ($apiFolders as $apiFolder) {
-                $folder = FolderEbook::updateOrCreate(
+                $folder = \App\Models\FolderEbook::updateOrCreate(
                     ['api_id' => $apiFolder['id'] ?? null],
                     [
-                        'folder_name' => $apiFolder['name'] ?? $apiFolder['folder_name'] ?? 'Unknown Folder',
-                        'deskripsi' => $apiFolder['description'] ?? $apiFolder['deskripsi'] ?? '',
-                        'slug' => $apiFolder['slug'] ?? \Str::slug($apiFolder['name'] ?? $apiFolder['folder_name'] ?? 'unknown-folder'),
-                        'api_data' => json_encode($apiFolder),
-                        'synced_at' => now(),
+                        'folder_name' => $apiFolder['name'] 
+                            ?? $apiFolder['folder_name'] 
+                            ?? 'Unknown Folder',
+                        'deskripsi'  => $apiFolder['description'] 
+                            ?? $apiFolder['deskripsi'] 
+                            ?? '',
+                        'slug'       => $apiFolder['slug'] 
+                            ?? \Str::slug($apiFolder['name'] 
+                            ?? $apiFolder['folder_name'] 
+                            ?? 'unknown-folder'),
+                        'api_data'   => json_encode($apiFolder),
+                        'synced_at'  => now(),
                     ]
                 );
 
-                // Sync ebooks for this folder
-                if (isset($apiFolder['slug'])) {
-                    $this->syncEbooksToDatabase($apiFolder['slug'], $folder->id);
+                // 🔑 Panggil sync ebooks by SLUG, bukan by ID
+                if (!empty($apiFolder['slug'])) {
+                    $this->syncEbooksToDatabaseBySlug($apiFolder['slug'], $folder->id);
                 }
 
                 $syncedCount++;
@@ -183,7 +190,7 @@ class EbookApiService
         } catch (\Exception $e) {
             Log::error('Exception when syncing folders to database', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace'   => $e->getTraceAsString()
             ]);
 
             return false;
