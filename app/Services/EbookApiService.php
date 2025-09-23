@@ -215,7 +215,7 @@ class EbookApiService
                         'deskripsi' => $apiEbook['description'] ?? $apiEbook['deskripsi'] ?? '',
                         'cover' => $apiEbook['cover'] ?? '/default-cover.jpg',
                         'file' => $apiEbook['file'] ?? '',
-                        'api_data' => json_encode($apiEbook),
+                        'api_data' => !empty($apiEbook) ? json_encode($apiEbook, JSON_UNESCAPED_UNICODE) : '{}',
                         'synced_at' => now(),
                     ]
                 );
@@ -266,7 +266,7 @@ class EbookApiService
                         'deskripsi' => $apiEbook['deskripsi'] ?? $apiEbook['description'] ?? '',
                         'cover' => $apiEbook['cover'] ?? '/default-cover.jpg',
                         'file' => $apiEbook['file'] ?? '',
-                        'api_data' => json_encode($apiEbook),
+                        'api_data' => !empty($apiEbook) ? json_encode($apiEbook, JSON_UNESCAPED_UNICODE) : '{}',
                         'synced_at' => now(),
                     ]
                 );
