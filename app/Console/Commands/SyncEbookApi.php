@@ -80,25 +80,23 @@ class SyncEbookApi extends Command
             }
 
             $this->info("✅ Slug sync finished. {$fixed} updated, {$skipped} already correct.");
-            
+
         // Get sync statistics
-        $folders = \App\Models\FolderEbook::syncedFromApi()->withCount('ebooks')->get();
-        $totalEbooks = \App\Models\Ebook::syncedFromApi()->count();
+        // Get sync statistics
+            $folders = \App\Models\FolderEbook::whereNotNull('api_id')->withCount('ebooks')->get();
+            $totalEbooks = \App\Models\Ebook::whereNotNull('api_id')->count();
 
-        $this->info('📊 Sync Statistics:');
-        $this->table(
-            ['Folder Name', 'Ebooks Count'],
-            $folders->map(function ($folder) {
-                return [
-                    $folder->folder_name,
-                    $folder->ebooks_count
-                ];
-            })->toArray()
-        );
+            $this->info('📊 Sync Statistics:');
+            $this->table(
+                ['Folder Name', 'Ebooks Count'],
+                $folders->map(function ($folder) {
+                    return [
+                        $folder->folder_name,
+                        $folder->ebooks_count
+                    ];
+                })->toArray()
+            );
 
-        $this->info("📚 Total synced ebooks: {$totalEbooks}");
-
-        $this->info('🎉 API sync completed successfully!');
-        return Command::SUCCESS;
+            $this->info("📚 Total synced ebooks: {$totalEbooks}");
     }
 }
