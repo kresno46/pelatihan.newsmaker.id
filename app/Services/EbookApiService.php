@@ -167,8 +167,8 @@ class EbookApiService
                 );
 
                 // Sync ebooks for this folder
-                if (isset($apiFolder['id'])) {
-                    $this->syncEbooksToDatabase($apiFolder['id'], $folder->id);
+                if (isset($apiFolder['slug'])) {
+                    $this->syncEbooksToDatabase($apiFolder['slug'], $folder->id);
                 }
 
                 $syncedCount++;
