@@ -113,37 +113,43 @@ class EbookController extends Controller
     /**
      * Download eBook PDF.
      */
-    public function download($folderSlug, $ebookSlug)
+   public function download($folderSlug, $ebookSlug)
     {
         try {
             $folder = FolderEbook::where('slug', $folderSlug)->firstOrFail();
-            $ebook = Ebook::where('slug', $ebookSlug)->where('folder_id', $folder->id)->firstOrFail();
+            $ebook = Ebook::where('slug', $ebookSlug)
+                ->where('folder_id', $folder->id)
+                ->firstOrFail();
 
-            // If ebook is from API, redirect to the API file URL
+            // Kalau ebook dari API → file ada di server ebook.newsmaker.id
             if ($ebook->isFromApi() && !empty($ebook->file)) {
-                $apiBaseUrl = 'https://ebook.newsmaker.id/';
-                $fileUrl = $apiBaseUrl . ltrim($ebook->file, '/');
+                // pastikan url benar (tanpa double slash)
+                $fileUrl = rtrim('https://ebook.newsmaker.id', '/') . '/' . ltrim($ebook->file, '/');
 
-                // Log the download attempt
+                // Logging
                 \Log::info('Ebook download attempt', [
-                    'ebook_id' => $ebook->id,
+                    'ebook_id'    => $ebook->id,
                     'ebook_title' => $ebook->title,
-                    'file_url' => $fileUrl,
-                    'user_agent' => request()->userAgent(),
-                    'ip' => request()->ip()
+                    'file_url'    => $fileUrl,
+                    'user_agent'  => request()->userAgent(),
+                    'ip'          => request()->ip(),
                 ]);
 
                 return redirect()->away($fileUrl);
             }
 
-            // Fallback for local files or if API file is not available
-            abort(404, 'File tidak tersedia untuk diunduh.');
+            // Kalau file lokal → cek storage
+            if (!empty($ebook->file) && \Storage::disk('public')->exists('ebooks/' . $ebook->file)) {
+                return response()->download(storage_path('app/public/ebooks/' . $ebook->file));
+            }
 
+            // fallback kalau gak ada file
+            abort(404, 'File tidak tersedia untuk diunduh.');
         } catch (\Exception $e) {
             \Log::error('Ebook download error', [
                 'folder_slug' => $folderSlug,
-                'ebook_slug' => $ebookSlug,
-                'error' => $e->getMessage()
+                'ebook_slug'  => $ebookSlug,
+                'error'       => $e->getMessage(),
             ]);
 
             abort(404, 'File tidak ditemukan.');
