@@ -125,4 +125,21 @@ class Ebook extends Model
     {
         $this->attributes['api_data'] = $value ? json_encode($value) : null;
     }
+    /**
+ * Get the download URL for the ebook
+ */
+    public function getDownloadUrlAttribute()
+    {
+        if ($this->isFromApi() && !empty($this->file)) {
+            // file dari API -> path relatif, tambahin base url
+            return rtrim('https://ebook.newsmaker.id', '/') . '/' . ltrim($this->file, '/');
+        }
+
+        // file lokal
+        if (!empty($this->file) && \Storage::disk('public')->exists('ebooks/' . $this->file)) {
+            return asset('storage/ebooks/' . $this->file);
+        }
+
+        return null; // fallback kalau file gak ada
+    }
 }
