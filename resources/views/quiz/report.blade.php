@@ -34,12 +34,24 @@
 
     {{-- Filter & Sort --}}
     <div class="mb-4 p-4 sm:p-5 bg-white dark:bg-gray-800 rounded-xl shadow">
-        <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-3">
+        <form method="GET" class="grid grid-cols-1 md:grid-cols-5 gap-3">
             <div>
                 <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">{{ __('Cari Peserta') }}</label>
                 <input type="text" name="q" value="{{ $filters['q'] ?? request('q') }}"
                     class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"
                     placeholder="Nama atau email...">
+            </div>
+
+            <div>
+                <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">{{ __('Filter Perusahaan') }}</label>
+                <select name="company"
+                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
+                    @php $company = $filters['company'] ?? request('company', ''); @endphp
+                    <option value="" {{ $company === '' ? 'selected' : '' }}>Semua Perusahaan</option>
+                    @foreach ($companies as $companyName)
+                        <option value="{{ $companyName }}" {{ $company === $companyName ? 'selected' : '' }}>{{ $companyName }}</option>
+                    @endforeach
+                </select>
             </div>
 
             <div>
