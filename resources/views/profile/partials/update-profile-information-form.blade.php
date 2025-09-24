@@ -115,7 +115,7 @@
 
             {{-- Alamat --}}
             <div class="mt-4">
-                <x-input-label-append for="alamat" :value="__('Alamat')" :append="empty($user->alamat) ? '<span class=\'text-red-500\'>*</span>' : ''" />
+                <x-input-label-append for="alamat" :value="__('Kota')" :append="empty($user->alamat) ? '<span class=\'text-red-500\'>*</span>' : ''" />
                 <textarea id="alamat" name="alamat"
                     class="block mt-1 w-full rounded-md shadow-sm border-gray-300
                             dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">{{ old('alamat', $user->alamat) }}</textarea>

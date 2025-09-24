@@ -56,7 +56,7 @@
 
             <div>
                 <div class="mb-4">
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Alamat</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Kota</p>
                     <p class="text-lg font-semibold">{{ $trainer->alamat ?? '-' }}</p>
                 </div>
 
