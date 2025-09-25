@@ -113,16 +113,60 @@ class QuizController extends Controller
             ->selectRaw('COUNT(*) AS total, AVG(post_test_results.score) AS avg_score, MAX(post_test_results.score) AS max_score, MIN(post_test_results.score) AS min_score')
             ->first();
 
-        // Daftar cabang untuk filter (berdasarkan perusahaan yang dipilih)
+        // Daftar cabang untuk filter (gunakan data dari $kantorCabang)
+        $kantorCabang = [
+            'RFB' => [
+                'Palembang',
+                'Balikpapan',
+                'Solo',
+                'Jakarta DBS Tower',
+                'Jakarta AXA 1',
+                'Jakarta AXA 2',
+                'Jakarta AXA 3',
+                'Medan',
+                'Semarang',
+                'Surabaya Pakuwon',
+                'Surabaya Ciputra',
+                'Pekanbaru',
+                'Bandung',
+                'Yogyakarta',
+            ],
+            'SGB' => ['Jakarta', 'Semarang', 'Makassar'],
+            'KPF' => ['Jakarta', 'Yogyakarta', 'Bali', 'Makassar', 'Bandung', 'Semarang'],
+            'EWF' => [
+                'SCC Jakarta',
+                'Cyber 2 Jakarta',
+                'Surabaya Trilium',
+                'Manado',
+                'Semarang',
+                'Surabaya Praxis',
+                'Cirebon',
+            ],
+            'BPF' => [
+                'Equity Tower Jakarta',
+                'Jambi',
+                'Jakarta - Pacific Place Mall',
+                'Pontianak',
+                'Malang',
+                'Surabaya',
+                'Medan',
+                'Bandung',
+                'Pekanbaru',
+                'Banjarmasin',
+                'Bandar Lampung',
+                'Semarang',
+            ],
+        ];
+
         $branches = [];
         if ($roleFilter) {
-            $branches = \App\Models\User::where('role', $roleFilter)
-                ->whereNotNull('cabang')
-                ->where('cabang', '!=', '')
-                ->distinct()
-                ->pluck('cabang')
-                ->sort()
-                ->values();
+            // Extract kode perusahaan dari role (misal 'Trainer (RFB)' -> 'RFB')
+            preg_match('/\((.*?)\)/', $roleFilter, $matches);
+            $roleKey = $matches[1] ?? null;
+
+            if ($roleKey && isset($kantorCabang[$roleKey])) {
+                $branches = collect($kantorCabang[$roleKey]);
+            }
         }
 
         // Rekap per perusahaan (group by users.role, lalu map ke nama perusahaan)
