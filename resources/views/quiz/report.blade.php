@@ -234,3 +234,93 @@
         @endif
     </div>
 @endsection
+
+@section('scripts')
+    @php
+        $kantorCabang = [
+            'RFB' => [
+                'Palembang',
+                'Balikpapan',
+                'Solo',
+                'Jakarta DBS Tower',
+                'Jakarta AXA 1',
+                'Jakarta AXA 2',
+                'Jakarta AXA 3',
+                'Medan',
+                'Semarang',
+                'Surabaya Pakuwon',
+                'Surabaya Ciputra',
+                'Pekanbaru',
+                'Bandung',
+                'Yogyakarta',
+            ],
+            'SGB' => ['Jakarta', 'Semarang', 'Makassar'],
+            'KPF' => ['Jakarta', 'Yogyakarta', 'Bali', 'Makassar', 'Bandung', 'Semarang'],
+            'EWF' => [
+                'SCC Jakarta',
+                'Cyber 2 Jakarta',
+                'Surabaya Trilium',
+                'Manado',
+                'Semarang',
+                'Surabaya Praxis',
+                'Cirebon',
+            ],
+            'BPF' => [
+                'Equity Tower Jakarta',
+                'Jambi',
+                'Jakarta - Pacific Place Mall',
+                'Pontianak',
+                'Malang',
+                'Surabaya',
+                'Medan',
+                'Bandung',
+                'Pekanbaru',
+                'Banjarmasin',
+                'Bandar Lampung',
+                'Semarang',
+            ],
+        ];
+        $companyToRole = [
+            'PT Rifan Financindo Berjangka' => 'RFB',
+            'PT Solid Gold Berjangka' => 'SGB',
+            'PT Kontak Perkasa Futures' => 'KPF',
+            'PT Best Profit Futures' => 'BPF',
+            'PT Equity World Futures' => 'EWF',
+        ];
+        $selectedCabang = $filters['branch'] ?? request('branch', '');
+    @endphp
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dataCabang = @json($kantorCabang);
+            const companyToRole = @json($companyToRole);
+            const selectedCabang = @json($selectedCabang);
+            const companySelect = document.getElementById('company');
+            const branchSelect = document.getElementById('branch');
+
+            function updateBranchOptions(companyName) {
+                branchSelect.innerHTML = '<option value="">Semua Cabang</option>';
+                if (companyName && companyToRole[companyName]) {
+                    const roleKey = companyToRole[companyName];
+                    if (dataCabang[roleKey]) {
+                        dataCabang[roleKey].forEach(c => {
+                            const opt = document.createElement('option');
+                            opt.value = c;
+                            opt.textContent = c;
+                            if (c === selectedCabang) opt.selected = true;
+                            branchSelect.appendChild(opt);
+                        });
+                    }
+                }
+            }
+
+            if (companySelect && companySelect.value) {
+                updateBranchOptions(companySelect.value);
+            }
+
+            companySelect?.addEventListener('change', function() {
+                updateBranchOptions(this.value);
+            });
+        });
+    </script>
+@endsection
