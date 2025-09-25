@@ -6,5 +6,6 @@
 - [x] Update report.blade.php to add JavaScript for dynamic sort dropdown options
 - [x] Add new sort options for branches ascending and descending
 - [x] Update controller to handle new sort values with branch filtering
+- [x] Simplified sort options to show only branch names
 - [ ] Test the filter and sort behavior in UI
 - [ ] Verify branches update correctly based on company filter

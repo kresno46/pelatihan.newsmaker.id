@@ -121,27 +121,13 @@
                 });
 
                 if (selectedCompany && branches.length > 0) {
-                    // Add branch sort options
-                    const optGroupAsc = document.createElement('optgroup');
-                    optGroupAsc.label = 'Cabang A-Z';
-
-                    const optGroupDesc = document.createElement('optgroup');
-                    optGroupDesc.label = 'Cabang Z-A';
-
+                    // Add branch options
                     branches.forEach(branch => {
-                        const optionAsc = document.createElement('option');
-                        optionAsc.value = 'cabang_asc_' + branch;
-                        optionAsc.textContent = branch;
-                        optGroupAsc.appendChild(optionAsc);
-
-                        const optionDesc = document.createElement('option');
-                        optionDesc.value = 'cabang_desc_' + branch;
-                        optionDesc.textContent = branch;
-                        optGroupDesc.appendChild(optionDesc);
+                        const option = document.createElement('option');
+                        option.value = 'cabang_asc_' + branch;
+                        option.textContent = branch;
+                        sortSelect.appendChild(option);
                     });
-
-                    sortSelect.appendChild(optGroupAsc);
-                    sortSelect.appendChild(optGroupDesc);
                 }
             }
 
