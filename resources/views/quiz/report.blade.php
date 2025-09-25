@@ -23,8 +23,8 @@
                     {{ __('Kembali') }}
                 </a>
 
-                {{-- Export bawa filter q & sort & company agar konsisten --}}
-                <a href="{{ route('posttest.report.export', $session->slug) }}?q={{ request('q') }}&sort={{ request('sort') }}&company={{ request('company') }}"
+                {{-- Export bawa filter q & sort & company & branch agar konsisten --}}
+                <a href="{{ route('posttest.report.export', $session->slug) }}?q={{ request('q') }}&sort={{ request('sort') }}&company={{ request('company') }}&branch={{ request('branch') }}"
                     class="px-3 py-2 text-sm rounded bg-green-500 hover:bg-green-600 text-white transition">
                     {{ __('Export CSV') }}
                 </a>
@@ -34,7 +34,7 @@
 
     {{-- Filter & Sort --}}
     <div class="mb-4 p-4 sm:p-5 bg-white dark:bg-gray-800 rounded-xl shadow">
-        <form method="GET" class="grid grid-cols-1 md:grid-cols-5 gap-3">
+        <form method="GET" class="grid grid-cols-1 md:grid-cols-6 gap-3">
             <div>
                 <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">{{ __('Cari Peserta') }}</label>
                 <input type="text" name="q" value="{{ $filters['q'] ?? request('q') }}"
@@ -55,19 +55,25 @@
             </div>
 
             <div>
+                <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">{{ __('Filter Cabang') }}</label>
+                <select name="branch" id="branch"
+                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
+                    @php $branch = $filters['branch'] ?? request('branch', ''); @endphp
+                    <option value="" {{ $branch === '' ? 'selected' : '' }}>Semua Cabang</option>
+                    @if($branches)
+                        @foreach ($branches as $b)
+                            <option value="{{ $b }}" {{ $branch === $b ? 'selected' : '' }}>{{ $b }}</option>
+                        @endforeach
+                    @endif
+                </select>
+            </div>
+
+            <div>
                 <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">{{ __('Urutkan') }}</label>
                 <select name="sort" id="sort"
                     class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
                     @php $sort = $filters['sort'] ?? request('sort', 'latest'); @endphp
                     <option value="latest" {{ $sort === 'latest' ? 'selected' : '' }}>{{ __('Terbaru') }}</option>
-                    <option value="oldest" {{ $sort === 'oldest' ? 'selected' : '' }}>{{ __('Terlama') }}</option>
-                    <option value="highest" {{ $sort === 'highest' ? 'selected' : '' }}>{{ __('Skor Tertinggi') }}
-                    </option>
-                    <option value="lowest" {{ $sort === 'lowest' ? 'selected' : '' }}>{{ __('Skor Terendah') }}</option>
-                    <option value="lulus_first" {{ $sort === 'lulus_first' ? 'selected' : '' }}>Lulus Dahulu</option>
-                    <option value="tidak_lulus_first" {{ $sort === 'tidak_lulus_first' ? 'selected' : '' }}>Tidak Lulus Dahulu</option>
-                    <option value="cabang_asc" {{ $sort === 'cabang_asc' ? 'selected' : '' }}>Cabang A-Z</option>
-                    <option value="cabang_desc" {{ $sort === 'cabang_desc' ? 'selected' : '' }}>Cabang Z-A</option>
                 </select>
             </div>
 
@@ -95,51 +101,6 @@
             </div>
         </form>
     </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const companySelect = document.getElementById('company');
-            const sortSelect = document.getElementById('sort');
-
-            // Original sort options
-            const originalSortOptions = Array.from(sortSelect.querySelectorAll('option')).filter(option => !option.value.startsWith('cabang_'));
-
-            // All branches data passed from controller
-            const allBranches = @json($allBranches);
-
-            function updateSortOptions() {
-                const selectedCompany = companySelect.value;
-
-                // Clear current options
-                sortSelect.innerHTML = '';
-
-                // Add default sort options
-                originalSortOptions.forEach(option => {
-                    sortSelect.appendChild(option.cloneNode(true));
-                });
-
-                if (selectedCompany && allBranches[selectedCompany]) {
-                    // Add branch options
-                    allBranches[selectedCompany].forEach(branch => {
-                        const optionAsc = document.createElement('option');
-                        optionAsc.value = 'cabang_asc_' + branch;
-                        optionAsc.textContent = branch;
-                        sortSelect.appendChild(optionAsc);
-
-                        const optionDesc = document.createElement('option');
-                        optionDesc.value = 'cabang_desc_' + branch;
-                        optionDesc.textContent = branch + ' (Z-A)';
-                        sortSelect.appendChild(optionDesc);
-                    });
-                }
-            }
-
-            companySelect.addEventListener('change', updateSortOptions);
-
-            // Initialize on page load
-            updateSortOptions();
-        });
-    </script>
 
     {{-- Ringkasan --}}
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
