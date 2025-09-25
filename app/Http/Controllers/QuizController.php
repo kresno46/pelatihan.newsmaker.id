@@ -155,6 +155,21 @@ class QuizController extends Controller
                 ->toArray();
         }
 
+        // Get all branches grouped by company
+        $allBranches = [];
+        foreach ($roleToCompany as $role => $company) {
+            $branchList = \App\Models\User::where('role', $role)
+                ->whereNotNull('cabang')
+                ->where('cabang', '!=', '')
+                ->distinct()
+                ->pluck('cabang')
+                ->sort()
+                ->toArray();
+            if (!empty($branchList)) {
+                $allBranches[$company] = $branchList;
+            }
+        }
+
         return view('quiz.report', [
             'session'     => $session,
             'results'     => $results,
@@ -169,6 +184,7 @@ class QuizController extends Controller
             'byCompany'   => $byCompany,   // rekap per perusahaan (nama → total)
             'noRoleCount' => $noRoleCount, // jumlah tanpa role
             'branches'    => $branches,    // cabang untuk sort dinamis
+            'allBranches' => $allBranches, // semua cabang per perusahaan
         ]);
     }
 

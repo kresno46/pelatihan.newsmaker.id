@@ -102,10 +102,10 @@
             const sortSelect = document.getElementById('sort');
 
             // Original sort options
-            const originalSortOptions = Array.from(sortSelect.options);
+            const originalSortOptions = Array.from(sortSelect.querySelectorAll('option')).filter(option => !option.value.startsWith('cabang_'));
 
-            // Branches data passed from controller
-            const branches = @json($branches);
+            // All branches data passed from controller
+            const allBranches = @json($allBranches);
 
             function updateSortOptions() {
                 const selectedCompany = companySelect.value;
@@ -115,18 +115,21 @@
 
                 // Add default sort options
                 originalSortOptions.forEach(option => {
-                    if (option.value !== 'cabang_asc' && option.value !== 'cabang_desc') {
-                        sortSelect.appendChild(option.cloneNode(true));
-                    }
+                    sortSelect.appendChild(option.cloneNode(true));
                 });
 
-                if (selectedCompany && branches.length > 0) {
+                if (selectedCompany && allBranches[selectedCompany]) {
                     // Add branch options
-                    branches.forEach(branch => {
-                        const option = document.createElement('option');
-                        option.value = 'cabang_asc_' + branch;
-                        option.textContent = branch;
-                        sortSelect.appendChild(option);
+                    allBranches[selectedCompany].forEach(branch => {
+                        const optionAsc = document.createElement('option');
+                        optionAsc.value = 'cabang_asc_' + branch;
+                        optionAsc.textContent = branch;
+                        sortSelect.appendChild(optionAsc);
+
+                        const optionDesc = document.createElement('option');
+                        optionDesc.value = 'cabang_desc_' + branch;
+                        optionDesc.textContent = branch + ' (Z-A)';
+                        sortSelect.appendChild(optionDesc);
                     });
                 }
             }
