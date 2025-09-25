@@ -102,8 +102,8 @@ class QuizController extends Controller
             ->when($sort === 'latest',  fn($qr) => $qr->orderByDesc('post_test_results.created_at'))
             ->when($sort === 'lulus_first', fn($qr) => $qr->orderByRaw('CASE WHEN post_test_results.score >= 60 THEN 1 ELSE 0 END DESC'))
             ->when($sort === 'tidak_lulus_first', fn($qr) => $qr->orderByRaw('CASE WHEN post_test_results.score >= 60 THEN 1 ELSE 0 END ASC'))
-            ->when($sort === 'cabang_asc', fn($qr) => $qr->orderBy('users.cabang', 'asc'))
-            ->when($sort === 'cabang_desc', fn($qr) => $qr->orderBy('users.cabang', 'desc'))
+            ->when($sort === 'cabang_asc', fn($qr) => $qr->orderBy('users.role', 'asc')->orderBy('users.cabang', 'asc'))
+            ->when($sort === 'cabang_desc', fn($qr) => $qr->orderBy('users.role', 'desc')->orderBy('users.cabang', 'desc'))
             ->when(preg_match('/^cabang_asc_(.+)$/', $sort, $matches), function ($qr) use ($matches) {
                 $branch = $matches[1];
                 $qr->where('users.cabang', $branch)->orderBy('users.cabang', 'asc');
@@ -232,8 +232,8 @@ class QuizController extends Controller
             ->when($sort === 'latest',  fn($qr) => $qr->orderByDesc('post_test_results.created_at'))
             ->when($sort === 'lulus_first', fn($qr) => $qr->orderByRaw('CASE WHEN post_test_results.score >= 60 THEN 1 ELSE 0 END DESC'))
             ->when($sort === 'tidak_lulus_first', fn($qr) => $qr->orderByRaw('CASE WHEN post_test_results.score >= 60 THEN 1 ELSE 0 END ASC'))
-            ->when($sort === 'cabang_asc', fn($qr) => $qr->orderBy('users.cabang', 'asc'))
-            ->when($sort === 'cabang_desc', fn($qr) => $qr->orderBy('users.cabang', 'desc'))
+            ->when($sort === 'cabang_asc', fn($qr) => $qr->orderBy('users.role', 'asc')->orderBy('users.cabang', 'asc'))
+            ->when($sort === 'cabang_desc', fn($qr) => $qr->orderBy('users.role', 'desc')->orderBy('users.cabang', 'desc'))
             ->when(preg_match('/^cabang_asc_(.+)$/', $sort, $matches), function ($qr) use ($matches) {
                 $branch = $matches[1];
                 $qr->where('users.cabang', $branch)->orderBy('users.cabang', 'asc');
