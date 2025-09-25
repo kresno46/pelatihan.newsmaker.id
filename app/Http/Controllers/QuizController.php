@@ -120,6 +120,7 @@ class QuizController extends Controller
                 'Balikpapan',
                 'Solo',
                 'Jakarta DBS Tower',
+                'Jakarta AXA Tower',
                 'Jakarta AXA 1',
                 'Jakarta AXA 2',
                 'Jakarta AXA 3',
