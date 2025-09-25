@@ -104,6 +104,14 @@ class QuizController extends Controller
             ->when($sort === 'tidak_lulus_first', fn($qr) => $qr->orderByRaw('CASE WHEN post_test_results.score >= 60 THEN 1 ELSE 0 END ASC'))
             ->when($sort === 'cabang_asc', fn($qr) => $qr->orderBy('users.cabang', 'asc'))
             ->when($sort === 'cabang_desc', fn($qr) => $qr->orderBy('users.cabang', 'desc'))
+            ->when(preg_match('/^cabang_asc_(.+)$/', $sort, $matches), function ($qr) use ($matches) {
+                $branch = $matches[1];
+                $qr->where('users.cabang', $branch)->orderBy('users.cabang', 'asc');
+            })
+            ->when(preg_match('/^cabang_desc_(.+)$/', $sort, $matches), function ($qr) use ($matches) {
+                $branch = $matches[1];
+                $qr->where('users.cabang', $branch)->orderBy('users.cabang', 'desc');
+            })
             ->select('post_test_results.*')
             ->paginate($perPage)
             ->withQueryString();
@@ -135,6 +143,18 @@ class QuizController extends Controller
         });
         $noRoleCount = (int) ($rawRoleCounts['TanpaRole'] ?? 0);
 
+        // Get distinct branches for the selected company (role)
+        $branches = [];
+        if ($roleFilter) {
+            $branches = \App\Models\User::where('role', $roleFilter)
+                ->whereNotNull('cabang')
+                ->where('cabang', '!=', '')
+                ->distinct()
+                ->pluck('cabang')
+                ->sort()
+                ->toArray();
+        }
+
         return view('quiz.report', [
             'session'     => $session,
             'results'     => $results,
@@ -148,6 +168,7 @@ class QuizController extends Controller
             'companies'   => $companies,   // opsi dropdown perusahaan
             'byCompany'   => $byCompany,   // rekap per perusahaan (nama → total)
             'noRoleCount' => $noRoleCount, // jumlah tanpa role
+            'branches'    => $branches,    // cabang untuk sort dinamis
         ]);
     }
 
@@ -213,6 +234,14 @@ class QuizController extends Controller
             ->when($sort === 'tidak_lulus_first', fn($qr) => $qr->orderByRaw('CASE WHEN post_test_results.score >= 60 THEN 1 ELSE 0 END ASC'))
             ->when($sort === 'cabang_asc', fn($qr) => $qr->orderBy('users.cabang', 'asc'))
             ->when($sort === 'cabang_desc', fn($qr) => $qr->orderBy('users.cabang', 'desc'))
+            ->when(preg_match('/^cabang_asc_(.+)$/', $sort, $matches), function ($qr) use ($matches) {
+                $branch = $matches[1];
+                $qr->where('users.cabang', $branch)->orderBy('users.cabang', 'asc');
+            })
+            ->when(preg_match('/^cabang_desc_(.+)$/', $sort, $matches), function ($qr) use ($matches) {
+                $branch = $matches[1];
+                $qr->where('users.cabang', $branch)->orderBy('users.cabang', 'desc');
+            })
             ->select('post_test_results.*')
             ->get();
 

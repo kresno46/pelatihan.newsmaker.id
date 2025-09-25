@@ -44,7 +44,7 @@
 
             <div>
                 <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">{{ __('Filter Perusahaan') }}</label>
-                <select name="company"
+                <select name="company" id="company"
                     class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
                     @php $company = $filters['company'] ?? request('company', ''); @endphp
                     <option value="" {{ $company === '' ? 'selected' : '' }}>Semua Perusahaan</option>
@@ -56,7 +56,7 @@
 
             <div>
                 <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">{{ __('Urutkan') }}</label>
-                <select name="sort"
+                <select name="sort" id="sort"
                     class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
                     @php $sort = $filters['sort'] ?? request('sort', 'latest'); @endphp
                     <option value="latest" {{ $sort === 'latest' ? 'selected' : '' }}>{{ __('Terbaru') }}</option>
@@ -66,8 +66,8 @@
                     <option value="lowest" {{ $sort === 'lowest' ? 'selected' : '' }}>{{ __('Skor Terendah') }}</option>
                     <option value="lulus_first" {{ $sort === 'lulus_first' ? 'selected' : '' }}>Lulus Dahulu</option>
                     <option value="tidak_lulus_first" {{ $sort === 'tidak_lulus_first' ? 'selected' : '' }}>Tidak Lulus Dahulu</option>
-                    <option value="cabang_asc" {{ $sort === 'cabang_asc' ? 'selected' : '' }}>Cabang A-Z</option>
-                    <option value="cabang_desc" {{ $sort === 'cabang_desc' ? 'selected' : '' }}>Cabang Z-A</option>
+                    {{-- <option value="cabang_asc" {{ $sort === 'cabang_asc' ? 'selected' : '' }}>Cabang A-Z</option>
+                    <option value="cabang_desc" {{ $sort === 'cabang_desc' ? 'selected' : '' }}>Cabang Z-A</option> --}}
                 </select>
             </div>
 
@@ -95,6 +95,62 @@
             </div>
         </form>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const companySelect = document.getElementById('company');
+            const sortSelect = document.getElementById('sort');
+
+            // Original sort options
+            const originalSortOptions = Array.from(sortSelect.options);
+
+            // Branches data passed from controller
+            const branches = @json($branches);
+
+            function updateSortOptions() {
+                const selectedCompany = companySelect.value;
+
+                // Clear current options
+                sortSelect.innerHTML = '';
+
+                // Add default sort options
+                originalSortOptions.forEach(option => {
+                    if (option.value !== 'cabang_asc' && option.value !== 'cabang_desc') {
+                        sortSelect.appendChild(option.cloneNode(true));
+                    }
+                });
+
+                if (selectedCompany && branches.length > 0) {
+                    // Add branch sort options
+                    const optGroupAsc = document.createElement('optgroup');
+                    optGroupAsc.label = 'Cabang A-Z';
+
+                    const optGroupDesc = document.createElement('optgroup');
+                    optGroupDesc.label = 'Cabang Z-A';
+
+                    branches.forEach(branch => {
+                        const optionAsc = document.createElement('option');
+                        optionAsc.value = 'cabang_asc_' + branch;
+                        optionAsc.textContent = branch;
+                        optGroupAsc.appendChild(optionAsc);
+
+                        const optionDesc = document.createElement('option');
+                        optionDesc.value = 'cabang_desc_' + branch;
+                        optionDesc.textContent = branch;
+                        optGroupDesc.appendChild(optionDesc);
+                    });
+
+                    sortSelect.appendChild(optGroupAsc);
+                    sortSelect.appendChild(optGroupDesc);
+                }
+            }
+
+            companySelect.addEventListener('change', updateSortOptions);
+
+            // Initialize on page load
+            updateSortOptions();
+        });
+    </script>
 
     {{-- Ringkasan --}}
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
