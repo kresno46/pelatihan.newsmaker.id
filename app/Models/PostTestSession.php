@@ -50,8 +50,17 @@ class PostTestSession extends Model
      */
     protected static function booted()
     {
+        // Ketika sesi baru dibuat, slug akan dibuat berdasarkan title
         static::creating(function ($session) {
             $session->slug = Str::slug($session->title) . '-' . uniqid();
+        });
+
+        // Ketika sesi di-update, slug akan diperbarui berdasarkan title
+        static::updating(function ($session) {
+            // Perbarui slug hanya jika title berubah
+            if ($session->isDirty('title')) {
+                $session->slug = Str::slug($session->title) . '-' . uniqid();
+            }
         });
     }
 

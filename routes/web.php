@@ -67,9 +67,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/tambah', [QuizController::class, 'create'])->name('posttest.create');
         Route::post('/', [QuizController::class, 'store'])->name('posttest.store');
 
-        Route::get('/{session}/edit', [QuizController::class, 'edit'])->name('posttest.edit');
-        Route::put('/{session}', [QuizController::class, 'update'])->name('posttest.update');
-        Route::delete('/{session}', [QuizController::class, 'destroy'])->name('posttest.destroy');
+        Route::get('/{session:slug}/edit', [QuizController::class, 'edit'])->name('posttest.edit');
+        Route::put('/{session:slug}', [QuizController::class, 'update'])->name('posttest.update');
+        Route::delete('/{session:slug}', [QuizController::class, 'destroy'])->name('posttest.destroy');
         Route::post('/toggle-status/{slug}', [PostTestController::class, 'toggleStatus'])->name('posttest.toggle');
 
 
@@ -81,7 +81,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/{session:slug}/report/{result}', [QuizController::class, 'deleteResult'])->name('posttest.report.delete');
 
         // === nested: /post-test/{session}/edit/question ===
-        Route::prefix('{session}/edit')->group(function () {
+        Route::prefix('{session:slug}/edit')->group(function () {
             Route::post('/question', [PostTestController::class, 'questionStore'])
                 ->name('question.store');
             Route::put('/question/{question}', [PostTestController::class, 'questionUpdate'])

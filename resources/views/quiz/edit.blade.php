@@ -67,10 +67,13 @@
                                         class="block font-medium text-gray-900 dark:text-gray-100">Status</label>
                                     <select name="status" id="status"
                                         class="w-full border rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-400 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('status') border-red-500 dark:border-red-400 @enderror">
-                                        <option value="" disabled {{ old('status') ? '' : 'selected' }}>Pilih status
+                                        <option value="" disabled
+                                            {{ old('status', $session->status) === null ? '' : 'selected' }}>Pilih status
                                         </option>
-                                        <option value="1" {{ old('status') == '1' ? 'selected' : '' }}>Aktif</option>
-                                        <option value="0" {{ old('status') == '0' ? 'selected' : '' }}>Tidak Aktif
+                                        <option value="1"
+                                            {{ old('status', $session->status) == '1' ? 'selected' : '' }}>Aktif</option>
+                                        <option value="0"
+                                            {{ old('status', $session->status) == '0' ? 'selected' : '' }}>Tidak Aktif
                                         </option>
                                     </select>
                                     @error('status')
