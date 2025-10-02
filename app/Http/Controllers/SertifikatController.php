@@ -21,7 +21,7 @@ class SertifikatController extends Controller
             ->where('user_id', $user->id)
             ->get();
 
-       if ($userResults->isEmpty()) {
+        if ($userResults->isEmpty()) {
             return view('sertifikat.index', [
                 'userResults' => collect(), // kirim collection kosong
                 'message' => 'Belum ada post-test yang Anda kerjakan.',
@@ -31,7 +31,7 @@ class SertifikatController extends Controller
                 'awards' => collect(),
             ]);
         }
-        
+
         // Hitung jumlah post-test dan rata-rata skor
         $totalResults = $userResults->count();
         $averageScore = round($userResults->avg('score'), 2);
@@ -55,13 +55,16 @@ class SertifikatController extends Controller
             ->where('id', $postTestId)
             ->firstOrFail();
 
-        // Pastikan nilai lebih dari 75 untuk sertifikat
+        // Pastikan nilai lebih dari 60 untuk sertifikat
         if ($postTestResult->score < 60) {
             return back()->with('error', 'Nilai rata-rata minimal 60 diperlukan untuk mendapatkan sertifikat.');
         }
 
         // Ambil title dari session yang terkait
         $sessionTitle = $postTestResult->session->title;  // Mengambil title dari relasi session
+
+        // Ambil created_at dari PostTestResult sebagai awarded_at
+        $awardDate = Carbon::parse($postTestResult->created_at);
 
         // Simpan atau perbarui sertifikat
         $award = CertificateAward::updateOrCreate(
@@ -73,7 +76,7 @@ class SertifikatController extends Controller
                 'batch_number' => $this->getBatchNumber($user->id),  // Mendapatkan batch number otomatis
                 'average_score' => $postTestResult->score,
                 'certificate_uuid' => (string) Str::uuid(),
-                'awarded_at' => now(),
+                'awarded_at' => $awardDate, // Menggunakan created_at sebagai awarded_at
             ]
         );
 
