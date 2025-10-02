@@ -26,6 +26,8 @@ class CertificateAward extends Model
         return $this->belongsTo(User::class);
     }
 
+
+
     /**
      * Relasi ke tabel post_test_results
      */

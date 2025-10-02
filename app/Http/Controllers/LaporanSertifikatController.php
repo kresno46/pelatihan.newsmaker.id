@@ -12,7 +12,7 @@ class LaporanSertifikatController extends Controller
      */
     public function index()
     {
-        $sertifikats = CertificateAward::with(['user', 'folder'])
+        $sertifikats = CertificateAward::with(['user'])
             ->orderByDesc('awarded_at')
             ->get();
 
