@@ -29,8 +29,11 @@
             <div>
                 <x-input-label-append for="name" :value="__('Nama Lengkap')" :append="empty($user->name) ? '<span class=\'text-red-500\'>*</span>' : ''" />
                 <x-text-input id="name" type="text" name="name" class="block mt-1 w-full"
-                    :value="old('name', $user->name)" />
+                    :value="old('name', $user->name)" {{ (auth()->user()->role !== 'Admin' && $user->isNameFilled()) ? 'readonly' : '' }} />
                 <x-input-error :messages="$errors->get('name')" class="mt-2" />
+                @if(auth()->user()->role !== 'Admin' && $user->isNameFilled())
+                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Nama lengkap tidak dapat diubah setelah diisi. Hanya admin yang dapat mengubahnya.</p>
+                @endif
             </div>
 
             {{-- Email --}}

@@ -1,5 +1,0 @@
-- [x] Add branch filter to quiz report page
-- [x] Update QuizController@report to handle branch filter
-- [x] Update QuizController@reportExport to include branch filter
-- [x] Update view to include branch dropdown dependent on company selection
-- [x] Update export link to include branch parameter

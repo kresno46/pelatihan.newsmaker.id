@@ -36,6 +36,16 @@ class User extends Authenticatable implements MustVerifyEmail
     ];
 
     /**
+     * Check if the user's name is already filled.
+     *
+     * @return bool
+     */
+    public function isNameFilled()
+    {
+        return !empty($this->name);
+    }
+
+    /**
      * Atribut yang harus disembunyikan saat serialisasi.
      *
      * @var array<int, string>
