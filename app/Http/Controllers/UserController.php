@@ -20,9 +20,9 @@ class UserController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', '%' . $search . '%')
-                  ->orWhere('email', 'like', '%' . $search . '%')
-                  ->orWhere('cabang', 'like', '%' . $search . '%')
-                  ->orWhere('role', 'like', '%' . $search . '%');
+                    ->orWhere('email', 'like', '%' . $search . '%')
+                    ->orWhere('cabang', 'like', '%' . $search . '%')
+                    ->orWhere('role', 'like', '%' . $search . '%');
             });
         }
 
@@ -147,5 +147,21 @@ class UserController extends Controller
         $trainer->delete();
 
         return redirect()->route('trainer.index')->with('Alert', 'Trainer ' . $trainer->name . ' berhasil dihapus.');
+    }
+
+    public function verify($id)
+    {
+        $trainer = User::findOrFail($id);
+
+        if ($trainer->email_verified_at) {
+            return redirect()->route('trainer.index')
+                ->with('Alert', 'Trainer ini sudah diverifikasi sebelumnya.');
+        }
+
+        $trainer->email_verified_at = now();
+        $trainer->save();
+
+        return redirect()->route('trainer.index')
+            ->with('Alert', 'Trainer ' . $trainer->name . ' berhasil diverifikasi.');
     }
 }
