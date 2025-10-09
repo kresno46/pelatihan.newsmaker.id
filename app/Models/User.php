@@ -36,6 +36,14 @@ class User extends Authenticatable implements MustVerifyEmail
     ];
 
     /**
+     * Mutator untuk atribut name: membuat huruf pertama setiap kata kapital.
+     */
+    public function setNameAttribute($value)
+    {
+        $this->attributes['name'] = ucwords($value);
+    }
+
+    /**
      * Check if the user's name is already filled.
      *
      * @return bool

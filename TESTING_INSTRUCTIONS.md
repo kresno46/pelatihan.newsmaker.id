@@ -1,4 +1,4 @@
-# Manual Testing Instructions for Dynamic Branch Sorting Feature in Quiz Report
+ # Manual Testing Instructions for Dynamic Branch Sorting Feature in Quiz Report
 
 ## Overview
 This document provides step-by-step instructions to manually test the dynamic branch sorting feature implemented in the quiz report page.
