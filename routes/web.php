@@ -100,6 +100,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/', [TestController::class, 'index'])->name('index');
         Route::middleware('absensi')->group(function () {
             Route::get('/{slug}', [TestController::class, 'showQuiz'])->name('show');
+            Route::match(['GET', 'POST'], '/{slug}/question/{number}', [TestController::class, 'showQuestion'])->name('question');
             Route::post('/{slug}/submit', [TestController::class, 'submitQuiz'])->name('submit');
         });
         Route::get('/result/{result}', [TestController::class, 'showResult'])->name('result');
