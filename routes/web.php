@@ -143,6 +143,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::put('/{id}', [UserController::class, 'update'])->name('trainer.update');
             Route::get('/{id}/show', [UserController::class, 'show'])->name('trainer.show');
             Route::delete('/{id}', [UserController::class, 'destroy'])->name('trainer.destroy');
+            Route::patch('/{id}/verify', [UserController::class, 'verify'])->name('trainer.verify');
         });
     });
 

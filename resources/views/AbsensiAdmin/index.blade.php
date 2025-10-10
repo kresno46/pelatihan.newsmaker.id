@@ -99,6 +99,9 @@
                                         Nama</th>
                                     <th
                                         class="px-6 py-3 text-start text-xs font-medium text-gray-700 dark:text-neutral-300 uppercase">
+                                        Email</th>
+                                    <th
+                                        class="px-6 py-3 text-start text-xs font-medium text-gray-700 dark:text-neutral-300 uppercase">
                                         Role</th>
                                     <th
                                         class="px-6 py-3 text-start text-xs font-medium text-gray-700 dark:text-neutral-300 uppercase">
@@ -118,6 +121,10 @@
                                         <td
                                             class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-neutral-200">
                                             {{ $item->user->name }}
+                                        </td>
+                                        <td
+                                            class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-neutral-200">
+                                            {{ $item->user->email }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">
                                             {{ $item->user->nama_perusahaan }}
