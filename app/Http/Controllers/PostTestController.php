@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Mews\Purifier\Facades\Purifier;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class PostTestController extends Controller
 {
@@ -120,54 +121,59 @@ class PostTestController extends Controller
     }
 
     // Submit Kuis
-    public function submitQuiz(Request $request, $sessionId)
+    public function submitQuiz(Request $request, PostTestSession $session)
     {
-        if (!auth()->check()) {
-            abort(403, 'Unauthorized.');
-        }
-
-        $session = PostTestSession::with('questions')->findOrFail($sessionId);
-        $userId = auth()->id();
-
-        // Cek hasil sebelumnya
-        $latestResult = PostTestResult::where('user_id', $userId)
-            ->where('session_id', $session->id)
-            ->latest()
-            ->first();
-
-        if ($latestResult && $latestResult->score >= 60) {
-            return redirect()->route('dashboard')
-                ->with('info', 'Anda sudah mengerjakan post test ini dengan nilai yang cukup.');
-        }
-
-        // Hapus nilai lama jika ada (dan skor < 75)
-        if ($latestResult && $latestResult->score < 60) {
-            $latestResult->delete();
-        }
-
-        // Hitung skor
+        $userId = Auth::id();
         $answers = $request->input('answer', []);
-        $correct = 0;
-        $total = count($session->questions);
 
-        foreach ($session->questions as $question) {
+        // Ambil semua soal dalam sesi, bukan hanya soal yang dijawab
+        $questions = PostTest::where('session_id', $session->id)->get();
+
+        if ($questions->isEmpty()) {
+            return redirect()->route('post-test.show', $session->slug)
+                ->with('error', 'Tidak ada soal dalam sesi ini.');
+        }
+
+        $totalQuestions = $questions->count();
+        $correct = 0;
+        $wrong = 0;
+
+        foreach ($questions as $question) {
             $userAnswer = $answers[$question->id] ?? null;
-            if ($userAnswer && strtoupper($userAnswer) === $question->correct_option) {
-                $correct++;
+
+            if ($userAnswer) {
+                if (strtoupper($userAnswer) === strtoupper($question->correct_option)) {
+                    $correct++;
+                } else {
+                    $wrong++;
+                }
+            } else {
+                // Kalau soal tidak dijawab, dianggap salah
+                $wrong++;
             }
         }
 
-        $score = $total > 0 ? round(($correct / $total) * 100, 2) : 0;
+        // Hitung skor dari jawaban benar dibanding total soal
+        $score = round(($correct / $totalQuestions) * 100);
 
-        // Simpan hasil baru
-        $result = PostTestResult::create([
-            'user_id'    => $userId,
-            'session_id' => $session->id,
-            'score'      => $score,
-        ]);
+        DB::transaction(function () use ($userId, $session, $correct, $wrong, $score, $answers) {
+            PostTestResult::updateOrCreate(
+                [
+                    'user_id' => $userId,
+                    'session_id' => $session->id,
+                ],
+                [
+                    'correct' => $correct,
+                    'wrong' => $wrong,
+                    'score' => $score,
+                    'answers' => json_encode($answers),
+                    'submitted_at' => now(),
+                ]
+            );
+        });
 
-        return redirect()->route('posttest.result', $result->id)
-            ->with('success', 'Post test berhasil dikumpulkan.');
+        return redirect()->route('post-test.result', ['session' => $session->slug])
+            ->with('success', 'Jawaban berhasil dikirim!');
     }
 
     // Lihat Hasil
