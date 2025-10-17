@@ -11,7 +11,7 @@
                     <i class="fa-solid fa-arrow-left text-sm"></i>
                 </a>
             </div>
-            <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div class="w-full flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <div>
                     <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
                         {{ __('Kuis / Post Test') }}
@@ -28,7 +28,9 @@
                             aria-live="polite">
                             {{ session('success') }}
                         </div>
-                    @elseif (session('error'))
+                    @endif
+
+                    @if (session('error'))
                         <div x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 5000)"
                             class="text-xs bg-red-100 dark:bg-red-200 text-red-800 py-1 px-3 rounded-lg mr-3"
                             aria-live="polite">
@@ -54,7 +56,7 @@
             </a>
             <a href="{{ route('post-test.index', ['tipe' => 'PATL']) }}"
                 class="py-2 shadow text-center rounded-t-3xl w-full 
-                {{ $activeTipe === 'PATL' ? 'bg-white font-semibold' : 'bg-gray-300 hover:bg-gray-200 transition-all' }}">
+                {{ $activeTipe === 'PATL' ? 'bg-white dark:bg-gray-800 font-semibold' : 'bg-gray-300 dark:bg-gray-600 hover:bg-gray-200 dark:hover:bg-gray-500 transition-all' }}">
                 PATL
             </a>
         </div>

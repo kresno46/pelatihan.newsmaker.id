@@ -97,7 +97,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::prefix('posttest')->name('post-test.')->middleware('profile.complete')->group(function () {
         Route::get('/', [TestController::class, 'index'])->name('index');
-        Route::middleware('absensi')->group(function () {
+        Route::middleware('absensi')->middleware('check.patl')->group(function () {
             Route::get('/{slug}', [TestController::class, 'showQuiz'])->name('show');
             Route::post('/{slug}/submit', [TestController::class, 'submitQuiz'])->name('submit');
         });

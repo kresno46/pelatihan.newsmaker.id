@@ -20,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'profile.complete' => EnsureProfileIsComplete::class,
             'absensi' => EnsureUserHasAbsensi::class,
             'bearer.token' => \App\Http\Middleware\BearerTokenMiddleware::class,
+            'check.patl' => \App\Http\Middleware\CheckPATLAccess::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

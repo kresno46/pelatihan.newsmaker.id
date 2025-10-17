@@ -26,7 +26,7 @@ class QuizController extends Controller
             'title'     => 'required|string|max:255',
             'duration'  => 'required|integer|min:1|max:1440',
             'status'    => 'required|in:1,0',
-            'tipe'      => 'required|in:PATD, PATL',
+            'tipe'      => 'required|in:PATD,PATL',
         ]);
 
         $session = PostTestSession::create($data); // slug dibuat otomatis di model

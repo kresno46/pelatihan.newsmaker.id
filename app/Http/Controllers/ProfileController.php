@@ -58,7 +58,7 @@ class ProfileController extends Controller
             'alamat' => ['nullable', 'string'],
             'no_tlp' => ['nullable', 'string', 'max:20'],
             // 'pekerjaan' => ['nullable', 'string', 'max:50'],
-            'jabatan' => ['nullable', 'in:BC,SBC,SBM,BM'],
+            'jabatan' => ['nullable', 'in:BC,SBC,BsM,SBM,EM,SEM,VBM,BrM'],
             'cabang' => ['nullable', 'string'],
         ]);
 
