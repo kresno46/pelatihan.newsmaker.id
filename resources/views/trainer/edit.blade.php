@@ -86,7 +86,7 @@
             </div> --}}
 
             <div class="mb-4">
-                <label for="alamat" class="block text-sm font-medium text-gray-700 dark:text-white">Alamat</label>
+                <label for="alamat" class="block text-sm font-medium text-gray-700 dark:text-white">Kota</label>
                 <textarea name="alamat" id="alamat" rows="3"
                     class="mt-1 block w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">{{ old('alamat', $trainer->alamat) }}</textarea>
             </div>

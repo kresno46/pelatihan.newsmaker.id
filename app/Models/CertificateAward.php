@@ -26,11 +26,13 @@ class CertificateAward extends Model
         return $this->belongsTo(User::class);
     }
 
+
+
     /**
-     * Relasi ke tabel folder_ebooks (batch_number → id)
+     * Relasi ke tabel post_test_results
      */
-    public function folder(): BelongsTo
+    public function postTestResult(): BelongsTo
     {
-        return $this->belongsTo(FolderEbook::class, 'batch_number');
+        return $this->belongsTo(PostTestResult::class, 'post_test_id');
     }
 }

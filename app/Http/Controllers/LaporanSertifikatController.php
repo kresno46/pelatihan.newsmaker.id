@@ -10,16 +10,23 @@ class LaporanSertifikatController extends Controller
     /**
      * Menampilkan daftar sertifikat yang telah diunduh.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $sertifikats = CertificateAward::with(['user', 'folder'])
-            ->orderByDesc('awarded_at')
-            ->get();
+        $search = $request->input('search'); // Ambil nilai pencarian dari input form
 
-        return view('LaporanSertifikat.index', compact('sertifikats'));
+        // Ambil sertifikat dengan pagination dan pencarian
+        $sertifikats = CertificateAward::with(['user'])
+            ->orderByDesc('awarded_at') // Urutkan berdasarkan tanggal awarded_at
+            ->when($search, function ($query, $search) {
+                // Jika ada query pencarian, cari berdasarkan nama user atau kriteria lainnya
+                return $query->whereHas('user', function ($q) use ($search) {
+                    $q->where('name', 'like', '%' . $search . '%');
+                });
+            })
+            ->paginate(10); // Menampilkan 10 data per halaman
+
+        return view('LaporanSertifikat.index', compact('sertifikats', 'search'));
     }
-
-    // Method lainnya masih kosong (bisa dihapus jika tidak dipakai)
 
     public function create()
     {

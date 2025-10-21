@@ -1,0 +1,1 @@
+- [ ] Add setNameAttribute mutator in User model to capitalize first letter of name

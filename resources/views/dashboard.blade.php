@@ -38,14 +38,6 @@
                     'route' => 'post-test.index',
                 ],
                 [
-                    'title' => 'Jumlah e-Book',
-                    'value' => $jumlahEbook,
-                    'suffix' => ' eBook',
-                    'icon' => 'fa-solid fa-book',
-                    'color' => 'blue',
-                    'route' => 'folder.index',
-                ],
-                [
                     'title' => 'Jumlah Daftar Absensi',
                     'value' => $jumlahJadwalAbsensi,
                     'suffix' => ' Jadwal',

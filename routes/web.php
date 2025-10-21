@@ -22,7 +22,6 @@ use App\Http\Controllers\SummernoteController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserCleanupController;
-use App\Models\Absensi;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -39,6 +38,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/{folderSlug}/edit', [FolderController::class, 'edit'])->name('folder.edit');
             Route::put('/{folderSlug}', [FolderController::class, 'update'])->name('folder.update');
             Route::delete('/{folderSlug}', [FolderController::class, 'destroy'])->name('folder.destroy');
+            // Manual sync from API
+            Route::post('/sync-from-api', [FolderController::class, 'syncFromApi'])->name('folder.sync');
         });
 
         // 📚 Ebook & Quiz Routes
@@ -58,6 +59,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
             // 📄 Tampil Detail eBook
             Route::get('/{ebookSlug}', [EbookController::class, 'show'])->name('ebook.show');
+
+            // 📥 Download eBook PDF
+            Route::get('/{ebookSlug}/download', [EbookController::class, 'download'])->name('ebook.download');
         });
     });
 
@@ -93,7 +97,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::prefix('posttest')->name('post-test.')->middleware('profile.complete')->group(function () {
         Route::get('/', [TestController::class, 'index'])->name('index');
-        Route::middleware('absensi')->group(function () {
+        Route::middleware('absensi')->middleware('check.patl')->group(function () {
             Route::get('/{slug}', [TestController::class, 'showQuiz'])->name('show');
             Route::post('/{slug}/submit', [TestController::class, 'submitQuiz'])->name('submit');
         });
@@ -137,6 +141,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::put('/{id}', [UserController::class, 'update'])->name('trainer.update');
             Route::get('/{id}/show', [UserController::class, 'show'])->name('trainer.show');
             Route::delete('/{id}', [UserController::class, 'destroy'])->name('trainer.destroy');
+            Route::patch('/{id}/verify', [UserController::class, 'verify'])->name('trainer.verify');
         });
     });
 

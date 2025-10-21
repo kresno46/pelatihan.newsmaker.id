@@ -23,8 +23,8 @@
                     {{ __('Kembali') }}
                 </a>
 
-                {{-- Export bawa filter q & sort & company agar konsisten --}}
-                <a href="{{ route('posttest.report.export', $session->slug) }}?q={{ request('q') }}&sort={{ request('sort') }}&company={{ request('company') }}"
+                {{-- Export bawa filter q & sort & company & branch agar konsisten --}}
+                <a href="{{ route('posttest.report.export', $session->slug) }}?q={{ request('q') }}&sort={{ request('sort') }}&company={{ request('company') }}&branch={{ request('branch') }}"
                     class="px-3 py-2 text-sm rounded bg-green-500 hover:bg-green-600 text-white transition">
                     {{ __('Export CSV') }}
                 </a>
@@ -34,7 +34,7 @@
 
     {{-- Filter & Sort --}}
     <div class="mb-4 p-4 sm:p-5 bg-white dark:bg-gray-800 rounded-xl shadow">
-        <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-3">
+        <form method="GET" class="grid grid-cols-1 md:grid-cols-6 gap-3">
             <div>
                 <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">{{ __('Cari Peserta') }}</label>
                 <input type="text" name="q" value="{{ $filters['q'] ?? request('q') }}"
@@ -43,19 +43,37 @@
             </div>
 
             <div>
+                <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">{{ __('Filter Perusahaan') }}</label>
+                <select name="company" id="company"
+                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
+                    @php $company = $filters['company'] ?? request('company', ''); @endphp
+                    <option value="" {{ $company === '' ? 'selected' : '' }}>Semua Perusahaan</option>
+                    @foreach ($companies as $companyName)
+                        <option value="{{ $companyName }}" {{ $company === $companyName ? 'selected' : '' }}>{{ $companyName }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">{{ __('Filter Cabang') }}</label>
+                <select name="branch" id="branch"
+                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
+                    @php $branch = $filters['branch'] ?? request('branch', ''); @endphp
+                    <option value="" {{ $branch === '' ? 'selected' : '' }}>Semua Cabang</option>
+                    @if($branches)
+                        @foreach ($branches as $b)
+                            <option value="{{ $b }}" {{ $branch === $b ? 'selected' : '' }}>{{ $b }}</option>
+                        @endforeach
+                    @endif
+                </select>
+            </div>
+
+            <div>
                 <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">{{ __('Urutkan') }}</label>
-                <select name="sort"
+                <select name="sort" id="sort"
                     class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
                     @php $sort = $filters['sort'] ?? request('sort', 'latest'); @endphp
                     <option value="latest" {{ $sort === 'latest' ? 'selected' : '' }}>{{ __('Terbaru') }}</option>
-                    <option value="oldest" {{ $sort === 'oldest' ? 'selected' : '' }}>{{ __('Terlama') }}</option>
-                    <option value="highest" {{ $sort === 'highest' ? 'selected' : '' }}>{{ __('Skor Tertinggi') }}
-                    </option>
-                    <option value="lowest" {{ $sort === 'lowest' ? 'selected' : '' }}>{{ __('Skor Terendah') }}</option>
-                    <option value="lulus_first" {{ $sort === 'lulus_first' ? 'selected' : '' }}>Lulus Dahulu</option>
-                    <option value="tidak_lulus_first" {{ $sort === 'tidak_lulus_first' ? 'selected' : '' }}>Tidak Lulus Dahulu</option>
-                    <option value="cabang_asc" {{ $sort === 'cabang_asc' ? 'selected' : '' }}>Cabang A-Z</option>
-                    <option value="cabang_desc" {{ $sort === 'cabang_desc' ? 'selected' : '' }}>Cabang Z-A</option>
                 </select>
             </div>
 
@@ -215,4 +233,95 @@
             </div>
         @endif
     </div>
+@endsection
+
+@section('scripts')
+    @php
+        $kantorCabang = [
+            'RFB' => [
+                'Palembang',
+                'Balikpapan',
+                'Solo',
+                'Jakarta DBS Tower',
+                'Jakarta AXA Tower',
+                'Jakarta AXA 1',
+                'Jakarta AXA 2',
+                'Jakarta AXA 3',
+                'Medan',
+                'Semarang',
+                'Surabaya Pakuwon',
+                'Surabaya Ciputra',
+                'Pekanbaru',
+                'Bandung',
+                'Yogyakarta',
+            ],
+            'SGB' => ['Jakarta', 'Semarang', 'Makassar'],
+            'KPF' => ['Jakarta', 'Yogyakarta', 'Bali', 'Makassar', 'Bandung', 'Semarang'],
+            'EWF' => [
+                'SCC Jakarta',
+                'Cyber 2 Jakarta',
+                'Surabaya Trilium',
+                'Manado',
+                'Semarang',
+                'Surabaya Praxis',
+                'Cirebon',
+            ],
+            'BPF' => [
+                'Equity Tower Jakarta',
+                'Jambi',
+                'Jakarta - Pacific Place Mall',
+                'Pontianak',
+                'Malang',
+                'Surabaya',
+                'Medan',
+                'Bandung',
+                'Pekanbaru',
+                'Banjarmasin',
+                'Bandar Lampung',
+                'Semarang',
+            ],
+        ];
+        $companyToRole = [
+            'PT Rifan Financindo Berjangka' => 'RFB',
+            'PT Solid Gold Berjangka' => 'SGB',
+            'PT Kontak Perkasa Futures' => 'KPF',
+            'PT Best Profit Futures' => 'BPF',
+            'PT Equity World Futures' => 'EWF',
+        ];
+        $selectedCabang = $filters['branch'] ?? request('branch', '');
+    @endphp
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dataCabang = @json($kantorCabang);
+            const companyToRole = @json($companyToRole);
+            const selectedCabang = @json($selectedCabang);
+            const companySelect = document.getElementById('company');
+            const branchSelect = document.getElementById('branch');
+
+            function updateBranchOptions(companyName) {
+                branchSelect.innerHTML = '<option value="">Semua Cabang</option>';
+                if (companyName && companyToRole[companyName]) {
+                    const roleKey = companyToRole[companyName];
+                    if (dataCabang[roleKey]) {
+                        dataCabang[roleKey].forEach(c => {
+                            const opt = document.createElement('option');
+                            opt.value = c;
+                            opt.textContent = c;
+                            if (c === selectedCabang) opt.selected = true;
+                            branchSelect.appendChild(opt);
+                        });
+                    }
+                }
+            }
+
+            if (companySelect && companySelect.value) {
+                updateBranchOptions(companySelect.value);
+            }
+
+            companySelect?.addEventListener('change', function() {
+                updateBranchOptions(this.value);
+            });
+        });
+    </script>
 @endsection

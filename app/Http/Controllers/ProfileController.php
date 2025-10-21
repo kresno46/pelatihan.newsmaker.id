@@ -43,9 +43,13 @@ class ProfileController extends Controller
     {
         $user = $request->user();
 
+        // Jika nama sudah diisi dan user bukan admin, cegah update nama
+        $isAdmin = auth()->user()->role === 'Admin';
+        $nameRules = (!$isAdmin && $user->isNameFilled()) ? [] : ['nullable', 'string', 'max:50'];
+
         // Validasi data manual
         $validator = Validator::make($request->all(), [
-            'name' => ['nullable', 'string', 'max:50'],
+            'name' => $nameRules,
             'email' => ['nullable', 'email', 'max:50', Rule::unique('users')->ignore($user->id)],
             'jenis_kelamin' => ['nullable', 'in:Pria,Wanita'],
             'tempat_lahir' => ['nullable', 'string', 'max:20'],
@@ -54,7 +58,7 @@ class ProfileController extends Controller
             'alamat' => ['nullable', 'string'],
             'no_tlp' => ['nullable', 'string', 'max:20'],
             // 'pekerjaan' => ['nullable', 'string', 'max:50'],
-            'jabatan' => ['nullable', 'in:BC,SBC,SBM,BM'],
+            'jabatan' => ['nullable', 'in:BC,SBC,BsM,SBM,EM,SEM,VBM,BrM'],
             'cabang' => ['nullable', 'string'],
         ]);
 
@@ -65,6 +69,11 @@ class ProfileController extends Controller
         }
 
         $validatedData = $validator->validated();
+
+        // Jika nama sudah diisi dan user bukan admin, hapus dari data yang akan diupdate
+        if (!$isAdmin && $user->isNameFilled()) {
+            unset($validatedData['name']);
+        }
 
         // Update atribut user
         $user->fill($validatedData);

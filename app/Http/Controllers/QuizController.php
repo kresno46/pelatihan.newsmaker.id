@@ -26,7 +26,7 @@ class QuizController extends Controller
             'title'     => 'required|string|max:255',
             'duration'  => 'required|integer|min:1|max:1440',
             'status'    => 'required|in:1,0',
-            'tipe'      => 'required|in:PATD, PATL',
+            'tipe'      => 'required|in:PATD,PATL',
         ]);
 
         $session = PostTestSession::create($data); // slug dibuat otomatis di model
@@ -79,6 +79,7 @@ class QuizController extends Controller
         $sort      = $request->input('sort', 'latest');       // latest|oldest|highest|lowest
         $perPage   = (int) $request->input('per_page', 12) ?: 12;
         $company   = trim((string) $request->input('company', '')); // filter berdasarkan NAMA PERUSAHAAN
+        $branch    = trim($request->input('branch', '')); // filter berdasarkan CABANG
 
         // Konversi filter perusahaan → kode role (karena query ke kolom users.role)
         $roleFilter = array_search($company, $roleToCompany, true) ?: null;
@@ -96,14 +97,10 @@ class QuizController extends Controller
             ->when($roleFilter, function ($qr) use ($roleFilter) {
                 $qr->where('users.role', $roleFilter);
             })
-            ->when($sort === 'highest', fn($qr) => $qr->orderByDesc('post_test_results.score'))
-            ->when($sort === 'lowest',  fn($qr) => $qr->orderBy('post_test_results.score'))
-            ->when($sort === 'oldest',  fn($qr) => $qr->orderBy('post_test_results.created_at'))
+            ->when($branch !== '', function ($qr) use ($branch) {
+                $qr->where('users.cabang', $branch);
+            })
             ->when($sort === 'latest',  fn($qr) => $qr->orderByDesc('post_test_results.created_at'))
-            ->when($sort === 'lulus_first', fn($qr) => $qr->orderByRaw('CASE WHEN post_test_results.score >= 60 THEN 1 ELSE 0 END DESC'))
-            ->when($sort === 'tidak_lulus_first', fn($qr) => $qr->orderByRaw('CASE WHEN post_test_results.score >= 60 THEN 1 ELSE 0 END ASC'))
-            ->when($sort === 'cabang_asc', fn($qr) => $qr->orderBy('users.cabang', 'asc'))
-            ->when($sort === 'cabang_desc', fn($qr) => $qr->orderBy('users.cabang', 'desc'))
             ->select('post_test_results.*')
             ->paginate($perPage)
             ->withQueryString();
@@ -112,8 +109,66 @@ class QuizController extends Controller
         $aggregates = $session->results()
             ->leftJoin('users', 'post_test_results.user_id', '=', 'users.id')
             ->when($roleFilter, fn($qr) => $qr->where('users.role', $roleFilter))
+            ->when($branch !== '', fn($qr) => $qr->where('users.cabang', $branch))
             ->selectRaw('COUNT(*) AS total, AVG(post_test_results.score) AS avg_score, MAX(post_test_results.score) AS max_score, MIN(post_test_results.score) AS min_score')
             ->first();
+
+        // Daftar cabang untuk filter (gunakan data dari $kantorCabang)
+        $kantorCabang = [
+            'RFB' => [
+                'Palembang',
+                'Balikpapan',
+                'Solo',
+                'Jakarta DBS Tower',
+                'Jakarta AXA Tower',
+                'Jakarta AXA 1',
+                'Jakarta AXA 2',
+                'Jakarta AXA 3',
+                'Medan',
+                'Semarang',
+                'Surabaya Pakuwon',
+                'Surabaya Ciputra',
+                'Pekanbaru',
+                'Bandung',
+                'Yogyakarta',
+            ],
+            'SGB' => ['Jakarta', 'Semarang', 'Makassar'],
+            'KPF' => ['Jakarta', 'Yogyakarta', 'Bali', 'Makassar', 'Bandung', 'Semarang'],
+            'EWF' => [
+                'SCC Jakarta',
+                'Cyber 2 Jakarta',
+                'Surabaya Trilium',
+                'Manado',
+                'Semarang',
+                'Surabaya Praxis',
+                'Cirebon',
+            ],
+            'BPF' => [
+                'Equity Tower Jakarta',
+                'Jambi',
+                'Jakarta - Pacific Place Mall',
+                'Pontianak',
+                'Malang',
+                'Surabaya',
+                'Medan',
+                'Bandung',
+                'Pekanbaru',
+                'Banjarmasin',
+                'Bandar Lampung',
+                'Semarang',
+            ],
+        ];
+
+        $branches = [];
+        if ($roleFilter) {
+            // Extract kode perusahaan dari role (misal 'Trainer (RFB)' -> 'RFB')
+            preg_match('/\((.*?)\)/', $roleFilter, $matches);
+            $roleKey = $matches[1] ?? null;
+
+            if ($roleKey && isset($kantorCabang[$roleKey])) {
+                $branches = collect($kantorCabang[$roleKey]);
+            }
+        }
 
         // Rekap per perusahaan (group by users.role, lalu map ke nama perusahaan)
         $rawRoleCounts = $session->results()
@@ -144,8 +199,10 @@ class QuizController extends Controller
                 'sort'     => $sort,
                 'per_page' => $perPage,
                 'company'  => $company, // kirim nama perusahaan yg sedang difilter
+                'branch'   => $branch, // kirim cabang yg sedang difilter
             ],
             'companies'   => $companies,   // opsi dropdown perusahaan
+            'branches'    => $branches,    // opsi dropdown cabang berdasarkan perusahaan
             'byCompany'   => $byCompany,   // rekap per perusahaan (nama → total)
             'noRoleCount' => $noRoleCount, // jumlah tanpa role
         ]);
@@ -183,6 +240,7 @@ class QuizController extends Controller
         $q         = trim($request->input('q', ''));
         $sort      = $request->input('sort', 'latest');       // latest|oldest|highest|lowest
         $company   = trim((string) $request->input('company', '')); // filter berdasarkan NAMA PERUSAHAAN
+        $branch    = trim($request->input('branch', '')); // filter berdasarkan CABANG
 
         // Konversi filter perusahaan → kode role (karena query ke kolom users.role)
         $roleFilter = array_search($company, [
@@ -205,14 +263,10 @@ class QuizController extends Controller
             ->when($roleFilter, function ($qr) use ($roleFilter) {
                 $qr->where('users.role', $roleFilter);
             })
-            ->when($sort === 'highest', fn($qr) => $qr->orderByDesc('post_test_results.score'))
-            ->when($sort === 'lowest',  fn($qr) => $qr->orderBy('post_test_results.score'))
-            ->when($sort === 'oldest',  fn($qr) => $qr->orderBy('post_test_results.created_at'))
+            ->when($branch !== '', function ($qr) use ($branch) {
+                $qr->where('users.cabang', $branch);
+            })
             ->when($sort === 'latest',  fn($qr) => $qr->orderByDesc('post_test_results.created_at'))
-            ->when($sort === 'lulus_first', fn($qr) => $qr->orderByRaw('CASE WHEN post_test_results.score >= 60 THEN 1 ELSE 0 END DESC'))
-            ->when($sort === 'tidak_lulus_first', fn($qr) => $qr->orderByRaw('CASE WHEN post_test_results.score >= 60 THEN 1 ELSE 0 END ASC'))
-            ->when($sort === 'cabang_asc', fn($qr) => $qr->orderBy('users.cabang', 'asc'))
-            ->when($sort === 'cabang_desc', fn($qr) => $qr->orderBy('users.cabang', 'desc'))
             ->select('post_test_results.*')
             ->get();
 
