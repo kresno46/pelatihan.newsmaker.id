@@ -108,11 +108,17 @@
                                 <td class="px-4 py-3 text-center">
                                     @if (!$posttest->status)
                                         <div class="flex gap-2">
-                                            <span
-                                                class="inline-block w-full bg-gray-400 text-white text-xs px-3 py-1 rounded cursor-not-allowed">
-                                                Tidak Tersedia
-                                            </span>
-                                            @if ($posttest->progres === 'Selesai')
+                                            @if ($posttest->progres === 'Belum Dikerjakan')
+                                                <span
+                                                    class="inline-block w-full bg-gray-400 text-white text-xs px-3 py-1 rounded cursor-not-allowed">
+                                                    Tidak Tersedia
+                                                </span>
+                                            @elseif ($posttest->progres === 'Nilai di Bawah 60')
+                                                <span
+                                                    class="inline-block w-full bg-red-400 text-white text-xs px-3 py-1 rounded cursor-not-allowed">
+                                                    Nilai anda di bawah 60
+                                                </span>
+                                            @elseif ($posttest->progres === 'Selesai')
                                                 <a href="{{ route('post-test.result', $posttest->result_id) }}"
                                                     class="inline-block w-full bg-gray-600 text-white text-xs px-3 py-1 rounded hover:bg-gray-700">
                                                     Lihat Hasil
@@ -142,7 +148,10 @@
                         @empty
                             <tr>
                                 <td colspan="6" class="px-4 py-3 text-center text-gray-500">
-                                    Tidak ada post test tersedia.
+                                    <div class="flex items-center justify-center flex-col">
+                                        <img src="{{ asset('/assets/NoData-removebg-preview.png') }}" alt="No Data">
+                                        <span>Belum ada sesi absensi tersedia.</span>
+                                    </div>
                                 </td>
                             </tr>
                         @endforelse

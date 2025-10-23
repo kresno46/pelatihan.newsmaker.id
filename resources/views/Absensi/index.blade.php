@@ -62,7 +62,12 @@
                     </div>
                 </div>
             @empty
-                <div class="col-span-4 text-center text-gray-500 dark:text-gray-400">Belum ada sesi absensi tersedia.</div>
+                <div class="col-span-4 py-10 text-center text-gray-500 dark:text-gray-400">
+                    <div class="flex items-center justify-center flex-col">
+                        <img src="{{ asset('/assets/NoData-removebg-preview.png') }}" alt="No Data">
+                        <span>Belum ada sesi absensi tersedia.</span>
+                    </div>
+                </div>
             @endforelse
 
             <!-- Modal Form Absensi -->

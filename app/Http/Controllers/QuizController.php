@@ -235,8 +235,6 @@ class QuizController extends Controller
     public function reportExport(Request $request, PostTestSession $session)
     {
         // (Kalau kamu sudah migrasi ke XLSX pakai Laravel Excel, ganti implementasi ini)
-        $filename = 'posttest-report-' . $session->slug . '-' . now()->format('Ymd_His') . '.csv';
-
         $q         = trim($request->input('q', ''));
         $sort      = $request->input('sort', 'latest');       // latest|oldest|highest|lowest
         $company   = trim((string) $request->input('company', '')); // filter berdasarkan NAMA PERUSAHAAN
@@ -270,9 +268,16 @@ class QuizController extends Controller
             ->select('post_test_results.*')
             ->get();
 
+        // Buat filename berdasarkan cabang jika ada filter cabang
+        $filename = 'posttest-report-' . $session->slug;
+        if ($branch !== '') {
+            $filename .= '-' . str_replace([' ', '/', '\\', ':'], '_', $branch);
+        }
+        $filename .= '-' . now()->format('Ymd_His') . '.csv';
+
         return response()->streamDownload(function () use ($rows) {
             $out = fopen('php://output', 'w');
-            fputcsv($out, ['No', 'Nama', 'Perusahaan', 'Cabang', 'Jabatan', 'Skor', 'Status', 'Tanggal'], ';');
+            fputcsv($out, ['No', 'Nama', 'Perusahaan', 'Cabang', 'Jabatan', 'Skor', 'Status', 'Tanggal']);
             foreach ($rows as $i => $r) {
                 fputcsv($out, [
                     $i + 1,
@@ -283,7 +288,7 @@ class QuizController extends Controller
                     $r->score,
                     $r->score >= 60 ? 'Lulus' : 'Tidak Lulus',
                     optional($r->created_at)->format('Y-m-d H:i'),
-                ], ';');
+                ]);
             }
             fclose($out);
         }, $filename, ['Content-Type' => 'text/csv; charset=UTF-8']);

@@ -91,6 +91,23 @@ class AdminController extends Controller
     }
 
     /**
+     * Verify the specified admin's email.
+     */
+    public function verify(string $id)
+    {
+        $admin = User::find($id);
+
+        if ($admin->email_verified_at) {
+            return redirect()->route('admin.index')->with('Alert', 'Admin ' . $admin->name . ' sudah terverifikasi.');
+        }
+
+        $admin->email_verified_at = now();
+        $admin->save();
+
+        return redirect()->route('admin.index')->with('Alert', 'Admin ' . $admin->name . ' berhasil diverifikasi.');
+    }
+
+    /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)

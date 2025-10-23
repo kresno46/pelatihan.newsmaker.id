@@ -3,6 +3,23 @@
 @section('namePage', 'Kuis Attempt: ' . $session->title)
 
 @section('content')
+    <style>
+        .no-select {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .no-select * {
+            user-select: none !important;
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+        }
+    </style>
     <div class="space-y-5">
         <!-- Header & Timer -->
         <div class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow">
@@ -21,7 +38,7 @@
                 <div class="question-card p-6 bg-white dark:bg-gray-800 rounded-lg shadow hidden"
                     data-index="{{ $index }}">
                     <div>
-                        <div class="font-medium text-gray-800 dark:text-gray-100 mb-3">
+                        <div class="font-medium text-gray-800 dark:text-gray-100 mb-3 no-select">
                             {!! $question->question !!}
                         </div>
                         <div class="space-y-3">
@@ -34,7 +51,7 @@
                                             value="{{ $opt }}" required
                                             class="mt-1 accent-blue-600 dark:accent-blue-500"
                                             data-question="{{ $question->id }}">
-                                        <span class="leading-snug">
+                                        <span class="leading-snug no-select">
                                             <strong>{{ $opt }}.</strong> {{ $opt_text }}
                                         </span>
                                     </label>
@@ -205,5 +222,44 @@
         quizForm.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') e.preventDefault();
         });
+
+        // Cegah copy paste dan right-click
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && (e.key === 'c' || e.key === 'v' || e.key === 'x' || e.key === 'a' || e.key === 'u' || e
+                    .key === 's' || e.key === 'p')) {
+                e.preventDefault();
+            }
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I') || (e.ctrlKey && e.shiftKey && e
+                    .key === 'J') || (e.ctrlKey && e.shiftKey && e.key === 'C')) {
+                e.preventDefault();
+            }
+        });
+
+        document.addEventListener('selectstart', function(e) {
+            e.preventDefault();
+        });
+
+        // Cegah drag and drop
+        document.addEventListener('dragstart', function(e) {
+            e.preventDefault();
+        });
+
+        // Cegah paste via mouse
+        document.addEventListener('paste', function(e) {
+            e.preventDefault();
+        });
+
+        // Override console to prevent debugging
+        (function() {
+            const noop = () => {};
+            const methods = ['log', 'warn', 'error', 'info', 'debug', 'trace'];
+            methods.forEach(method => {
+                console[method] = noop;
+            });
+        })();
     </script>
 @endsection

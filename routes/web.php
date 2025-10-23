@@ -127,6 +127,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/store', [AdminController::class, 'store'])->name('admin.store');
             Route::get('/{id}/edit', [AdminController::class, 'edit'])->name('admin.edit');
             Route::put('/{id}', [AdminController::class, 'update'])->name('admin.update');
+            Route::patch('/{id}/verify', [AdminController::class, 'verify'])->name('admin.verify');
             Route::delete('/{id}', [AdminController::class, 'destroy'])->name('admin.destroy');
         });
     });

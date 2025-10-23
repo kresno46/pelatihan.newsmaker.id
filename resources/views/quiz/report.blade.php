@@ -49,7 +49,8 @@
                     @php $company = $filters['company'] ?? request('company', ''); @endphp
                     <option value="" {{ $company === '' ? 'selected' : '' }}>Semua Perusahaan</option>
                     @foreach ($companies as $companyName)
-                        <option value="{{ $companyName }}" {{ $company === $companyName ? 'selected' : '' }}>{{ $companyName }}</option>
+                        <option value="{{ $companyName }}" {{ $company === $companyName ? 'selected' : '' }}>
+                            {{ $companyName }}</option>
                     @endforeach
                 </select>
             </div>
@@ -60,9 +61,10 @@
                     class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
                     @php $branch = $filters['branch'] ?? request('branch', ''); @endphp
                     <option value="" {{ $branch === '' ? 'selected' : '' }}>Semua Cabang</option>
-                    @if($branches)
+                    @if ($branches)
                         @foreach ($branches as $b)
-                            <option value="{{ $b }}" {{ $branch === $b ? 'selected' : '' }}>{{ $b }}</option>
+                            <option value="{{ $b }}" {{ $branch === $b ? 'selected' : '' }}>
+                                {{ $b }}</option>
                         @endforeach
                     @endif
                 </select>
@@ -130,9 +132,26 @@
         </div>
     </div>
 
+    {{-- Export Per Cabang --}}
+    @if ($branches && $branches->isNotEmpty())
+        <div class="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl shadow">
+            <h3 class="text-sm font-semibold text-blue-900 dark:text-blue-100 mb-2">{{ __('Download Laporan Per Cabang') }}
+            </h3>
+            <div class="flex flex-wrap gap-2">
+                @foreach ($branches as $b)
+                    <a href="{{ route('posttest.report.export', $session->slug) }}?q={{ request('q') }}&sort={{ request('sort') }}&company={{ request('company') }}&branch={{ $b }}"
+                        class="px-3 py-2 text-xs rounded bg-blue-500 hover:bg-blue-600 text-white transition">
+                        {{ __('Download') }} {{ $b }}
+                    </a>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
     {{-- Tombol Hapus Semua Tidak Lulus --}}
     <div class="mb-4">
-        <form action="{{ route('posttest.report.deleteAllFailed', ['session' => $session->slug]) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus semua hasil post test yang tidak lulus?');">
+        <form action="{{ route('posttest.report.deleteAllFailed', ['session' => $session->slug]) }}" method="POST"
+            onsubmit="return confirm('Yakin ingin menghapus semua hasil post test yang tidak lulus?');">
             @csrf
             @method('DELETE')
             <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded">
@@ -203,24 +222,28 @@
                                     {{ $r->score }}
                                 </td>
                                 <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-                                @if($r->score >= 60)
-                                    <span class="text-green-600 font-semibold">{{ 'Lulus' }}</span>
-                                @else
-                                    <span class="text-red-600 font-semibold">{{ 'Tidak Lulus' }}</span>
-                                @endif
-                            </td>
-                            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-                                @if($r->score < 60)
-                                <form action="{{ route('posttest.report.delete', ['session' => $session->slug, 'result' => $r->id]) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus hasil post test user ini?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-800 font-semibold">Hapus</button>
-                                </form>
-                                @endif
-                            </td>
-                            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-                                {{ optional($r->created_at)->format('Y-m-d H:i') }}
-                            </td>
+                                    @if ($r->score >= 60)
+                                        <span class="text-green-600 font-semibold">{{ 'Lulus' }}</span>
+                                    @else
+                                        <span class="text-red-600 font-semibold">{{ 'Tidak Lulus' }}</span>
+                                    @endif
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                                    @if ($r->score < 60)
+                                        <form
+                                            action="{{ route('posttest.report.delete', ['session' => $session->slug, 'result' => $r->id]) }}"
+                                            method="POST"
+                                            onsubmit="return confirm('Yakin ingin menghapus hasil post test user ini?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                class="text-red-600 hover:text-red-800 font-semibold">Hapus</button>
+                                        </form>
+                                    @endif
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                                    {{ optional($r->created_at)->format('Y-m-d H:i') }}
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>
