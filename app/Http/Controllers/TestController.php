@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\PostTestSession;
 use App\Models\PostTestResult;
+use App\Models\Absensi;
 
 class TestController extends Controller
 {
@@ -48,6 +49,17 @@ class TestController extends Controller
         }
 
         $userId = auth()->id();
+
+        // Cek apakah user sudah absen untuk session ini
+        $jadwalIds = $session->jadwalAbsensis->pluck('id');
+        $absenExists = Absensi::where('user_id', $userId)
+            ->whereIn('jadwal_id', $jadwalIds)
+            ->exists();
+
+        if (!$absenExists) {
+            return redirect()->route('post-test.index')
+                ->with('error', 'Anda harus mengisi absensi terlebih dahulu sebelum mengerjakan post test.');
+        }
 
         // Cek hasil sebelumnya
         $existingResult = PostTestResult::where('user_id', $userId)
@@ -100,6 +112,17 @@ class TestController extends Controller
         }
 
         $userId = auth()->id();
+
+        // Cek apakah user sudah absen untuk session ini
+        $jadwalIds = $session->jadwalAbsensis->pluck('id');
+        $absenExists = Absensi::where('user_id', $userId)
+            ->whereIn('jadwal_id', $jadwalIds)
+            ->exists();
+
+        if (!$absenExists) {
+            return redirect()->route('post-test.index')
+                ->with('error', 'Anda harus mengisi absensi terlebih dahulu sebelum mengerjakan post test.');
+        }
 
         // Cek hasil sebelumnya
         $latestResult = PostTestResult::where('user_id', $userId)
