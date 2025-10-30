@@ -34,6 +34,12 @@
                             <div class="text-gray-500 dark:text-gray-400 text-xs">
                                 {{ \Carbon\Carbon::parse($jadwal->tanggal)->format('d M Y') }}
                             </div>
+                            <div class="text-gray-500 dark:text-gray-400 text-xs">
+                                Sesi: {{ $jadwal->postTestSession->title ?? 'N/A' }}
+                            </div>
+                            <div class="text-gray-500 dark:text-gray-400 text-xs">
+                                Durasi: {{ $jadwal->postTestSession->duration ?? 'N/A' }} Menit
+                            </div>
                         </div>
 
                         <div class="flex flex-col items-end gap-3">
@@ -142,7 +148,9 @@
                             required>
                             <option value="">-- Pilih Sesi Post-Test --</option>
                             @foreach ($postTestSessions as $session)
-                                <option value="{{ $session->id }}">{{ $session->title }}</option>
+                                <option value="{{ $session->id }}">{{ $session->title }} ({{ $session->duration }}
+                                    Menit)
+                                </option>
                             @endforeach
                         </select>
                     </div>
