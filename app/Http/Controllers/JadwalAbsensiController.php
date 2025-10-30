@@ -24,7 +24,7 @@ class JadwalAbsensiController extends Controller
     public function create()
     {
         $postTestSessions = PostTestSession::all(); // Ambil semua sesi post-test
-        return view('jadwal.index', compact('postTestSessions'));
+        return view('jadwal.create', compact('postTestSessions'));
     }
 
     /**
@@ -45,7 +45,7 @@ class JadwalAbsensiController extends Controller
             'is_open' => false, // default tertutup
         ]);
 
-        return back()->with('Alert', 'Jadwal absensi berhasil ditambahkan.');
+        return  redirect()->route('absensi.index')->with('Alert', 'Jadwal absensi berhasil ditambahkan.');
     }
 
     /**
@@ -55,7 +55,7 @@ class JadwalAbsensiController extends Controller
     {
         $jadwal = JadwalAbsensi::findOrFail($id);
         $postTestSessions = PostTestSession::all(); // Ambil semua sesi post-test
-        return view('jadwal.index', compact('jadwal', 'postTestSessions'));
+        return view('jadwal.edit', compact('jadwal', 'postTestSessions'));
     }
 
     /**
@@ -77,7 +77,7 @@ class JadwalAbsensiController extends Controller
             'post_test_session_id' => $request->post_test_session_id,
         ]);
 
-        return back()->with('Alert', 'Jadwal ' . $jadwal->title . ' berhasil diperbarui.');
+        return redirect()->route('absensi.index')->with('Alert', 'Jadwal ' . $jadwal->title . ' berhasil diperbarui.');
     }
 
     /**

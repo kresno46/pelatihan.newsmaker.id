@@ -156,6 +156,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
             Route::prefix('absensi')->group(function () {
                 Route::get('/', [JadwalAbsensiController::class, 'index'])->name('absensi.index');
+                Route::get('/create', [JadwalAbsensiController::class, 'create'])->name('absensi.create');
+                Route::get('/{id}/edit', [JadwalAbsensiController::class, 'edit'])->name('absensi.edit');
                 Route::post('/tambah', [JadwalAbsensiController::class, 'store'])->name('absensi.store');
                 Route::post('/{id}/toggle', [JadwalAbsensiController::class, 'toggle'])->name('absensi.toggle');
                 Route::put('/{id}/update', [JadwalAbsensiController::class, 'update'])->name('absensi.update');
