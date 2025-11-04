@@ -127,7 +127,7 @@
                                         </div>
                                     @else
                                         @if ($posttest->progres === 'Belum Dikerjakan')
-                                            <a href="{{ route('post-test.show', $posttest->slug) }}"
+                                            <a href="{{ route('post-test.show', $posttest->id) }}"
                                                 class="inline-block w-full bg-blue-600 text-white text-xs px-3 py-1 rounded hover:bg-blue-700">
                                                 Mulai
                                             </a>
@@ -198,7 +198,7 @@
                                 </span>
                             @else
                                 @if ($posttest->progres === 'Belum Dikerjakan')
-                                    <a href="{{ route('post-test.show', $posttest->slug) }}"
+                                    <a href="{{ route('post-test.show', $posttest->id) }}"
                                         class="block w-full bg-blue-600 text-white text-xs text-center px-3 py-1 rounded hover:bg-blue-700">
                                         Mulai
                                     </a>

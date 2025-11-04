@@ -37,7 +37,7 @@
                                 class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">✕</button>
                         </div>
 
-                        <form action="{{ route('posttest.update', $session) }}" method="POST" class="p-5">
+                        <form action="{{ route('posttest.update', $session->id) }}" method="POST" class="p-5">
                             @csrf @method('PUT')
                             <div class="space-y-4">
                                 <div>
@@ -211,14 +211,14 @@
                       option_c: @js($q->option_c),
                       option_d: @js($q->option_d),
                       correct_option: @js($q->correct_option),
-                      action: '{{ route('question.update', [$session, $q]) }}'
+                      action: '{{ route('question.update', [$session->id, $q->id]) }}'
                     };
                     setTimeout(() => { window.fillEditEditor(edit.question_text); }, 0);
                   ">
                                         Edit
                                     </button>
 
-                                    <form action="{{ route('question.destroy', [$session, $q]) }}" method="POST"
+                                    <form action="{{ route('question.destroy', [$session->id, $q->id]) }}" method="POST"
                                         onsubmit="return confirm('Hapus soal ini?')">
                                         @csrf @method('DELETE')
                                         <button class="text-red-600 text-sm hover:underline">Hapus</button>
@@ -242,7 +242,7 @@
                         class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">✕</button>
                 </div>
 
-                <form action="{{ route('question.store', $session) }}" method="POST" class="p-5">
+                <form action="{{ route('question.store', $session->id) }}" method="POST" class="p-5">
                     @csrf
                     <div class="space-y-4">
                         <div>
@@ -435,15 +435,13 @@
                 const $create = $('#create-question-editor');
                 if ($create.length) $create.summernote(commonConfig);
 
-                const $edit = $('#edit-question-editor');
-                if ($edit.length) $edit.summernote(commonConfig);
-
                 // Helper dipanggil saat klik tombol Edit
                 window.fillEditEditor = function(html) {
                     const $ed = $('#edit-question-editor');
-                    if ($ed.data('summernote')) {
-                        $ed.summernote('code', html || '');
+                    if (!$ed.data('summernote')) {
+                        $ed.summernote(commonConfig);
                     }
+                    $ed.summernote('code', html || '');
                 };
 
                 // Jika validasi update gagal, isi editor edit dengan old()

@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\DB;
 class PostTestController extends Controller
 {
     // ====== Tambah soal (modal + Summernote) ======
-    public function questionStore(Request $request, PostTestSession $session)
+    public function questionStore(Request $request, PostTestSession $id)
     {
         $v = Validator::make($request->all(), [
             'question_text'  => ['required', 'string', 'max:10000'],
@@ -30,7 +30,7 @@ class PostTestController extends Controller
 
         // Sanitasi HTML pertanyaan
         $clean = Purifier::clean($data['question_text'], 'default');
-        $session->questions()->create([
+        $id->questions()->create([
             'question'       => $clean,            // <— kolom DB: question (HTML)
             'option_a'       => $data['option_a'],
             'option_b'       => $data['option_b'],
@@ -43,9 +43,9 @@ class PostTestController extends Controller
     }
 
     // ====== Update soal (modal + Summernote) ======
-    public function questionUpdate(Request $request, PostTestSession $session, PostTest $question)
+    public function questionUpdate(Request $request, PostTestSession $id, PostTest $question)
     {
-        if ($question->session_id !== $session->id) abort(404);
+        if ($question->session_id !== $id->id) abort(404);
 
         $v = Validator::make($request->all(), [
             'question_text'  => ['required', 'string', 'max:10000'],
@@ -73,21 +73,21 @@ class PostTestController extends Controller
     }
 
     // ====== Hapus soal ======
-    public function questionDestroy(PostTestSession $session, PostTest $question)
+    public function questionDestroy(PostTestSession $id, PostTest $question)
     {
-        if ($question->session_id !== $session->id) abort(404);
+        if ($question->session_id !== $id->id) abort(404);
         $question->delete();
         return back()->with('success', 'Soal berhasil dihapus.');
     }
 
     // Mengerjakan Kuis
-    public function showQuiz(PostTestSession $session)
+    public function showQuiz(PostTestSession $id)
     {
         $userId = auth()->id();
 
         // Cek hasil sebelumnya
         $existingResult = PostTestResult::where('user_id', $userId)
-            ->where('session_id', $session->id)
+            ->where('session_id', $id->id)
             ->latest()
             ->first();
 
@@ -96,14 +96,14 @@ class PostTestController extends Controller
                 ->with('info', 'Anda sudah mengerjakan post test ini dan mendapatkan nilai yang cukup.');
         }
 
-        $key = "quiz_{$session->id}_questions_user_{$userId}";
+        $key = "quiz_{$id->id}_questions_user_{$userId}";
 
         if (!session()->has($key)) {
-            $questions = $session->questions()->inRandomOrder()->get();
+            $questions = $id->questions()->inRandomOrder()->get();
             session([$key => $questions->pluck('id')->toArray()]);
         } else {
             $questionIds = session($key);
-            $questions = $session->questions()
+            $questions = $id->questions()
                 ->whereIn('id', $questionIds)
                 ->get()
                 ->sortBy(function ($q) use ($questionIds) {
@@ -112,25 +112,25 @@ class PostTestController extends Controller
                 ->values();
         }
 
-        $startKey = "quiz_{$session->id}_start_time_user_{$userId}";
+        $startKey = "quiz_{$id->id}_start_time_user_{$userId}";
         if (!session()->has($startKey)) {
             session([$startKey => now()]);
         }
 
-        return view('post-test.index', compact('session', 'questions'));
+        return view('post-test.index', compact('id', 'questions'));
     }
 
     // Submit Kuis
-    public function submitQuiz(Request $request, PostTestSession $session)
+    public function submitQuiz(Request $request, PostTestSession $id)
     {
         $userId = Auth::id();
         $answers = $request->input('answer', []);
 
         // Ambil semua soal dalam sesi, bukan hanya soal yang dijawab
-        $questions = PostTest::where('session_id', $session->id)->get();
+        $questions = PostTest::where('session_id', $id->id)->get();
 
         if ($questions->isEmpty()) {
-            return redirect()->route('post-test.show', $session->slug)
+            return redirect()->route('post-test.show', $id->id)
                 ->with('error', 'Tidak ada soal dalam sesi ini.');
         }
 
@@ -156,11 +156,11 @@ class PostTestController extends Controller
         // Hitung skor dari jawaban benar dibanding total soal
         $score = round(($correct / $totalQuestions) * 100);
 
-        DB::transaction(function () use ($userId, $session, $correct, $wrong, $score, $answers) {
+        DB::transaction(function () use ($userId, $id, $correct, $wrong, $score, $answers) {
             PostTestResult::updateOrCreate(
                 [
                     'user_id' => $userId,
-                    'session_id' => $session->id,
+                    'session_id' => $id->id,
                 ],
                 [
                     'correct' => $correct,
@@ -172,7 +172,7 @@ class PostTestController extends Controller
             );
         });
 
-        return redirect()->route('post-test.result', ['session' => $session->slug])
+        return redirect()->route('post-test.result', ['session' => $id->id])
             ->with('success', 'Jawaban berhasil dikirim!');
     }
 
@@ -185,14 +185,11 @@ class PostTestController extends Controller
         return view('post-test.result', compact('session', 'result', 'user'));
     }
 
-    public function toggleStatus($slug)
+    public function toggleStatus(PostTestSession $id)
     {
-        // Find the post test by its slug
-        $postTest = PostTestSession::where('slug', $slug)->firstOrFail();
-
         // Toggle the 'status' (Aktif -> Tidak Aktif or vice versa)
-        $postTest->status = !$postTest->status;
-        $postTest->save();
+        $id->status = !$id->status;
+        $id->save();
 
         // Redirect back with a success message
         return redirect()->route('posttest.index')->with('alert', 'Status updated successfully!');

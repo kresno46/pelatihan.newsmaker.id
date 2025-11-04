@@ -37,10 +37,10 @@ class TestController extends Controller
         return view('post-test.index', compact('tests'));
     }
 
-    // Mengerjakan Kuis berdasarkan slug
-    public function showQuiz($slug)
+    // Mengerjakan Kuis berdasarkan id
+    public function showQuiz(PostTestSession $session)
     {
-        $session = PostTestSession::where('slug', $slug)->with('questions')->firstOrFail();
+        $session->load('questions');
 
         // Proteksi: cek status
         if (!$session->status) { // Status now boolean
@@ -97,13 +97,13 @@ class TestController extends Controller
     }
 
     // Submit Kuis
-    public function submitQuiz(Request $request, $slug)
+    public function submitQuiz(Request $request, PostTestSession $session)
     {
         if (!auth()->check()) {
             abort(403, 'Unauthorized.');
         }
 
-        $session = PostTestSession::where('slug', $slug)->with('questions')->firstOrFail();
+        $session->load('questions');
 
         // Proteksi: cek status
         if (!$session->status) { // Status now boolean

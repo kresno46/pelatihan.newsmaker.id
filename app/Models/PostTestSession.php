@@ -56,10 +56,10 @@ class PostTestSession extends Model
     }
 
     /**
-     * Override key untuk route model binding → pakai slug
+     * Override key untuk route model binding → pakai id
      */
     public function getRouteKeyName()
     {
-        return 'slug';
+        return 'id';
     }
 }

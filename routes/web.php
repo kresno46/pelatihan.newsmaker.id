@@ -71,21 +71,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/tambah', [QuizController::class, 'create'])->name('posttest.create');
         Route::post('/', [QuizController::class, 'store'])->name('posttest.store');
 
-        Route::get('/{session}/edit', [QuizController::class, 'edit'])->name('posttest.edit');
-        Route::put('/{session}', [QuizController::class, 'update'])->name('posttest.update');
-        Route::delete('/{session}', [QuizController::class, 'destroy'])->name('posttest.destroy');
-        Route::post('/toggle-status/{slug}', [PostTestController::class, 'toggleStatus'])->name('posttest.toggle');
+        Route::get('/{id}/edit', [QuizController::class, 'edit'])->name('posttest.edit');
+        Route::put('/{id}', [QuizController::class, 'update'])->name('posttest.update');
+        Route::delete('/{id}', [QuizController::class, 'destroy'])->name('posttest.destroy');
+        Route::post('/toggle-status/{id}', [PostTestController::class, 'toggleStatus'])->name('posttest.toggle');
 
 
         // REPORT
-        Route::get('/{session:slug}/report', [QuizController::class, 'report'])->name('posttest.report');
+        Route::get('/{id}/report', [QuizController::class, 'report'])->name('posttest.report');
         // (opsional) export CSV
-        Route::get('/{session:slug}/report/export', [QuizController::class, 'reportExport'])->name('posttest.report.export');
-        Route::delete('/{session:slug}/report/delete-all-failed', [QuizController::class, 'deleteAllFailed'])->name('posttest.report.deleteAllFailed');
-        Route::delete('/{session:slug}/report/{result}', [QuizController::class, 'deleteResult'])->name('posttest.report.delete');
+        Route::get('/{id}/report/export', [QuizController::class, 'reportExport'])->name('posttest.report.export');
+        Route::delete('/{id}/report/delete-all-failed', [QuizController::class, 'deleteAllFailed'])->name('posttest.report.deleteAllFailed');
+        Route::delete('/{id}/report/{result}', [QuizController::class, 'deleteResult'])->name('posttest.report.delete');
 
-        // === nested: /post-test/{session}/edit/question ===
-        Route::prefix('{session}/edit')->group(function () {
+        // === nested: /post-test/{id}/edit/question ===
+        Route::prefix('{id}/edit')->group(function () {
             Route::post('/question', [PostTestController::class, 'questionStore'])
                 ->name('question.store');
             Route::put('/question/{question}', [PostTestController::class, 'questionUpdate'])
@@ -98,8 +98,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('posttest')->name('post-test.')->middleware('profile.complete')->group(function () {
         Route::get('/', [TestController::class, 'index'])->name('index');
         Route::middleware('absensi')->middleware('check.patl')->group(function () {
-            Route::get('/{slug}', [TestController::class, 'showQuiz'])->name('show');
-            Route::post('/{slug}/submit', [TestController::class, 'submitQuiz'])->name('submit');
+            Route::get('/{session}', [TestController::class, 'showQuiz'])->name('show');
+            Route::post('/{session}/submit', [TestController::class, 'submitQuiz'])->name('submit');
         });
         Route::get('/result/{result}', [TestController::class, 'showResult'])->name('result');
     });

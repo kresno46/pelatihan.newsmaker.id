@@ -36,13 +36,15 @@ class QuizController extends Controller
             ->with('success', 'Sesi berhasil dibuat. Silakan tambahkan soal.');
     }
 
-    public function edit(PostTestSession $session)
+    public function edit($id)
     {
-        $session->load(['questions' => fn($q) => $q->orderBy('created_at')]);
+        $session = PostTestSession::with(['questions' => fn($q) => $q->orderBy('created_at')])
+            ->findOrFail($id);
+
         return view('quiz.edit', compact('session'));
     }
 
-    public function update(Request $request, PostTestSession $session)
+    public function update(Request $request, PostTestSession $id)
     {
         $data = $request->validate([
             'title'    => 'required|string|max:255',
@@ -51,10 +53,10 @@ class QuizController extends Controller
             'tipe'     => 'required|in:PATD,PATL',
         ]);
 
-        $session->update($data);
+        $id->update($data);
 
         return redirect()
-            ->route('posttest.edit', $session)
+            ->route('posttest.edit', $id)
             ->with('success', 'Sesi berhasil diperbarui.');
     }
 
