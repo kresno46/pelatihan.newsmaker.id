@@ -34,7 +34,9 @@
                     'value' => $jumlahPelatihan,
                     'suffix' => ' Pelatihan',
                     'icon' => 'fa-solid fa-certificate',
-                    'color' => 'emerald',
+                    'bg_class' => 'bg-emerald-500',
+                    'text_class' => 'text-white',
+                    'border_class' => 'border-emerald-500',
                     'route' => 'post-test.index',
                 ],
                 [
@@ -42,7 +44,9 @@
                     'value' => $jumlahJadwalAbsensi,
                     'suffix' => ' Jadwal',
                     'icon' => 'fa-solid fa-list-check',
-                    'color' => 'pink',
+                    'bg_class' => 'bg-pink-500',
+                    'text_class' => 'text-white',
+                    'border_class' => 'border-pink-500',
                     'route' => 'AbsensiUser.index',
                 ],
                 [
@@ -50,7 +54,9 @@
                     'value' => $jumlahAbsensiTerisi,
                     'suffix' => ' Terisi',
                     'icon' => 'fa-solid fa-pen-to-square',
-                    'color' => 'violet',
+                    'bg_class' => 'bg-violet-500',
+                    'text_class' => 'text-white',
+                    'border_class' => 'border-violet-500',
                     'route' => 'AbsensiUser.index',
                 ],
                 [
@@ -58,7 +64,9 @@
                     'value' => $jumlahSession,
                     'suffix' => ' Post Test',
                     'icon' => 'fa-solid fa-question',
-                    'color' => 'red',
+                    'bg_class' => 'bg-red-500',
+                    'text_class' => 'text-white',
+                    'border_class' => 'border-red-500',
                     'route' => 'post-test.index',
                 ],
                 [
@@ -66,7 +74,9 @@
                     'value' => $riwayatUserLogin,
                     'suffix' => ' Kuis',
                     'icon' => 'fa-solid fa-check',
-                    'color' => 'green',
+                    'bg_class' => 'bg-green-500',
+                    'text_class' => 'text-white',
+                    'border_class' => 'border-green-500',
                     'route' => 'riwayat.index',
                 ],
                 [
@@ -74,7 +84,9 @@
                     'value' => $jumlahSertifikatSelesai,
                     'suffix' => ' Sertifikat',
                     'icon' => 'fa-solid fa-certificate',
-                    'color' => 'orange',
+                    'bg_class' => 'bg-orange-500',
+                    'text_class' => 'text-white',
+                    'border_class' => 'border-orange-500',
                     'route' => 'sertifikat.index',
                 ],
             ];
@@ -84,7 +96,9 @@
                     'value' => $jumlahUser,
                     'suffix' => ' User',
                     'icon' => 'fa-solid fa-users',
-                    'color' => 'purple',
+                    'bg_class' => 'bg-purple-500',
+                    'text_class' => 'text-white',
+                    'border_class' => 'border-purple-500',
                     'route' => 'trainer.index',
                 ];
                 $cards[] = [
@@ -92,7 +106,9 @@
                     'value' => $jumlahAdmin,
                     'suffix' => ' Admin',
                     'icon' => 'fa-solid fa-user-shield',
-                    'color' => 'indigo',
+                    'bg_class' => 'bg-indigo-500',
+                    'text_class' => 'text-white',
+                    'border_class' => 'border-indigo-500',
                     'route' => 'admin.index',
                 ];
             }
@@ -100,11 +116,10 @@
 
         @foreach ($cards as $card)
             <div
-                class="bg-white dark:bg-gray-800 border-l-4 border-{{ $card['color'] }}-500 rounded-lg shadow transform transition duration-300 hover:scale-105 hover:shadow-xl cursor-pointer">
+                class="bg-white dark:bg-gray-800 border-l-4 {{ $card['border_class'] }} rounded-lg shadow transform transition duration-300 hover:scale-105 hover:shadow-xl cursor-pointer">
                 <a href="{{ route($card['route']) }}">
                     <div class="flex items-center p-5">
-                        <div
-                            class="text-{{ $card['color'] }}-500 px-6 py-5 bg-{{ $card['color'] }}-100 dark:bg-{{ $card['color'] }}-900 rounded-full">
+                        <div class="{{ $card['text_class'] }} px-6 py-5 {{ $card['bg_class'] }} rounded-full">
                             <i class="{{ $card['icon'] }} text-2xl"></i>
                         </div>
                         <div class="ml-4">
@@ -121,15 +136,96 @@
         @endforeach
     </div>
 
+    @if (Auth::check() && Auth::user()->role === 'Admin')
+        <!-- Graphs Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+            <!-- Absensi Graph -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Grafik Absensi</h3>
+                    <a href="{{ route('absensi.index') }}"
+                        class="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">Lihat
+                        Lainnya</a>
+                </div>
+                <div class="relative h-64">
+                    <canvas id="absensiChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Post Test Graph -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Grafik Post Test</h3>
+                    <a href="{{ route('posttest.index') }}"
+                        class="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">Lihat
+                        Lainnya</a>
+                </div>
+                <div class="relative h-64">
+                    <canvas id="postTestChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Certificate Awards Table -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mt-8">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-semibold text-gray-800 dark:text-white">Laporan Sertifikat</h3>
+                <a href="{{ route('LaporanSertifikat.index') }}"
+                    class="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200">Lihat
+                    Lainnya →</a>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full min-w-[700px] text-sm text-center table-auto">
+                    <thead class="bg-gray-600 text-white dark:bg-gray-700">
+                        <tr>
+                            <th class="px-4 py-3 rounded-l-lg">#</th>
+                            <th class="px-4 py-3">Nama</th>
+                            <th class="px-4 py-3">Batch</th>
+                            <th class="px-4 py-3">Nilai</th>
+                            <th class="px-4 py-3 rounded-r-lg">Tanggal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($certificateAwards as $index => $certificate)
+                            <tr
+                                class="{{ $loop->odd ? 'bg-white dark:bg-gray-800' : 'bg-gray-100 dark:bg-gray-900' }} border-b border-gray-300 dark:border-gray-700">
+                                <td class="px-4 py-3 text-gray-900 dark:text-gray-100 font-semibold">{{ $index + 1 }}
+                                </td>
+                                <td class="px-4 py-3 text-gray-900 dark:text-gray-100">
+                                    {{ $certificate->user->name ?? '-' }}</td>
+                                <td class="px-4 py-3 text-gray-900 dark:text-gray-100">
+                                    {{ $certificate->batch_number ?? '-' }}</td>
+                                <td class="px-4 py-3 text-gray-900 dark:text-gray-100">
+                                    {{ $certificate->average_score }}/100</td>
+                                <td class="px-4 py-3 text-gray-900 dark:text-gray-100">
+                                    {{ $certificate->awarded_at ? \Carbon\Carbon::parse($certificate->awarded_at)->translatedFormat('d F Y, H:i') : '-' }}
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="px-4 py-4 text-center text-gray-500 dark:text-gray-400">
+                                    Belum ada pengguna yang mengunduh sertifikat.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    @endif
+@endsection
+
+@section('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Counter animation
         document.addEventListener("DOMContentLoaded", () => {
+            // Counter animation
             const counters = document.querySelectorAll('.counter');
             counters.forEach(counter => {
                 const updateCount = () => {
                     const target = +counter.getAttribute('data-target');
                     const count = +counter.innerText;
-                    const increment = Math.ceil(target / 50); // speed
+                    const increment = Math.ceil(target / 50);
 
                     if (count < target) {
                         counter.innerText = count + increment;
@@ -140,6 +236,82 @@
                 };
                 updateCount();
             });
+
+            @if (Auth::check() && Auth::user()->role === 'Admin')
+                // ===== Fungsi Bikin Grafik Chart.js =====
+                function createChart(canvasId, chartType, labels, data, label, colors) {
+                    const ctx = document.getElementById(canvasId);
+                    if (!ctx) return;
+
+                    new Chart(ctx, {
+                        type: chartType,
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: label,
+                                data: data,
+                                backgroundColor: colors.background,
+                                borderColor: colors.border,
+                                borderWidth: 2,
+                                fill: chartType === 'line',
+                                tension: 0.3,
+                                pointRadius: 4,
+                                pointHoverRadius: 6,
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        stepSize: 1
+                                    }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    labels: {
+                                        color: '#374151' // abu gelap
+                                    }
+                                },
+                                tooltip: {
+                                    mode: 'index',
+                                    intersect: false,
+                                },
+                            },
+                        }
+                    });
+                }
+
+                // ===== Data dari Controller =====
+                const absensiData = @json($absensiData);
+                const postTestData = @json($postTestData);
+
+                // Jika data kosong, tampilkan minimal label agar chart tidak error
+                const absensiLabels = Object.keys(absensiData).length ? Object.keys(absensiData) : [
+                    'Tidak ada data'
+                ];
+                const absensiValues = Object.values(absensiData).length ? Object.values(absensiData) : [0];
+
+                const postTestLabels = Object.keys(postTestData).length ? Object.keys(postTestData) : [
+                    'Tidak ada data'
+                ];
+                const postTestValues = Object.values(postTestData).length ? Object.values(postTestData) : [0];
+
+                // ===== Buat Chart =====
+                createChart('absensiChart', 'line', absensiLabels, absensiValues, 'Absensi', {
+                    background: 'rgba(16, 185, 129, 0.3)', // hijau toska transparan
+                    border: 'rgb(16, 185, 129)',
+                });
+
+                createChart('postTestChart', 'bar', postTestLabels, postTestValues, 'Post Test', {
+                    background: 'rgba(239, 68, 68, 0.3)', // merah muda transparan
+                    border: 'rgb(239, 68, 68)',
+                });
+            @endif
         });
     </script>
 @endsection

@@ -23,15 +23,73 @@
 
         <hr class="border-gray-300 dark:border-gray-600 my-6">
 
-        <!-- Search Form -->
-        <div class="mb-6">
-            <form method="GET" action="{{ route('LaporanSertifikat.index') }}">
-                <input type="text" name="search" value="{{ old('search', $search) }}"
-                    placeholder="Cari nama pengguna..."
-                    class="p-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <button type="submit" class="ml-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                    Cari
-                </button>
+        {{-- Filter & Sort --}}
+        <div class="mb-4 p-4 sm:p-5 bg-white dark:bg-gray-800 rounded-xl shadow">
+            <form method="GET" class="grid grid-cols-1 md:grid-cols-6 gap-3">
+                <div>
+                    <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Cari Pengguna</label>
+                    <input type="text" name="q" value="{{ request('q') }}"
+                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"
+                        placeholder="Nama atau email...">
+                </div>
+
+                <div>
+                    <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Filter Perusahaan</label>
+                    <select name="company" id="company"
+                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
+                        @php $company = request('company', ''); @endphp
+                        <option value="" {{ $company === '' ? 'selected' : '' }}>Semua Perusahaan</option>
+                        @php $companies = ['PT Solid Gold Berjangka', 'PT Rifan Financindo Berjangka', 'PT Equity World Futures', 'PT Best Profit Futures', 'PT Kontak Perkasa Futures']; @endphp
+                        @foreach ($companies as $companyName)
+                            <option value="{{ $companyName }}" {{ $company === $companyName ? 'selected' : '' }}>
+                                {{ $companyName }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Filter Cabang</label>
+                    <select name="branch" id="branch"
+                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
+                        @php $branch = request('branch', ''); @endphp
+                        <option value="" {{ $branch === '' ? 'selected' : '' }}>Semua Cabang</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Urutkan</label>
+                    <select name="sort" id="sort"
+                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
+                        @php $sort = request('sort', 'latest'); @endphp
+                        <option value="latest" {{ $sort === 'latest' ? 'selected' : '' }}>Terbaru</option>
+                        <option value="oldest" {{ $sort === 'oldest' ? 'selected' : '' }}>Terlama</option>
+                        <option value="name_asc" {{ $sort === 'name_asc' ? 'selected' : '' }}>Nama A-Z</option>
+                        <option value="name_desc" {{ $sort === 'name_desc' ? 'selected' : '' }}>Nama Z-A</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Per Halaman</label>
+                    @php $per = (int) request('per_page', 15); @endphp
+                    <select name="per_page"
+                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
+                        @foreach ([15, 20, 30, 50, 100, 200] as $n)
+                            <option value="{{ $n }}" {{ $per === $n ? 'selected' : '' }}>{{ $n }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="flex items-end gap-2">
+                    <button type="submit"
+                        class="w-full md:w-auto px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm transition">
+                        Terapkan
+                    </button>
+                    <a href="{{ route('LaporanSertifikat.index') }}"
+                        class="w-full md:w-auto px-4 py-2 rounded border bg-red-500 hover:bg-red-600 text-white border-gray-300 dark:border-gray-600 text-sm dark:text-gray-200 dark:hover:bg-gray-700 transition">
+                        Reset
+                    </a>
+                </div>
             </form>
         </div>
 
@@ -300,7 +358,94 @@
 @endsection
 
 @section('scripts')
+    @php
+        $kantorCabang = [
+            'RFB' => [
+                'Palembang',
+                'Balikpapan',
+                'Solo',
+                'Jakarta DBS Tower',
+                'Jakarta AXA Tower',
+                'Jakarta AXA 1',
+                'Jakarta AXA 2',
+                'Jakarta AXA 3',
+                'Medan',
+                'Semarang',
+                'Surabaya Pakuwon',
+                'Surabaya Ciputra',
+                'Pekanbaru',
+                'Bandung',
+                'Yogyakarta',
+            ],
+            'SGB' => ['Jakarta', 'Semarang', 'Makassar'],
+            'KPF' => ['Jakarta', 'Yogyakarta', 'Bali', 'Makassar', 'Bandung', 'Semarang'],
+            'EWF' => [
+                'SCC Jakarta',
+                'Cyber 2 Jakarta',
+                'Surabaya Trilium',
+                'Manado',
+                'Semarang',
+                'Surabaya Praxis',
+                'Cirebon',
+            ],
+            'BPF' => [
+                'Equity Tower Jakarta',
+                'Jambi',
+                'Jakarta - Pacific Place Mall',
+                'Pontianak',
+                'Malang',
+                'Surabaya',
+                'Medan',
+                'Bandung',
+                'Pekanbaru',
+                'Banjarmasin',
+                'Bandar Lampung',
+                'Semarang',
+            ],
+        ];
+        $companyToRole = [
+            'PT Rifan Financindo Berjangka' => 'RFB',
+            'PT Solid Gold Berjangka' => 'SGB',
+            'PT Kontak Perkasa Futures' => 'KPF',
+            'PT Best Profit Futures' => 'BPF',
+            'PT Equity World Futures' => 'EWF',
+        ];
+        $selectedCabang = request('branch', '');
+    @endphp
+
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dataCabang = @json($kantorCabang);
+            const companyToRole = @json($companyToRole);
+            const selectedCabang = @json($selectedCabang);
+            const companySelect = document.getElementById('company');
+            const branchSelect = document.getElementById('branch');
+
+            function updateBranchOptions(companyName) {
+                branchSelect.innerHTML = '<option value="">Semua Cabang</option>';
+                if (companyName && companyToRole[companyName]) {
+                    const roleKey = companyToRole[companyName];
+                    if (dataCabang[roleKey]) {
+                        dataCabang[roleKey].forEach(c => {
+                            const opt = document.createElement('option');
+                            opt.value = c;
+                            opt.textContent = c;
+                            if (c === selectedCabang) opt.selected = true;
+                            branchSelect.appendChild(opt);
+                        });
+                    }
+                }
+            }
+
+            if (companySelect && companySelect.value) {
+                updateBranchOptions(companySelect.value);
+            }
+
+            companySelect?.addEventListener('change', function() {
+                updateBranchOptions(this.value);
+            });
+        });
+
         function showDetailModal(name, company, score, uuid, date, email, cabang) {
             document.getElementById('detailName').textContent = name;
             document.getElementById('detailCompany').textContent = company;

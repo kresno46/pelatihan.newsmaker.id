@@ -52,6 +52,31 @@ class HomeController extends Controller
         $jumlahAbsensiTerisi        = Absensi::where('user_id', auth()->id())->count();
         $jumlahJadwalAbsensi        = JadwalAbsensi::count();
 
+        // Data for graphs (limit to 5 latest dates)
+        $absensiData = \App\Models\Absensi::selectRaw('DATE(created_at) as date, COUNT(*) as count')
+            ->groupBy('date')
+            ->orderBy('date', 'desc')
+            ->limit(5)
+            ->get()
+            ->sortBy('date')
+            ->pluck('count', 'date')
+            ->toArray();
+
+        $postTestData = \App\Models\PostTestResult::selectRaw('DATE(created_at) as date, COUNT(*) as count')
+            ->groupBy('date')
+            ->orderBy('date', 'desc')
+            ->limit(5)
+            ->get()
+            ->sortBy('date')
+            ->pluck('count', 'date')
+            ->toArray();
+
+        // Data for certificate table (limit to 15 latest)
+        $certificateAwards = CertificateAward::with(['user', 'postTestResult'])
+            ->orderBy('awarded_at', 'desc')
+            ->limit(15)
+            ->get();
+
         return view('dashboard', compact(
             'isIncomplete',
             'jumlahEbook',
@@ -62,7 +87,10 @@ class HomeController extends Controller
             'jumlahSertifikatSelesai',
             'jumlahPelatihan',
             'jumlahAbsensiTerisi',
-            'jumlahJadwalAbsensi'
+            'jumlahJadwalAbsensi',
+            'absensiData',
+            'postTestData',
+            'certificateAwards'
         ));
     }
 }

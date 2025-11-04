@@ -12,20 +12,49 @@ class LaporanSertifikatController extends Controller
      */
     public function index(Request $request)
     {
-        $search = $request->input('search'); // Ambil nilai pencarian dari input form
+        $q = $request->input('q');
+        $company = $request->input('company');
+        $branch = $request->input('branch');
+        $sort = $request->input('sort', 'latest');
+        $perPage = (int) $request->input('per_page', 15);
 
-        // Ambil sertifikat dengan pagination dan pencarian
+        // Ambil sertifikat dengan pagination dan filter
         $sertifikats = CertificateAward::with(['user'])
-            ->orderByDesc('awarded_at') // Urutkan berdasarkan tanggal awarded_at
-            ->when($search, function ($query, $search) {
-                // Jika ada query pencarian, cari berdasarkan nama user atau kriteria lainnya
-                return $query->whereHas('user', function ($q) use ($search) {
-                    $q->where('name', 'like', '%' . $search . '%');
+            ->when($q, function ($query, $q) {
+                return $query->whereHas('user', function ($qUser) use ($q) {
+                    $qUser->where('name', 'like', '%' . $q . '%')
+                        ->orWhere('email', 'like', '%' . $q . '%');
                 });
             })
-            ->paginate(10); // Menampilkan 10 data per halaman
+            ->when($company, function ($query, $company) {
+                return $query->whereHas('user', function ($qUser) use ($company) {
+                    $qUser->where('nama_perusahaan', $company);
+                });
+            })
+            ->when($branch, function ($query, $branch) {
+                return $query->whereHas('user', function ($qUser) use ($branch) {
+                    $qUser->where('cabang', $branch);
+                });
+            })
+            ->when($sort === 'latest', function ($query) {
+                return $query->orderByDesc('awarded_at');
+            })
+            ->when($sort === 'oldest', function ($query) {
+                return $query->orderBy('awarded_at');
+            })
+            ->when($sort === 'name_asc', function ($query) {
+                return $query->join('users', 'certificate_awards.user_id', '=', 'users.id')
+                    ->orderBy('users.name')
+                    ->select('certificate_awards.*');
+            })
+            ->when($sort === 'name_desc', function ($query) {
+                return $query->join('users', 'certificate_awards.user_id', '=', 'users.id')
+                    ->orderByDesc('users.name')
+                    ->select('certificate_awards.*');
+            })
+            ->paginate($perPage);
 
-        return view('LaporanSertifikat.index', compact('sertifikats', 'search'));
+        return view('LaporanSertifikat.index', compact('sertifikats'));
     }
 
     public function create()
