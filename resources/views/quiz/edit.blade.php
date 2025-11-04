@@ -37,7 +37,7 @@
                                 class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">✕</button>
                         </div>
 
-                        <form action="{{ route('posttest.update', $session->id) }}" method="POST" class="p-5">
+                        <form action="{{ route('posttest.update', $session) }}" method="POST" class="p-5">
                             @csrf @method('PUT')
                             <div class="space-y-4">
                                 <div>
@@ -211,15 +211,15 @@
                       option_c: @js($q->option_c),
                       option_d: @js($q->option_d),
                       correct_option: @js($q->correct_option),
-                      action: '{{ route('question.update', [$session->id, $q->id]) }}'
+                      action: '{{ route('posttest.question.update', [$session->id, $q->id]) }}'
                     };
                     setTimeout(() => { window.fillEditEditor(edit.question_text); }, 0);
                   ">
                                         Edit
                                     </button>
 
-                                    <form action="{{ route('question.destroy', [$session->id, $q->id]) }}" method="POST"
-                                        onsubmit="return confirm('Hapus soal ini?')">
+                                    <form action="{{ route('posttest.question.destroy', [$session, $q->id]) }}"
+                                        method="POST" onsubmit="return confirm('Hapus soal ini?')">
                                         @csrf @method('DELETE')
                                         <button class="text-red-600 text-sm hover:underline">Hapus</button>
                                     </form>
@@ -242,7 +242,7 @@
                         class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">✕</button>
                 </div>
 
-                <form action="{{ route('question.store', $session->id) }}" method="POST" class="p-5">
+                <form action="{{ route('posttest.question.store', $session) }}" method="POST" class="p-5">
                     @csrf
                     <div class="space-y-4">
                         <div>

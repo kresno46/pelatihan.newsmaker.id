@@ -24,9 +24,9 @@
                 </a>
 
                 {{-- Export bawa filter q & sort & company & branch agar konsisten --}}
-                <a href="{{ route('posttest.report.export', $session->id) }}?q={{ request('q') }}&sort={{ request('sort') }}&company={{ request('company') }}&branch={{ request('branch') }}"
-                    class="px-3 py-2 text-sm rounded bg-green-500 hover:bg-green-600 text-white transition">
-                    {{ __('Export CSV') }}
+                <a
+                    href="{{ route('posttest.report.export', $session) }}?q={{ request('q') }}&sort={{ request('sort') }}&company={{ request('company') }}&branch={{ request('branch') }}">
+                    Export
                 </a>
             </div>
         </div>
@@ -96,7 +96,7 @@
                     class="w-full md:w-auto px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm transition">
                     {{ __('Terapkan') }}
                 </button>
-                <a href="{{ route('posttest.report', $session->id) }}"
+                <a href="{{ route('posttest.report', $session) }}"
                     class="w-full md:w-auto px-4 py-2 rounded border bg-red-500 hover:bg-red-600 text-white border-gray-300 dark:border-gray-600 text-sm dark:text-gray-200 dark:hover:bg-gray-700 transition">
                     {{ __('Reset') }}
                 </a>
@@ -139,9 +139,9 @@
             </h3>
             <div class="flex flex-wrap gap-2">
                 @foreach ($branches as $b)
-                    <a href="{{ route('posttest.report.export', $session->id) }}?q={{ request('q') }}&sort={{ request('sort') }}&company={{ request('company') }}&branch={{ $b }}"
-                        class="px-3 py-2 text-xs rounded bg-blue-500 hover:bg-blue-600 text-white transition">
-                        {{ __('Download') }} {{ $b }}
+                    <a
+                        href="{{ route('posttest.report.export', $session) }}?q={{ request('q') }}&sort={{ request('sort') }}&company={{ request('company') }}&branch={{ $b }}">
+                        Export {{ $b }}
                     </a>
                 @endforeach
             </div>
@@ -150,7 +150,7 @@
 
     {{-- Tombol Hapus Semua Tidak Lulus --}}
     <div class="mb-4">
-        <form action="{{ route('posttest.report.deleteAllFailed', ['session' => $session->id]) }}" method="POST"
+        <form action="{{ route('posttest.report.deleteAllFailed', $session) }}" method="POST"
             onsubmit="return confirm('Yakin ingin menghapus semua hasil post test yang tidak lulus?');">
             @csrf
             @method('DELETE')
@@ -230,8 +230,7 @@
                                 </td>
                                 <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
                                     @if ($r->score < 60)
-                                        <form
-                                            action="{{ route('posttest.report.delete', ['session' => $session->id, 'result' => $r->id]) }}"
+                                        <form action="{{ route('posttest.report.delete', [$session, $r->id]) }}"
                                             method="POST"
                                             onsubmit="return confirm('Yakin ingin menghapus hasil post test user ini?');">
                                             @csrf

@@ -65,35 +65,37 @@ Route::middleware(['auth', 'verified'])->group(function () {
         });
     });
 
-    Route::prefix('post-test')->middleware('auth', 'is_admin:Admin')->group(function () {
-        // routes sesi yang sudah kamu punya
-        Route::get('/', [QuizController::class, 'index'])->name('posttest.index');
-        Route::get('/tambah', [QuizController::class, 'create'])->name('posttest.create');
-        Route::post('/', [QuizController::class, 'store'])->name('posttest.store');
+    Route::prefix('post-test')
+        ->middleware(['auth', 'is_admin:Admin'])
+        ->name('posttest.')
+        ->group(function () {
 
-        Route::get('/{id}/edit', [QuizController::class, 'edit'])->name('posttest.edit');
-        Route::put('/{id}', [QuizController::class, 'update'])->name('posttest.update');
-        Route::delete('/{id}', [QuizController::class, 'destroy'])->name('posttest.destroy');
-        Route::post('/toggle-status/{id}', [PostTestController::class, 'toggleStatus'])->name('posttest.toggle');
+            // === CRUD Sesi Post-Test ===
+            Route::get('/', [QuizController::class, 'index'])->name('index');
+            Route::get('/tambah', [QuizController::class, 'create'])->name('create');
+            Route::post('/', [QuizController::class, 'store'])->name('store');
 
+            // Gunakan model binding berdasarkan slug
+            Route::get('/{session:slug}/edit', [QuizController::class, 'edit'])->name('edit');
+            Route::put('/{session:slug}', [QuizController::class, 'update'])->name('update');
+            Route::delete('/{session:slug}', [QuizController::class, 'destroy'])->name('destroy');
 
-        // REPORT
-        Route::get('/{id}/report', [QuizController::class, 'report'])->name('posttest.report');
-        // (opsional) export CSV
-        Route::get('/{id}/report/export', [QuizController::class, 'reportExport'])->name('posttest.report.export');
-        Route::delete('/{id}/report/delete-all-failed', [QuizController::class, 'deleteAllFailed'])->name('posttest.report.deleteAllFailed');
-        Route::delete('/{id}/report/{result}', [QuizController::class, 'deleteResult'])->name('posttest.report.delete');
+            // Toggle status (gunakan controller PostTestController)
+            Route::post('/toggle-status/{session:slug}', [PostTestController::class, 'toggleStatus'])->name('toggle');
 
-        // === nested: /post-test/{id}/edit/question ===
-        Route::prefix('{id}/edit')->group(function () {
-            Route::post('/question', [PostTestController::class, 'questionStore'])
-                ->name('question.store');
-            Route::put('/question/{question}', [PostTestController::class, 'questionUpdate'])
-                ->name('question.update');
-            Route::delete('/question/{question}', [PostTestController::class, 'questionDestroy'])
-                ->name('question.destroy');
+            // === REPORT ===
+            Route::get('/{session:slug}/report', [QuizController::class, 'report'])->name('report');
+            Route::get('/{session:slug}/report/export', [QuizController::class, 'reportExport'])->name('report.export');
+            Route::delete('/{session:slug}/report/delete-all-failed', [QuizController::class, 'deleteAllFailed'])->name('report.deleteAllFailed');
+            Route::delete('/{session:slug}/report/{result}', [QuizController::class, 'deleteResult'])->name('report.delete');
+
+            // === NESTED: /post-test/{session:slug}/edit/question ===
+            Route::prefix('{session:slug}/edit')->group(function () {
+                Route::post('/question', [PostTestController::class, 'questionStore'])->name('question.store');
+                Route::put('/question/{question}', [PostTestController::class, 'questionUpdate'])->name('question.update');
+                Route::delete('/question/{question}', [PostTestController::class, 'questionDestroy'])->name('question.destroy');
+            });
         });
-    });
 
     Route::prefix('posttest')->name('post-test.')->middleware('profile.complete')->group(function () {
         Route::get('/', [TestController::class, 'index'])->name('index');

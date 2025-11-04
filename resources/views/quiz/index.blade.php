@@ -70,19 +70,19 @@
                         <div class="space-y-5">
                             <div class="w-full grid grid-cols-3 gap-2">
                                 {{-- Laporan / Show --}}
-                                <a href="{{ route('posttest.report', $item->id) }}"
+                                <a href="{{ route('posttest.report', $item) }}"
                                     class="bg-green-500 px-3 py-2 text-xs sm:text-sm hover:bg-green-600 text-white rounded transition-all text-center">
                                     {{ __('Laporan') }}
                                 </a>
 
                                 {{-- Edit --}}
-                                <a href="{{ route('posttest.edit', $item->id) }}"
+                                <a href="{{ route('posttest.edit', $item) }}"
                                     class="bg-yellow-500 px-3 py-2 text-xs sm:text-sm hover:bg-yellow-600 text-white rounded transition-all text-center">
                                     {{ __('Edit') }}
                                 </a>
 
                                 {{-- Hapus (DELETE) --}}
-                                <form action="{{ route('posttest.destroy', $item->id) }}" method="POST" x-data
+                                <form action="{{ route('posttest.destroy', $item) }}" method="POST" x-data
                                     @submit.prevent="if (confirm('{{ __('Yakin ingin menghapus post test ini? Tindakan tidak dapat dibatalkan.') }}')) $el.submit()">
                                     @csrf
                                     @method('DELETE')
@@ -94,7 +94,7 @@
                             </div>
 
                             {{-- Toggle Status Aktif / Tidak Aktif --}}
-                            <form action="{{ route('posttest.toggle', $item->id) }}" method="POST">
+                            <form action="{{ route('posttest.toggle', $item) }}" method="POST">
                                 @csrf
                                 <label class="relative inline-block w-12 h-6 cursor-pointer">
                                     <input type="checkbox" name="status" onchange="this.form.submit()" class="sr-only peer"
