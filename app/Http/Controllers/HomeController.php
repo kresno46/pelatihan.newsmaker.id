@@ -7,10 +7,9 @@ use App\Models\CertificateAward;
 use App\Models\Ebook;
 use App\Models\FolderEbook;
 use App\Models\JadwalAbsensi;
-use App\Models\PostTestSession;
 use App\Models\PostTestResult;
+use App\Models\PostTestSession;
 use App\Models\User;
-use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
@@ -42,17 +41,17 @@ class HomeController extends Controller
         // ========================
         // Statistik dasar
         // ========================
-        $jumlahEbook             = Ebook::count();
-        $jumlahSession           = PostTestSession::count();
-        $jumlahPelatihan         = FolderEbook::count();
-        $jumlahJadwalAbsensi     = JadwalAbsensi::count();
-        $jumlahUser              = User::where('role', 'Trainer (Eksternal)')->count();
-        $jumlahAdmin             = User::where('role', 'Admin')->count();
+        $jumlahEbook = Ebook::count();
+        $jumlahSession = PostTestSession::count();
+        $jumlahPelatihan = FolderEbook::count();
+        $jumlahJadwalAbsensi = JadwalAbsensi::count();
+        $jumlahUser = User::where('role', 'Trainer (Eksternal)')->count();
+        $jumlahAdmin = User::where('role', 'Admin')->count();
 
         // Statistik berdasarkan user login
-        $riwayatUserLogin        = PostTestResult::where('user_id', $user->id)->count();
+        $riwayatUserLogin = PostTestResult::where('user_id', $user->id)->count();
         $jumlahSertifikatSelesai = CertificateAward::where('user_id', $user->id)->count();
-        $jumlahAbsensiTerisi     = Absensi::where('user_id', $user->id)->count();
+        $jumlahAbsensiTerisi = Absensi::where('user_id', $user->id)->count();
 
         // ========================
         // Data untuk grafik
@@ -61,7 +60,8 @@ class HomeController extends Controller
         $absensiPerJadwal = Absensi::selectRaw('jadwal_absensis.tanggal, COUNT(absensis.id) as jumlah')
             ->join('jadwal_absensis', 'absensis.jadwal_id', '=', 'jadwal_absensis.id')
             ->groupBy('jadwal_absensis.tanggal')
-            ->orderBy('jadwal_absensis.tanggal')
+            ->orderBy('jadwal_absensis.tanggal', 'asc')
+            ->limit(50)
             ->get();
 
         $absensiLabels = $absensiPerJadwal->pluck('tanggal');

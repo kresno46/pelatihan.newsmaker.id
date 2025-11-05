@@ -28,9 +28,12 @@
             {{-- Nama Lengkap --}}
             <div>
                 <x-input-label-append for="name" :value="__('Nama Lengkap')" :append="empty($user->name) ? '<span class=\'text-red-500\'>*</span>' : ''" />
-                <x-text-input id="name" type="text" name="name" class="block mt-1 w-full"
+                <x-text-input id="name" type="text" name="name" class="block mt-1 w-full" readonly
                     :value="old('name', $user->name)" />
                 <x-input-error :messages="$errors->get('name')" class="mt-2" />
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    Nama lengkap tidak dapat diubah. Jika ada kesalahan, hubungi administrator.
+                </p>
             </div>
 
             {{-- Email --}}
@@ -52,12 +55,14 @@
             {{-- Jabatan --}}
             <div class="mt-4">
                 <x-input-label-append for="jabatan" :value="__('Jabatan')" :append="empty($user->jabatan) ? '<span class=\'text-red-500\'>*</span>' : ''" />
-                
-                <select id="jabatan" name="jabatan" class="block mt-1 w-full rounded-md shadow-sm border-gray-300
+
+                <select id="jabatan" name="jabatan"
+                    class="block mt-1 w-full rounded-md shadow-sm border-gray-300
                             dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
                     <option value="">-- Pilih Jabatan --</option>
                     @foreach (['BC', 'SBC', 'BsM', 'SBM', 'EM', 'SEM', 'VBM', 'BrM'] as $jabatan)
-                        <option value="{{ $jabatan }}" {{ old('jabatan', $user->jabatan) === $jabatan ? 'selected' : '' }}>
+                        <option value="{{ $jabatan }}"
+                            {{ old('jabatan', $user->jabatan) === $jabatan ? 'selected' : '' }}>
                             {{ $jabatan }}
                         </option>
                     @endforeach

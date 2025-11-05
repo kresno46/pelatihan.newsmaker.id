@@ -69,7 +69,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse ($tests as $index => $posttest)
+                    @forelse ($tests->where('status', true) as $index => $posttest)
                         <tr class="border-b dark:border-gray-700">
                             <td class="px-4 py-3">{{ $index + 1 }}</td>
                             <td class="px-4 py-3 font-medium text-gray-900 dark:text-white">
@@ -88,56 +88,33 @@
                                 @endif
                             </td>
                             <td class="px-4 py-3">
-                                @if ($posttest->status)
-                                    <!-- Status is now boolean -->
-                                    <div class="bg-green-500 text-center rounded-full py-1 text-sm">
-                                        <span class="text-green-100 font-semibold">Aktif</span>
-                                    </div>
-                                @else
-                                    <div class="bg-red-500 text-center rounded-full py-1 text-sm">
-                                        <span class="text-red-100 font-semibold">Tidak Aktif</span>
-                                    </div>
-                                @endif
+                                <div class="bg-green-500 text-center rounded-full py-1 text-sm">
+                                    <span class="text-green-100 font-semibold">Aktif</span>
+                                </div>
                             </td>
                             <td class="px-4 py-3 text-center">
-                                @if (!$posttest->status)
-                                    <!-- Status is now boolean -->
-                                    <div class="flex gap-2">
-                                        <span
-                                            class="inline-block w-full bg-gray-400 text-white text-xs px-3 py-1 rounded cursor-not-allowed">
-                                            Tidak Tersedia
-                                        </span>
-                                        @if ($posttest->progres === 'Selesai')
-                                            <a href="{{ route('post-test.result', $posttest->result_id) }}"
-                                                class="inline-block w-full bg-gray-600 text-white text-xs px-3 py-1 rounded hover:bg-gray-700">
-                                                Lihat Hasil
-                                            </a>
-                                        @endif
-                                    </div>
+                                @if ($posttest->progres === 'Belum Dikerjakan')
+                                    <a href="{{ route('post-test.show', $posttest->slug) }}"
+                                        class="inline-block w-full bg-blue-600 text-white text-xs px-3 py-1 rounded hover:bg-blue-700">
+                                        Mulai
+                                    </a>
+                                @elseif ($posttest->progres === 'Nilai di Bawah 60')
+                                    <a href="{{ route('post-test.result', $posttest->result_id) }}"
+                                        class="inline-block w-full bg-gray-600 text-white text-xs px-3 py-1 rounded hover:bg-gray-700">
+                                        Lihat Hasil
+                                    </a>
                                 @else
-                                    @if ($posttest->progres === 'Belum Dikerjakan')
-                                        <a href="{{ route('post-test.show', $posttest->slug) }}"
-                                            class="inline-block w-full bg-blue-600 text-white text-xs px-3 py-1 rounded hover:bg-blue-700">
-                                            Mulai
-                                        </a>
-                                    @elseif ($posttest->progres === 'Nilai di Bawah 60')
-                                        {{-- <a href="{{ route('post-test.show', $posttest->slug) }}"
-                                            class="inline-block w-full bg-orange-600 text-white text-xs px-3 py-1 rounded hover:bg-orange-700">
-                                            Ulangi
-                                        </a> --}}
-                                    @else
-                                        <a href="{{ route('post-test.result', $posttest->result_id) }}"
-                                            class="inline-block w-full bg-gray-600 text-white text-xs px-3 py-1 rounded hover:bg-gray-700">
-                                            Lihat Hasil
-                                        </a>
-                                    @endif
+                                    <a href="{{ route('post-test.result', $posttest->result_id) }}"
+                                        class="inline-block w-full bg-gray-600 text-white text-xs px-3 py-1 rounded hover:bg-gray-700">
+                                        Lihat Hasil
+                                    </a>
                                 @endif
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="px-4 py-3 text-center text-gray-500">
-                                Tidak ada post test tersedia.
+                            <td colspan="6" class="px-4 py-3 text-center text-gray-500">
+                                Tidak ada post test aktif tersedia.
                             </td>
                         </tr>
                     @endforelse
