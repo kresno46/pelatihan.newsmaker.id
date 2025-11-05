@@ -90,7 +90,7 @@
             <div class="flex justify-end gap-2">
                 <a href="{{ route('absensi.index') }}"
                     class="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-white rounded hover:bg-gray-400 dark:hover:bg-gray-500">Batal</a>
-                <button type="button" onclick="submitForm()"
+                <button type="submit"
                     class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Update</button>
             </div>
         </form>
@@ -140,57 +140,7 @@
             selectedRadioDot.classList.remove('opacity-0');
         }
 
-        function submitForm() {
-            const title = document.getElementById('title').value.trim();
-            const tanggal = document.getElementById('tanggal').value;
-            const selectedSession = document.querySelector('input[name="post_test_session_id"]:checked');
 
-            if (!title || !tanggal || !selectedSession) {
-                alert('Mohon lengkapi semua field yang diperlukan.');
-                return;
-            }
-
-            const btn = document.querySelector('button[onclick="submitForm()"]');
-            btn.innerHTML = 'Mengupdate...';
-            btn.disabled = true;
-
-            const form = document.querySelector('form');
-            const formData = new FormData(form);
-
-            fetch(form.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json',
-                    },
-                    credentials: 'same-origin'
-                })
-                .then(response => {
-                    if (response.ok) {
-                        window.location.href = '{{ route('absensi.index') }}';
-                    } else if (response.status === 422) {
-                        return response.json().then(data => {
-                            let msg = 'Validasi error:\n';
-                            for (const [field, messages] of Object.entries(data.errors)) {
-                                msg += `- ${messages.join(', ')}\n`;
-                            }
-                            alert(msg);
-                        });
-                    } else if (response.status === 419) {
-                        alert('Sesi berakhir. Refresh halaman.');
-                    } else {
-                        alert('Error. Coba lagi.');
-                    }
-                })
-                .catch(error => {
-                    alert('Error koneksi. Coba lagi.');
-                })
-                .finally(() => {
-                    btn.innerHTML = 'Update';
-                    btn.disabled = false;
-                });
-        }
 
 
 

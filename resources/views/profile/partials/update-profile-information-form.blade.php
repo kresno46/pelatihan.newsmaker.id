@@ -56,7 +56,7 @@
                 <select id="jabatan" name="jabatan" class="block mt-1 w-full rounded-md shadow-sm border-gray-300
                             dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
                     <option value="">-- Pilih Jabatan --</option>
-                    @foreach (['BC', 'SBC', 'SBM', 'BM'] as $jabatan)
+                    @foreach (['BC', 'SBC', 'BsM', 'SBM', 'EM', 'SEM', 'VBM', 'BrM'] as $jabatan)
                         <option value="{{ $jabatan }}" {{ old('jabatan', $user->jabatan) === $jabatan ? 'selected' : '' }}>
                             {{ $jabatan }}
                         </option>
@@ -203,18 +203,12 @@
 
 
             {{-- Cabang --}}
-            <div class="mt-4">
+            <div class="mt-4" id="cabang-container">
                 <x-input-label-append for="cabang" :value="__('Cabang')" />
                 <select id="cabang" name="cabang"
                     class="block mt-1 w-full rounded-md shadow-sm border-gray-300
                             dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
-                    <option value="">-- Pilih Cabang --</option>
-                    @foreach ($branches as $branch)
-                        <option value="{{ $branch }}"
-                            {{ old('cabang', $user->cabang) == $branch ? 'selected' : '' }}>
-                            {{ $branch }}
-                        </option>
-                    @endforeach
+                    <option value="">-- Pilih Kantor Cabang --</option>
                 </select>
                 <x-input-error :messages="$errors->get('cabang')" class="mt-2" />
             </div>

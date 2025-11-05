@@ -5,13 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\PostTestResult;
 use App\Models\PostTestSession;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class QuizController extends Controller
 {
     public function index()
     {
         $sessions = PostTestSession::withCount('questions')->latest()->paginate(10);
+
         return view('quiz.index', compact('sessions'));
     }
 
@@ -23,10 +23,10 @@ class QuizController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'title'     => 'required|string|max:255',
-            'duration'  => 'required|integer|min:1|max:1440',
-            'status'    => 'required|in:1,0',
-            'tipe'      => 'required|in:PATD, PATL',
+            'title' => 'required|string|max:255',
+            'duration' => 'required|integer|min:1|max:1440',
+            'status' => 'required|in:1,0',
+            'tipe' => 'required|in:PATD, PATL',
         ]);
 
         $session = PostTestSession::create($data); // slug dibuat otomatis di model
@@ -38,17 +38,18 @@ class QuizController extends Controller
 
     public function edit(PostTestSession $session)
     {
-        $session->load(['questions' => fn($q) => $q->orderBy('created_at')]);
+        $session->load(['questions' => fn ($q) => $q->orderBy('created_at')]);
+
         return view('quiz.edit', compact('session'));
     }
 
     public function update(Request $request, PostTestSession $session)
     {
         $data = $request->validate([
-            'title'    => 'required|string|max:255',
+            'title' => 'required|string|max:255',
             'duration' => 'required|integer|min:1|max:1440',
-            'status'    => 'required|in:1,0',
-            'tipe'     => 'required|in:PATD,PATL',
+            'status' => 'required|in:1,0',
+            'tipe' => 'required|in:PATD,PATL',
         ]);
 
         $session->update($data);
@@ -61,6 +62,7 @@ class QuizController extends Controller
     public function destroy(PostTestSession $session)
     {
         $session->delete();
+
         return redirect()->route('posttest.index')->with('success', 'Sesi berhasil dihapus.');
     }
 
@@ -75,10 +77,11 @@ class QuizController extends Controller
             'Trainer (EWF)' => 'PT Equity World Futures',
         ];
 
-        $q         = trim($request->input('q', ''));
-        $sort      = $request->input('sort', 'latest');       // latest|oldest|highest|lowest
-        $perPage   = (int) $request->input('per_page', 12) ?: 12;
-        $company   = trim((string) $request->input('company', '')); // filter berdasarkan NAMA PERUSAHAAN
+        $q = trim($request->input('q', ''));
+        $sort = $request->input('sort', 'latest');       // latest|oldest|highest|lowest
+        $perPage = (int) $request->input('per_page', 20) ?: 20;
+        $company = trim((string) $request->input('company', '')); // filter berdasarkan NAMA PERUSAHAAN
+        $cabang = trim((string) $request->input('cabang', '')); // filter berdasarkan CABANG
 
         // Konversi filter perusahaan → kode role (karena query ke kolom users.role)
         $roleFilter = array_search($company, $roleToCompany, true) ?: null;
@@ -96,14 +99,17 @@ class QuizController extends Controller
             ->when($roleFilter, function ($qr) use ($roleFilter) {
                 $qr->where('users.role', $roleFilter);
             })
-            ->when($sort === 'highest', fn($qr) => $qr->orderByDesc('post_test_results.score'))
-            ->when($sort === 'lowest',  fn($qr) => $qr->orderBy('post_test_results.score'))
-            ->when($sort === 'oldest',  fn($qr) => $qr->orderBy('post_test_results.created_at'))
-            ->when($sort === 'latest',  fn($qr) => $qr->orderByDesc('post_test_results.created_at'))
-            ->when($sort === 'lulus_first', fn($qr) => $qr->orderByRaw('CASE WHEN post_test_results.score >= 60 THEN 1 ELSE 0 END DESC'))
-            ->when($sort === 'tidak_lulus_first', fn($qr) => $qr->orderByRaw('CASE WHEN post_test_results.score >= 60 THEN 1 ELSE 0 END ASC'))
-            ->when($sort === 'cabang_asc', fn($qr) => $qr->orderBy('users.cabang', 'asc'))
-            ->when($sort === 'cabang_desc', fn($qr) => $qr->orderBy('users.cabang', 'desc'))
+            ->when($cabang !== '', function ($qr) use ($cabang) {
+                $qr->where('users.cabang', $cabang);
+            })
+            ->when($sort === 'highest', fn ($qr) => $qr->orderByDesc('post_test_results.score'))
+            ->when($sort === 'lowest', fn ($qr) => $qr->orderBy('post_test_results.score'))
+            ->when($sort === 'oldest', fn ($qr) => $qr->orderBy('post_test_results.created_at'))
+            ->when($sort === 'latest', fn ($qr) => $qr->orderByDesc('post_test_results.created_at'))
+            ->when($sort === 'lulus_first', fn ($qr) => $qr->orderByRaw('CASE WHEN post_test_results.score >= 60 THEN 1 ELSE 0 END DESC'))
+            ->when($sort === 'tidak_lulus_first', fn ($qr) => $qr->orderByRaw('CASE WHEN post_test_results.score >= 60 THEN 1 ELSE 0 END ASC'))
+            ->when($sort === 'cabang_asc', fn ($qr) => $qr->orderBy('users.cabang', 'asc'))
+            ->when($sort === 'cabang_desc', fn ($qr) => $qr->orderBy('users.cabang', 'desc'))
             ->select('post_test_results.*')
             ->paginate($perPage)
             ->withQueryString();
@@ -111,7 +117,8 @@ class QuizController extends Controller
         // Agregat (ikuti filter company bila ada)
         $aggregates = $session->results()
             ->leftJoin('users', 'post_test_results.user_id', '=', 'users.id')
-            ->when($roleFilter, fn($qr) => $qr->where('users.role', $roleFilter))
+            ->when($roleFilter, fn ($qr) => $qr->where('users.role', $roleFilter))
+            ->when($cabang !== '', fn ($qr) => $qr->where('users.cabang', $cabang))
             ->selectRaw('COUNT(*) AS total, AVG(post_test_results.score) AS avg_score, MAX(post_test_results.score) AS max_score, MIN(post_test_results.score) AS min_score')
             ->first();
 
@@ -135,19 +142,32 @@ class QuizController extends Controller
         });
         $noRoleCount = (int) ($rawRoleCounts['TanpaRole'] ?? 0);
 
+        // Collect unique branches for download per cabang
+        $branches = $session->results()
+            ->leftJoin('users', 'post_test_results.user_id', '=', 'users.id')
+            ->when($roleFilter, fn ($qr) => $qr->where('users.role', $roleFilter))
+            ->when($cabang !== '', fn ($qr) => $qr->where('users.cabang', $cabang))
+            ->whereNotNull('users.cabang')
+            ->distinct()
+            ->pluck('users.cabang')
+            ->sort()
+            ->values();
+
         return view('quiz.report', [
-            'session'     => $session,
-            'results'     => $results,
-            'aggregates'  => $aggregates,
-            'filters'     => [
-                'q'        => $q,
-                'sort'     => $sort,
+            'session' => $session,
+            'results' => $results,
+            'aggregates' => $aggregates,
+            'filters' => [
+                'q' => $q,
+                'sort' => $sort,
                 'per_page' => $perPage,
-                'company'  => $company, // kirim nama perusahaan yg sedang difilter
+                'company' => $company, // kirim nama perusahaan yg sedang difilter
+                'cabang' => $cabang, // kirim cabang yg sedang difilter
             ],
-            'companies'   => $companies,   // opsi dropdown perusahaan
-            'byCompany'   => $byCompany,   // rekap per perusahaan (nama → total)
+            'companies' => $companies,   // opsi dropdown perusahaan
+            'byCompany' => $byCompany,   // rekap per perusahaan (nama → total)
             'noRoleCount' => $noRoleCount, // jumlah tanpa role
+            'branches' => $branches, // unique branches for download per cabang
         ]);
     }
 
@@ -178,11 +198,12 @@ class QuizController extends Controller
     public function reportExport(Request $request, PostTestSession $session)
     {
         // (Kalau kamu sudah migrasi ke XLSX pakai Laravel Excel, ganti implementasi ini)
-        $filename = 'posttest-report-' . $session->slug . '-' . now()->format('Ymd_His') . '.csv';
+        $filename = 'posttest-report-'.$session->slug.'-'.now()->format('Ymd_His').'.csv';
 
-        $q         = trim($request->input('q', ''));
-        $sort      = $request->input('sort', 'latest');       // latest|oldest|highest|lowest
-        $company   = trim((string) $request->input('company', '')); // filter berdasarkan NAMA PERUSAHAAN
+        $q = trim($request->input('q', ''));
+        $sort = $request->input('sort', 'latest');       // latest|oldest|highest|lowest
+        $company = trim((string) $request->input('company', '')); // filter berdasarkan NAMA PERUSAHAAN
+        $cabang = trim((string) $request->input('cabang', '')); // filter berdasarkan CABANG
 
         // Konversi filter perusahaan → kode role (karena query ke kolom users.role)
         $roleFilter = array_search($company, [
@@ -205,14 +226,17 @@ class QuizController extends Controller
             ->when($roleFilter, function ($qr) use ($roleFilter) {
                 $qr->where('users.role', $roleFilter);
             })
-            ->when($sort === 'highest', fn($qr) => $qr->orderByDesc('post_test_results.score'))
-            ->when($sort === 'lowest',  fn($qr) => $qr->orderBy('post_test_results.score'))
-            ->when($sort === 'oldest',  fn($qr) => $qr->orderBy('post_test_results.created_at'))
-            ->when($sort === 'latest',  fn($qr) => $qr->orderByDesc('post_test_results.created_at'))
-            ->when($sort === 'lulus_first', fn($qr) => $qr->orderByRaw('CASE WHEN post_test_results.score >= 60 THEN 1 ELSE 0 END DESC'))
-            ->when($sort === 'tidak_lulus_first', fn($qr) => $qr->orderByRaw('CASE WHEN post_test_results.score >= 60 THEN 1 ELSE 0 END ASC'))
-            ->when($sort === 'cabang_asc', fn($qr) => $qr->orderBy('users.cabang', 'asc'))
-            ->when($sort === 'cabang_desc', fn($qr) => $qr->orderBy('users.cabang', 'desc'))
+            ->when($cabang !== '', function ($qr) use ($cabang) {
+                $qr->where('users.cabang', $cabang);
+            })
+            ->when($sort === 'highest', fn ($qr) => $qr->orderByDesc('post_test_results.score'))
+            ->when($sort === 'lowest', fn ($qr) => $qr->orderBy('post_test_results.score'))
+            ->when($sort === 'oldest', fn ($qr) => $qr->orderBy('post_test_results.created_at'))
+            ->when($sort === 'latest', fn ($qr) => $qr->orderByDesc('post_test_results.created_at'))
+            ->when($sort === 'lulus_first', fn ($qr) => $qr->orderByRaw('CASE WHEN post_test_results.score >= 60 THEN 1 ELSE 0 END DESC'))
+            ->when($sort === 'tidak_lulus_first', fn ($qr) => $qr->orderByRaw('CASE WHEN post_test_results.score >= 60 THEN 1 ELSE 0 END ASC'))
+            ->when($sort === 'cabang_asc', fn ($qr) => $qr->orderBy('users.cabang', 'asc'))
+            ->when($sort === 'cabang_desc', fn ($qr) => $qr->orderBy('users.cabang', 'desc'))
             ->select('post_test_results.*')
             ->get();
 

@@ -14,7 +14,7 @@ class JadwalAbsensiController extends Controller
     public function index(Request $request)
     {
         $search = $request->get('search');
-        $jadwals = JadwalAbsensi::query()
+        $jadwals = JadwalAbsensi::with('postTestSession') // Eager load relasi postTestSession
             ->when($search, function ($query) use ($search) {
                 $query->where('title', 'like', '%' . $search . '%');
             })

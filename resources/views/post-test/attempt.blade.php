@@ -6,8 +6,13 @@
     <div class="space-y-5">
         <div class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow">
             <h2 class="text-xl font-bold mb-4 text-gray-900 dark:text-white">{{ $session->title }}</h2>
-            <div id="timer" class="text-red-600 dark:text-red-400 font-semibold">
-                Sisa waktu: <span id="countdown"></span>
+            <div class="flex justify-between items-center">
+                <div id="timer" class="text-red-600 dark:text-red-400 font-semibold">
+                    Sisa waktu: <span id="countdown"></span>
+                </div>
+                <div class="text-sm text-gray-600 dark:text-gray-400">
+                    Tipe: <span class="font-semibold {{ $session->tipe === 'PATL' ? 'text-red-600' : 'text-green-600' }}">{{ $session->tipe }}</span>
+                </div>
             </div>
         </div>
 
@@ -29,7 +34,7 @@
                                             style="user-select: none;">
                                             <label class="block text-gray-700 dark:text-gray-300 cursor-pointer">
                                                 <input type="radio" name="answer[{{ $question->id }}]"
-                                                    value="{{ $opt }}" required class="mr-2"
+                                                    value="{{ $opt }}" class="mr-2"
                                                     data-question="{{ $question->id }}">
                                                 {{ $opt }}. {{ $opt_text }}
                                             </label>

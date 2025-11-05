@@ -24,17 +24,45 @@
                 </a>
 
                 {{-- Export bawa filter q & sort & company agar konsisten --}}
-                <a href="{{ route('posttest.report.export', $session->slug) }}?q={{ request('q') }}&sort={{ request('sort') }}&company={{ request('company') }}"
-                    class="px-3 py-2 text-sm rounded bg-green-500 hover:bg-green-600 text-white transition">
-                    {{ __('Export CSV') }}
-                </a>
+                <div class="flex gap-2">
+                    <a href="{{ route('posttest.report.export', $session->slug) }}?q={{ request('q') }}&sort={{ request('sort') }}&company={{ request('company') }}&cabang={{ request('cabang') }}"
+                        class="px-3 py-2 text-sm rounded bg-green-500 hover:bg-green-600 text-white transition">
+                        {{ __('Export CSV') }}
+                    </a>
+
+                    {{-- Download per cabang --}}
+                    @if ($branches->isNotEmpty())
+                        <div class="relative">
+                            <button type="button" id="downloadDropdown"
+                                class="px-3 py-2 text-sm rounded bg-blue-500 hover:bg-blue-600 text-white transition flex items-center gap-1">
+                                {{ __('Download per Cabang') }}
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            <div id="downloadMenu"
+                                class="absolute right-0 mt-1 w-64 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10 hidden">
+                                <div class="py-1">
+                                    @foreach ($branches as $branch)
+                                        <a href="{{ route('posttest.report.export', $session->slug) }}?q={{ request('q') }}&sort={{ request('sort') }}&company={{ request('company') }}&cabang={{ $branch }}"
+                                            class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                            {{ $branch }}
+                                        </a>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                </div>
             </div>
         </div>
     </header>
 
     {{-- Filter & Sort --}}
     <div class="mb-4 p-4 sm:p-5 bg-white dark:bg-gray-800 rounded-xl shadow">
-        <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-3">
+        <form method="GET" class="grid grid-cols-1 md:grid-cols-5 gap-3" id="filterForm">
+            <input type="hidden" name="page" value="1">
             <div>
                 <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">{{ __('Cari Peserta') }}</label>
                 <input type="text" name="q" value="{{ $filters['q'] ?? request('q') }}"
@@ -44,7 +72,7 @@
 
             <div>
                 <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">{{ __('Perusahaan') }}</label>
-                <select name="company"
+                <select name="company" id="companySelect"
                     class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
                     @php $company = $filters['company'] ?? request('company'); @endphp
                     <option value="">{{ __('Semua Perusahaan') }}</option>
@@ -63,6 +91,18 @@
             </div>
 
             <div>
+                <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">{{ __('Cabang') }}</label>
+                <select name="cabang" id="cabangSelect"
+                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
+                    @php $cabang = $filters['cabang'] ?? request('cabang'); @endphp
+                    <option value="">{{ __('Semua Cabang') }}</option>
+                    @if ($cabang)
+                        <option value="{{ $cabang }}" selected>{{ $cabang }}</option>
+                    @endif
+                </select>
+            </div>
+
+            <div>
                 <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">{{ __('Urutkan') }}</label>
                 <select name="sort"
                     class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
@@ -77,22 +117,24 @@
                         Dahulu</option>
                     <option value="cabang_asc" {{ $sort === 'cabang_asc' ? 'selected' : '' }}>Cabang A-Z</option>
                     <option value="cabang_desc" {{ $sort === 'cabang_desc' ? 'selected' : '' }}>Cabang Z-A</option>
+                    <option value="nama_asc" {{ $sort === 'nama_asc' ? 'selected' : '' }}>Nama A-Z</option>
+                    <option value="nama_desc" {{ $sort === 'nama_desc' ? 'selected' : '' }}>Nama Z-A</option>
                 </select>
             </div>
 
             <div>
                 <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">{{ __('Per Halaman') }}</label>
-                @php $per = (int)($filters['per_page'] ?? request('per_page', 12)); @endphp
+                @php $per = (int)($filters['per_page'] ?? request('per_page', 20)); @endphp
                 <select name="per_page"
                     class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
-                    @foreach ([10, 12, 15, 20, 30, 50, 100, 200] as $n)
+                    @foreach ([20, 30, 50, 100, 200] as $n)
                         <option value="{{ $n }}" {{ $per === $n ? 'selected' : '' }}>{{ $n }}
                         </option>
                     @endforeach
                 </select>
             </div>
 
-            <div class="flex items-end gap-2 md:col-span-4">
+            <div class="flex items-end gap-2 md:col-span-5">
                 <button type="submit"
                     class="w-full md:w-auto px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm transition">
                     {{ __('Terapkan') }}
@@ -241,4 +283,57 @@
             </div>
         @endif
     </div>
+@endsection
+
+@section('scripts')
+    <script>
+        @php
+            $kantorCabang = [
+                'PT Solid Gold Berjangka' => ['Jakarta', 'Semarang', 'Makassar'],
+                'PT Rifan Financindo Berjangka' => ['Palembang', 'Balikpapan', 'Solo', 'Jakarta DBS Tower', 'Jakarta AXA Tower', 'Medan', 'Semarang', 'Surabaya Pakuwon', 'Surabaya Ciputra', 'Pekanbaru', 'Bandung', 'Yogyakarta'],
+                'PT Equity World Futures' => ['SCC Jakarta', 'Cyber 2 Jakarta', 'Surabaya Trilium', 'Manado', 'Semarang', 'Surabaya Praxis', 'Cirebon'],
+                'PT Best Profit Futures' => ['Equity Tower Jakarta', 'Jambi', 'Jakarta - Pacific Place Mall', 'Pontianak', 'Malang', 'Surabaya', 'Medan', 'Bandung', 'Pekanbaru', 'Banjarmasin', 'Bandar Lampung', 'Semarang'],
+                'PT Kontak Perkasa Futures' => ['Jakarta', 'Yogyakarta', 'Bali', 'Makassar', 'Bandung', 'Semarang'],
+            ];
+        @endphp
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const dataCabang = @json($kantorCabang);
+            const companySelect = document.getElementById('companySelect');
+            const cabangSelect = document.getElementById('cabangSelect');
+
+            function updateCabangOptions() {
+                const selectedCompany = companySelect.value;
+                cabangSelect.innerHTML = '<option value="">-- Pilih Cabang --</option>';
+
+                if (selectedCompany && dataCabang[selectedCompany]) {
+                    dataCabang[selectedCompany].forEach(cabang => {
+                        const option = document.createElement('option');
+                        option.value = cabang;
+                        option.textContent = cabang;
+                        cabangSelect.appendChild(option);
+                    });
+                }
+            }
+
+            companySelect.addEventListener('change', updateCabangOptions);
+            updateCabangOptions(); // Initialize on page load
+
+            // Dropdown toggle for download per cabang
+            const downloadDropdown = document.getElementById('downloadDropdown');
+            const downloadMenu = document.getElementById('downloadMenu');
+
+            if (downloadDropdown && downloadMenu) {
+                downloadDropdown.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    downloadMenu.classList.toggle('hidden');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function() {
+                    downloadMenu.classList.add('hidden');
+                });
+            }
+        });
+    </script>
 @endsection

@@ -1,15 +1,9 @@
-<?php
+  <?php
 
 use App\Http\Controllers\AbsensiAdminController;
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\EbookController;
-use App\Http\Controllers\EmailController;
-use App\Http\Controllers\FolderController;
-use App\Http\Controllers\FolderOutlookController;
-use App\Http\Controllers\OutlookController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\JadwalAbsenController;
 use App\Http\Controllers\JadwalAbsensiController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\LaporanSertifikatController;
@@ -17,11 +11,10 @@ use App\Http\Controllers\PostTestController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\RiwayatController;
-use App\Http\Controllers\SertifikatController;
 use App\Http\Controllers\SummernoteController;
 use App\Http\Controllers\TestController;
-use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserCleanupController;
+use App\Http\Controllers\UserController;
 use App\Models\Absensi;
 use Illuminate\Support\Facades\Route;
 
@@ -38,7 +31,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('/{session}', [QuizController::class, 'update'])->name('posttest.update');
         Route::delete('/{session}', [QuizController::class, 'destroy'])->name('posttest.destroy');
         Route::post('/toggle-status/{slug}', [PostTestController::class, 'toggleStatus'])->name('posttest.toggle');
-
 
         // REPORT
         Route::get('/{session:slug}/report', [QuizController::class, 'report'])->name('posttest.report');
@@ -60,7 +52,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::prefix('posttest')->name('post-test.')->middleware('profile.complete')->group(function () {
         Route::get('/', [TestController::class, 'index'])->name('index');
-        Route::middleware('absensi')->group(function () {
+        Route::middleware(['absensi', 'App\Http\Middleware\CheckPATLAccess'])->group(function () {
             Route::get('/{slug}', [TestController::class, 'showQuiz'])->name('show');
             Route::post('/{slug}/submit', [TestController::class, 'submitQuiz'])->name('submit');
         });
@@ -129,12 +121,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
                     Route::get('/', [AbsensiAdminController::class, 'indexAdmin'])->name('absensiAdmin.index');
                     Route::get('/pdf', [AbsensiAdminController::class, 'downloadPdf'])->name('absensi.downloadPdf');
                     Route::get('/excel', [AbsensiAdminController::class, 'downloadExcel'])->name('absensi.downloadExcel');
+                    Route::get('/pdf-per-cabang', [AbsensiAdminController::class, 'downloadPdfPerCabang'])->name('absensi.downloadPdfPerCabang');
+                    Route::get('/excel-per-cabang', [AbsensiAdminController::class, 'downloadExcelPerCabang'])->name('absensi.downloadExcelPerCabang');
                     Route::delete('/{idAbsensi}/delete', [AbsensiAdminController::class, 'delete'])->name('absensiAdmin.delete');
                 });
             });
 
             Route::prefix('sertifikat')->group(function () {
                 Route::get('/', [LaporanSertifikatController::class, 'index'])->name('LaporanSertifikat.index');
+                Route::get('/export', [LaporanSertifikatController::class, 'export'])->name('LaporanSertifikat.export');
+                Route::get('/export-per-cabang', [LaporanSertifikatController::class, 'exportPerCabang'])->name('LaporanSertifikat.exportPerCabang');
                 Route::delete('/{id}/delete', [LaporanSertifikatController::class, 'destroy'])->name('LaporanSertifikat.destroy');
             });
         });
@@ -162,4 +158,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/hapus-akun-tidak-verifikasi', [UserCleanupController::class, 'deleteUnverifiedUsers'])->name('user.delete');
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

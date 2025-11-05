@@ -35,6 +35,23 @@
                 </select>
             </div>
 
+            {{-- Jabatan --}}
+            <div class="mb-4">
+                <label for="jabatan" class="block text-sm font-medium text-gray-700 dark:text-white">Jabatan</label>
+                <select name="jabatan" id="jabatan"
+                    class="mt-1 block w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    <option value="">-- Pilih Jabatan --</option>
+                    <option value="BC" {{ old('jabatan', $trainer->jabatan) == 'BC' ? 'selected' : '' }}>BC</option>
+                    <option value="SBC" {{ old('jabatan', $trainer->jabatan) == 'SBC' ? 'selected' : '' }}>SBC</option>
+                    <option value="BsM" {{ old('jabatan', $trainer->jabatan) == 'BsM' ? 'selected' : '' }}>BsM</option>
+                    <option value="SBM" {{ old('jabatan', $trainer->jabatan) == 'SBM' ? 'selected' : '' }}>SBM</option>
+                    <option value="EM" {{ old('jabatan', $trainer->jabatan) == 'EM' ? 'selected' : '' }}>EM</option>
+                    <option value="SEM" {{ old('jabatan', $trainer->jabatan) == 'SEM' ? 'selected' : '' }}>SEM</option>
+                    <option value="VBM" {{ old('jabatan', $trainer->jabatan) == 'VBM' ? 'selected' : '' }}>VBM</option>
+                    <option value="BrM" {{ old('jabatan', $trainer->jabatan) == 'BrM' ? 'selected' : '' }}>BrM</option>
+                </select>
+            </div>
+
             <div class="mb-4">
                 <label for="role" class="block text-sm font-medium text-gray-700 dark:text-white">Perusahaan</label>
                 <select name="role" id="role" required
@@ -53,11 +70,11 @@
                 </select>
             </div>
 
-            <div class="mb-4" id="cabangContainer" style="display: none;">
+            <div class="mb-4" id="cabang-container" style="display: none;">
                 <label for="cabang" class="block text-sm font-medium text-gray-700 dark:text-white">Cabang</label>
                 <select name="cabang" id="cabang"
                     class="mt-1 block w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                    <!-- Opsi cabang akan ditambahkan dengan JavaScript -->
+                    <option value="">-- Pilih Kantor Cabang --</option>
                 </select>
             </div>
 
@@ -91,11 +108,7 @@
                     class="mt-1 block w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">{{ old('alamat', $trainer->alamat) }}</textarea>
             </div>
 
-            <div class="mb-4">
-                <label for="no_id" class="block text-sm font-medium text-gray-700 dark:text-white">No. Identitas</label>
-                <input type="text" name="no_id" id="no_id" value="{{ old('no_id', $trainer->no_id) }}"
-                    class="mt-1 block w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-            </div>
+
 
             <div class="mb-4">
                 <label for="no_tlp" class="block text-sm font-medium text-gray-700 dark:text-white">No. Telepon</label>
@@ -157,69 +170,71 @@
 
 @section('scripts')
     <script>
+        const currentCabang = '{{ old('cabang', $trainer->cabang) }}';
+
         // Script untuk menampilkan cabang berdasarkan role
         document.getElementById('role').addEventListener('change', function() {
             const role = this.value;
-            const cabangContainer = document.getElementById('cabangContainer');
+            const cabangContainer = document.getElementById('cabang-container');
             const cabangSelect = document.getElementById('cabang');
 
             // Reset nilai cabang select
-            cabangSelect.innerHTML = '<option value="">-- Pilih Cabang --</option>';
+            cabangSelect.innerHTML = '<option value="">-- Pilih Kantor Cabang --</option>';
 
             if (role === 'Trainer (SGB)') {
                 cabangContainer.style.display = 'block';
                 cabangSelect.innerHTML += `
-                    <option value="Semarang">Semarang</option>
-                    <option value="Makassar">Makassar</option>
+                    <option value="Semarang" ${currentCabang === 'Semarang' ? 'selected' : ''}>Semarang</option>
+                    <option value="Makassar" ${currentCabang === 'Makassar' ? 'selected' : ''}>Makassar</option>
                 `;
             } else if (role === 'Trainer (RFB)') {
                 cabangContainer.style.display = 'block';
                 cabangSelect.innerHTML += `
-                    <option value="Medan">Medan</option>
-                    <option value="Palembang">Palembang</option>
-                    <option value="Semarang">Semarang</option>
-                    <option value="Jakarta">Jakarta</option>
-                    <option value="Surabaya">Surabaya</option>
-                    <option value="Pekanbaru">Pekanbaru</option>
-                    <option value="Bandung">Bandung</option>
-                    <option value="Solo">Solo</option>
-                    <option value="Yogyakarta">Yogyakarta</option>
-                    <option value="Balikpapan">Balikpapan</option>
-                    <option value="Surabaya II">Surabaya II</option>
+                    <option value="Medan" ${currentCabang === 'Medan' ? 'selected' : ''}>Medan</option>
+                    <option value="Palembang" ${currentCabang === 'Palembang' ? 'selected' : ''}>Palembang</option>
+                    <option value="Semarang" ${currentCabang === 'Semarang' ? 'selected' : ''}>Semarang</option>
+                    <option value="Jakarta" ${currentCabang === 'Jakarta' ? 'selected' : ''}>Jakarta</option>
+                    <option value="Surabaya" ${currentCabang === 'Surabaya' ? 'selected' : ''}>Surabaya</option>
+                    <option value="Pekanbaru" ${currentCabang === 'Pekanbaru' ? 'selected' : ''}>Pekanbaru</option>
+                    <option value="Bandung" ${currentCabang === 'Bandung' ? 'selected' : ''}>Bandung</option>
+                    <option value="Solo" ${currentCabang === 'Solo' ? 'selected' : ''}>Solo</option>
+                    <option value="Yogyakarta" ${currentCabang === 'Yogyakarta' ? 'selected' : ''}>Yogyakarta</option>
+                    <option value="Balikpapan" ${currentCabang === 'Balikpapan' ? 'selected' : ''}>Balikpapan</option>
+                    <option value="Surabaya II" ${currentCabang === 'Surabaya II' ? 'selected' : ''}>Surabaya II</option>
                 `;
             } else if (role === 'Trainer (EWF)') {
                 cabangContainer.style.display = 'block';
                 cabangSelect.innerHTML += `
-                    <option value="Surabaya Trillium">Surabaya Trillium</option>
-                    <option value="Manado">Manado</option>
-                    <option value="Jakarta">Jakarta</option>
-                    <option value="Semarang">Semarang</option>
-                    <option value="Surabaya Praxis">Surabaya Praxis</option>
-                    <option value="Cirebon">Cirebon</option>
+                    <option value="Surabaya Trillium" ${currentCabang === 'Surabaya Trillium' ? 'selected' : ''}>Surabaya Trillium</option>
+                    <option value="Manado" ${currentCabang === 'Manado' ? 'selected' : ''}>Manado</option>
+                    <option value="Jakarta" ${currentCabang === 'Jakarta' ? 'selected' : ''}>Jakarta</option>
+                    <option value="Semarang" ${currentCabang === 'Semarang' ? 'selected' : ''}>Semarang</option>
+                    <option value="Surabaya Praxis" ${currentCabang === 'Surabaya Praxis' ? 'selected' : ''}>Surabaya Praxis</option>
+                    <option value="Cirebon" ${currentCabang === 'Cirebon' ? 'selected' : ''}>Cirebon</option>
                 `;
             } else if (role === 'Trainer (BPF)') {
                 cabangContainer.style.display = 'block';
                 cabangSelect.innerHTML += `
-                    <option value="Jambi">Jambi</option>
-                    <option value="Jakarta - Pacific Place Mall">Jakarta - Pacific Place Mall</option>
-                    <option value="Pontianak">Pontianak</option>
-                    <option value="Malang">Malang</option>
-                    <option value="Surabaya">Surabaya</option>
-                    <option value="Medan">Medan</option>
-                    <option value="Bandung">Bandung</option>
-                    <option value="Pekanbaru">Pekanbaru</option>
-                    <option value="Banjarmasin">Banjarmasin</option>
-                    <option value="Bandar Lampung">Bandar Lampung</option>
-                    <option value="Semarang">Semarang</option>
+                    <option value="Jambi" ${currentCabang === 'Jambi' ? 'selected' : ''}>Jambi</option>
+                    <option value="Jakarta - Pacific Place Mall" ${currentCabang === 'Jakarta - Pacific Place Mall' ? 'selected' : ''}>Jakarta - Pacific Place Mall</option>
+                    <option value="Pontianak" ${currentCabang === 'Pontianak' ? 'selected' : ''}>Pontianak</option>
+                    <option value="Malang" ${currentCabang === 'Malang' ? 'selected' : ''}>Malang</option>
+                    <option value="Surabaya" ${currentCabang === 'Surabaya' ? 'selected' : ''}>Surabaya</option>
+                    <option value="Medan" ${currentCabang === 'Medan' ? 'selected' : ''}>Medan</option>
+                    <option value="Bandung" ${currentCabang === 'Bandung' ? 'selected' : ''}>Bandung</option>
+                    <option value="Pekanbaru" ${currentCabang === 'Pekanbaru' ? 'selected' : ''}>Pekanbaru</option>
+                    <option value="Banjarmasin" ${currentCabang === 'Banjarmasin' ? 'selected' : ''}>Banjarmasin</option>
+                    <option value="Bandar Lampung" ${currentCabang === 'Bandar Lampung' ? 'selected' : ''}>Bandar Lampung</option>
+                    <option value="Semarang" ${currentCabang === 'Semarang' ? 'selected' : ''}>Semarang</option>
                 `;
             } else if (role === 'Trainer (KPF)') {
                 cabangContainer.style.display = 'block';
                 cabangSelect.innerHTML += `
-                    <option value="Yogyakarta">Yogyakarta</option>
-                    <option value="Bali">Bali</option>
-                    <option value="Makassar">Makassar</option>
-                    <option value="Bandung">Bandung</option>
-                    <option value="Semarang">Semarang</option>
+                    <option value="Yogyakarta" ${currentCabang === 'Yogyakarta' ? 'selected' : ''}>Yogyakarta</option>
+                    <option value="Bali" ${currentCabang === 'Bali' ? 'selected' : ''}>Bali</option>
+                    <option value="Makassar" ${currentCabang === 'Makassar' ? 'selected' : ''}>Makassar</option>
+                    <option value="Bandung" ${currentCabang === 'Bandung' ? 'selected' : ''}>Bandung</option>
+                    <option value="Semarang" ${currentCabang === 'Semarang' ? 'selected' : ''}>Semarang</option>
                 `;
             } else {
                 cabangContainer.style.display = 'none';

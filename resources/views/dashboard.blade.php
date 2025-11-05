@@ -121,7 +121,8 @@
         @endforeach
     </div>
 
-    <!-- Grafik Section -->
+    @if (Auth::check() && Auth::user()->role === 'Admin')
+            <!-- Grafik Section -->
     <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Grafik Absensi Per Jadwal -->
         <div
@@ -199,6 +200,10 @@
                                 </th>
                                 <th
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    Cabang
+                                </th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                     Nilai
                                 </th>
                                 <th
@@ -248,6 +253,9 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
                                         {{ $perusahaan }}
                                     </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                                        {{ $certificate->user->cabang ?? '-' }}
+                                    </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span
                                             class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100">
@@ -265,6 +273,7 @@
             @endif
         </div>
     </div>
+    @endif
 
     <script>
         // Counter animation

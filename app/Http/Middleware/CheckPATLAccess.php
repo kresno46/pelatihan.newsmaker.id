@@ -32,13 +32,23 @@ class CheckPATLAccess
                 ->with('error', 'Session tidak ditemukan.');
         }
 
-        // Cek tipe soal, jika PATL maka hanya jabatan BM atau SBM yang boleh akses
+        // Cek tipe soal, jika PATL maka hanya jabatan tertentu yang boleh akses
         if ($session->tipe === 'PATL') {
             $user = auth()->user();
 
             if (!in_array($user->jabatan, ['SBC', 'BsM', 'SBM', 'EM', 'SEM', 'VBM', 'BrM'])) {
                 return redirect()->route('post-test.index')
                     ->with('error', 'Anda tidak memiliki akses untuk tipe soal PATL.');
+            }
+        }
+
+        // Jika tipe PATD, jabatan BC tidak boleh akses
+        if ($session->tipe === 'PATD') {
+            $user = auth()->user();
+
+            if ($user->jabatan === 'BC') {
+                return redirect()->route('post-test.index')
+                    ->with('error', 'Anda tidak memiliki akses untuk tipe soal PATD.');
             }
         }
 

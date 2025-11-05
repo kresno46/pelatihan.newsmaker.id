@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Exports\AbsensiExport;
 use App\Models\Absensi;
 use App\Models\JadwalAbsensi;
-use App\Models\User;
-use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Str;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AbsensiAdminController extends Controller
 {
@@ -32,7 +31,7 @@ class AbsensiAdminController extends Controller
         // Filter berdasarkan pencarian nama
         if ($request->filled('q')) {
             $query->whereHas('user', function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->q . '%');
+                $q->where('name', 'like', '%'.$request->q.'%');
             });
         }
 
@@ -40,6 +39,13 @@ class AbsensiAdminController extends Controller
         if ($request->filled('company')) {
             $query->whereHas('user', function ($q) use ($request) {
                 $q->where('role', $request->company);
+            });
+        }
+
+        // Filter berdasarkan cabang
+        if ($request->filled('cabang')) {
+            $query->whereHas('user', function ($q) use ($request) {
+                $q->where('cabang', $request->cabang);
             });
         }
 
@@ -64,6 +70,14 @@ class AbsensiAdminController extends Controller
             case 'company_desc':
                 $query->join('users', 'absensis.user_id', '=', 'users.id')
                     ->orderBy('users.role', 'desc');
+                break;
+            case 'cabang_asc':
+                $query->join('users', 'absensis.user_id', '=', 'users.id')
+                    ->orderBy('users.cabang', 'asc');
+                break;
+            case 'cabang_desc':
+                $query->join('users', 'absensis.user_id', '=', 'users.id')
+                    ->orderBy('users.cabang', 'desc');
                 break;
             default:
                 $query->orderBy('waktu_absen', 'desc');
@@ -90,7 +104,7 @@ class AbsensiAdminController extends Controller
 
         $absensi->delete(); // Jangan lupa ini agar datanya benar-benar dihapus
 
-        return redirect()->back()->with('Alert', $absensi->user->nama . ' berhasil dihapus!');
+        return redirect()->back()->with('Alert', $absensi->user->nama.' berhasil dihapus!');
     }
 
     public function downloadExcel($idJadwal)
@@ -115,6 +129,80 @@ class AbsensiAdminController extends Controller
         $tanggal = Carbon::now()->format('Ymd_His');
 
         $fileName = "absensi_{$judul}_{$tanggal}.pdf";
+
+        $pdf = Pdf::loadView('AbsensiAdmin.PdfExport', compact('absensiList', 'jadwal'));
+
+        return $pdf->download($fileName);
+    }
+
+    public function downloadExcelPerCabang($idJadwal, Request $request)
+    {
+        $jadwal = JadwalAbsensi::findOrFail($idJadwal);
+
+        $query = Absensi::with('user')->where('jadwal_id', $idJadwal);
+
+        // Apply same filters as index
+        if ($request->filled('q')) {
+            $query->whereHas('user', function ($q) use ($request) {
+                $q->where('name', 'like', '%'.$request->q.'%');
+            });
+        }
+
+        if ($request->filled('company')) {
+            $query->whereHas('user', function ($q) use ($request) {
+                $q->where('role', $request->company);
+            });
+        }
+
+        if ($request->filled('cabang')) {
+            $query->whereHas('user', function ($q) use ($request) {
+                $q->where('cabang', $request->cabang);
+            });
+        }
+
+        $absensiList = $query->get();
+
+        $judul = Str::slug($jadwal->title, '_');
+        $cabang = $request->cabang ? Str::slug($request->cabang, '_') : 'semua';
+        $tanggal = Carbon::now()->format('Ymd_His');
+
+        $fileName = "absensi_{$judul}_{$cabang}_{$tanggal}.xlsx";
+
+        return Excel::download(new AbsensiExport($absensiList), $fileName);
+    }
+
+    public function downloadPdfPerCabang($idJadwal, Request $request)
+    {
+        $jadwal = JadwalAbsensi::findOrFail($idJadwal);
+
+        $query = Absensi::with('user')->where('jadwal_id', $idJadwal);
+
+        // Apply same filters as index
+        if ($request->filled('q')) {
+            $query->whereHas('user', function ($q) use ($request) {
+                $q->where('name', 'like', '%'.$request->q.'%');
+            });
+        }
+
+        if ($request->filled('company')) {
+            $query->whereHas('user', function ($q) use ($request) {
+                $q->where('role', $request->company);
+            });
+        }
+
+        if ($request->filled('cabang')) {
+            $query->whereHas('user', function ($q) use ($request) {
+                $q->where('cabang', $request->cabang);
+            });
+        }
+
+        $absensiList = $query->get();
+
+        $judul = Str::slug($jadwal->title, '_');
+        $cabang = $request->cabang ? Str::slug($request->cabang, '_') : 'semua';
+        $tanggal = Carbon::now()->format('Ymd_His');
+
+        $fileName = "absensi_{$judul}_{$cabang}_{$tanggal}.pdf";
 
         $pdf = Pdf::loadView('AbsensiAdmin.PdfExport', compact('absensiList', 'jadwal'));
 

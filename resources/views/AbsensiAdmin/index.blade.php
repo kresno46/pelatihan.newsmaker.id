@@ -20,23 +20,62 @@
                     Kembali
                 </a>
 
-                {{-- Export bawa filter q & sort & company agar konsisten --}}
-                <a href="{{ route('absensi.downloadExcel', $jadwal->id) }}?q={{ request('q') }}&sort={{ request('sort') }}&company={{ request('company') }}"
+                {{-- Export bawa filter q & sort & company & cabang agar konsisten --}}
+                <a href="{{ route('absensi.downloadExcel', $jadwal->id) }}?q={{ request('q') }}&sort={{ request('sort') }}&company={{ request('company') }}&cabang={{ request('cabang') }}"
                     class="px-3 py-2 text-sm rounded bg-green-500 hover:bg-green-600 text-white transition">
                     <i class="fa-solid fa-file-excel"></i> Excel
                 </a>
 
-                <a href="{{ route('absensi.downloadPdf', $jadwal->id) }}?q={{ request('q') }}&sort={{ request('sort') }}&company={{ request('company') }}"
+                <a href="{{ route('absensi.downloadPdf', $jadwal->id) }}?q={{ request('q') }}&sort={{ request('sort') }}&company={{ request('company') }}&cabang={{ request('cabang') }}"
                     class="px-3 py-2 text-sm rounded bg-red-500 hover:bg-red-600 text-white transition">
                     <i class="fa-solid fa-file-pdf"></i> PDF
                 </a>
+
+                {{-- Download per cabang --}}
+                @if ($absensiList->isNotEmpty())
+                    <div class="relative">
+                        <button type="button" id="downloadDropdown"
+                            class="px-3 py-2 text-sm rounded bg-blue-500 hover:bg-blue-600 text-white transition flex items-center gap-1">
+                            {{ __('Download per Cabang') }}
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                                </path>
+                            </svg>
+                        </button>
+                        <div id="downloadMenu"
+                            class="absolute right-0 mt-1 w-64 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10 hidden">
+                            <div class="py-1">
+                                @php
+                                    $cabangs = collect();
+                                    foreach ($absensiList as $absensi) {
+                                        if ($absensi->user && $absensi->user->cabang) {
+                                            $cabangs->push($absensi->user->cabang);
+                                        }
+                                    }
+                                    $uniqueCabangs = $cabangs->unique()->sort();
+                                @endphp
+                                @foreach ($uniqueCabangs as $cabang)
+                                    <a href="{{ route('absensi.downloadExcelPerCabang', $jadwal->id) }}?q={{ request('q') }}&sort={{ request('sort') }}&company={{ request('company') }}&cabang={{ $cabang }}"
+                                        class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                        <span class="font-medium text-green-500">Excel</span> - {{ $cabang }}
+                                    </a>
+                                    <a href="{{ route('absensi.downloadPdfPerCabang', $jadwal->id) }}?q={{ request('q') }}&sort={{ request('sort') }}&company={{ request('company') }}&cabang={{ $cabang }}"
+                                        class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                        <span class="font-medium text-red-500">PDF</span> - {{ $cabang }}
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
     </header>
 
     {{-- Filter & Sort --}}
     <div class="mb-4 p-4 sm:p-5 bg-white dark:bg-gray-800 rounded-xl shadow">
-        <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-3">
+        <form method="GET" class="grid grid-cols-1 md:grid-cols-5 gap-3" id="filterForm">
+            <input type="hidden" name="page" value="1">
             <div>
                 <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Cari Peserta</label>
                 <input type="text" name="q" value="{{ request('q') }}"
@@ -46,7 +85,7 @@
 
             <div>
                 <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Perusahaan</label>
-                <select name="company"
+                <select name="company" id="companySelect"
                     class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
                     @php $company = request('company'); @endphp
                     <option value="">Semua Perusahaan</option>
@@ -64,6 +103,18 @@
             </div>
 
             <div>
+                <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Cabang</label>
+                <select name="cabang" id="cabangSelect"
+                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
+                    @php $cabang = request('cabang'); @endphp
+                    <option value="">Semua Cabang</option>
+                    @if ($cabang)
+                        <option value="{{ $cabang }}" selected>{{ $cabang }}</option>
+                    @endif
+                </select>
+            </div>
+
+            <div>
                 <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Urutkan</label>
                 <select name="sort"
                     class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
@@ -74,6 +125,8 @@
                     <option value="name_desc" {{ $sort === 'name_desc' ? 'selected' : '' }}>Nama Z-A</option>
                     <option value="company_asc" {{ $sort === 'company_asc' ? 'selected' : '' }}>Perusahaan A-Z</option>
                     <option value="company_desc" {{ $sort === 'company_desc' ? 'selected' : '' }}>Perusahaan Z-A</option>
+                    <option value="cabang_asc" {{ $sort === 'cabang_asc' ? 'selected' : '' }}>Cabang A-Z</option>
+                    <option value="cabang_desc" {{ $sort === 'cabang_desc' ? 'selected' : '' }}>Cabang Z-A</option>
                 </select>
             </div>
 
@@ -89,7 +142,7 @@
                 </select>
             </div>
 
-            <div class="flex items-end gap-2 md:col-span-4">
+            <div class="flex items-end gap-2 md:col-span-5">
                 <button type="submit"
                     class="w-full md:w-auto px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm transition">
                     Terapkan
@@ -210,7 +263,90 @@
 @endsection
 
 @section('scripts')
+    @php
+        $kantorCabang = [
+            'Trainer (SGB)' => ['Jakarta', 'Semarang', 'Makassar'],
+            'Trainer (RFB)' => [
+                'Palembang',
+                'Balikpapan',
+                'Solo',
+                'Jakarta DBS Tower',
+                'Jakarta AXA Tower',
+                'Medan',
+                'Semarang',
+                'Surabaya Pakuwon',
+                'Surabaya Ciputra',
+                'Pekanbaru',
+                'Bandung',
+                'Yogyakarta',
+            ],
+            'Trainer (EWF)' => [
+                'SCC Jakarta',
+                'Cyber 2 Jakarta',
+                'Surabaya Trilium',
+                'Manado',
+                'Semarang',
+                'Surabaya Praxis',
+                'Cirebon',
+            ],
+            'Trainer (BPF)' => [
+                'Equity Tower Jakarta',
+                'Jambi',
+                'Jakarta - Pacific Place Mall',
+                'Pontianak',
+                'Malang',
+                'Surabaya',
+                'Medan',
+                'Bandung',
+                'Pekanbaru',
+                'Banjarmasin',
+                'Bandar Lampung',
+                'Semarang',
+            ],
+            'Trainer (KPF)' => ['Jakarta', 'Yogyakarta', 'Bali', 'Makassar', 'Bandung', 'Semarang'],
+        ];
+    @endphp
+
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dataCabang = @json($kantorCabang);
+            const companySelect = document.getElementById('companySelect');
+            const cabangSelect = document.getElementById('cabangSelect');
+
+            function updateCabangOptions() {
+                const selectedCompany = companySelect.value;
+                cabangSelect.innerHTML = '<option value="">-- Pilih Cabang --</option>';
+
+                if (selectedCompany && dataCabang[selectedCompany]) {
+                    dataCabang[selectedCompany].forEach(cabang => {
+                        const option = document.createElement('option');
+                        option.value = cabang;
+                        option.textContent = cabang;
+                        cabangSelect.appendChild(option);
+                    });
+                }
+            }
+
+            companySelect.addEventListener('change', updateCabangOptions);
+            updateCabangOptions(); // Initialize on page load
+
+            // Dropdown toggle for download per cabang
+            const downloadDropdown = document.getElementById('downloadDropdown');
+            const downloadMenu = document.getElementById('downloadMenu');
+
+            if (downloadDropdown && downloadMenu) {
+                downloadDropdown.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    downloadMenu.classList.toggle('hidden');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function() {
+                    downloadMenu.classList.add('hidden');
+                });
+            }
+        });
+
         function openModalDelete(idAbsensi) {
             const idJadwal = "{{ request()->route('idJadwal') }}";
             const form = document.getElementById('deleteForm');

@@ -7,7 +7,13 @@
         <div class="p-5 bg-white dark:bg-gray-800 rounded-lg shadow-lg space-y-5">
             {{-- Header --}}
             <div class="flex items-center justify-between w-full">
-                <h3 class="text-xl font-bold text-gray-900 dark:text-white">Daftar Absensi</h3>
+                <div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white">Daftar Absensi</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        Kelola sesi absensi dan post test. Setiap sesi post test memiliki durasi 30 menit untuk
+                        menyelesaikan 20 pertanyaan.
+                    </p>
+                </div>
 
                 <a href="{{ route('absensi.create') }}"
                     class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200">
@@ -58,7 +64,16 @@
                     <div
                         class="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 flex items-center justify-between">
                         <div class="flex flex-col justify-between mb-2 h-full">
-                            <h2 class="font-semibold text-sm text-gray-900 dark:text-white">{{ $jadwal->title }}</h2>
+                            <div>
+                                <h2 class="font-semibold text-sm text-gray-900 dark:text-white">{{ $jadwal->title }}</h2>
+                                <div class="text-gray-600 dark:text-gray-300 text-xs mt-1">
+                                    <strong class="text-blue-500">Sesi Post Test:</strong>
+                                    {{ $jadwal->postTestSession->title }}<br>
+                                    <strong class="text-blue-500">Durasi:</strong>
+                                    {{ $jadwal->postTestSession->duration ?? '30 menit' }} menit
+                                    ({{ $jadwal->postTestSession->questions_count ?? '20' }} pertanyaan)
+                                </div>
+                            </div>
                             <div class="text-gray-500 dark:text-gray-400 text-xs">
                                 {{ \Carbon\Carbon::parse($jadwal->tanggal)->format('d M Y') }}
                             </div>

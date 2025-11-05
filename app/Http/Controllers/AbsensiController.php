@@ -10,7 +10,7 @@ class AbsensiController extends Controller
 {
     public function indexAbsensi()
     {
-        $jadwals = JadwalAbsensi::all();
+        $jadwals = JadwalAbsensi::where('is_open', true)->orderBy('tanggal', 'desc')->get();
         $userId = auth()->user()->id;
 
         $absensiUser = Absensi::where('user_id', $userId)->pluck('jadwal_id')->toArray();
