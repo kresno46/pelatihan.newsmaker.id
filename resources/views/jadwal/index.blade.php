@@ -5,23 +5,54 @@
 @section('content')
     <div>
         <div class="p-5 bg-white dark:bg-gray-800 rounded-lg shadow-lg space-y-5">
+            {{-- Header --}}
             <div class="flex items-center justify-between w-full">
                 <h3 class="text-xl font-bold text-gray-900 dark:text-white">Daftar Absensi</h3>
 
-                <a href="{{ route('absensi.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                    <i class="fa-solid fa-plus mr-2"></i>Tambah Jadwal
+                <a href="{{ route('absensi.create') }}"
+                    class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                    <i class="fa-solid fa-plus mr-2"></i>Tambah Sesi
                 </a>
             </div>
 
             @if (session('Alert'))
-                <div class="text-green-700 text-sm mt-4">
+                <div class="text-green-700 text-sm">
                     {{ session('Alert') }}
                 </div>
             @endif
 
+            {{-- Pemisah --}}
             <hr class="border bg-gray-500 dark:bg-gray-700">
 
+            {{-- Search Bar --}}
+            <div class="flex items-center space-x-4">
+                <div class="flex-1">
+                    <form method="GET" action="{{ route('absensi.index') }}" class="flex items-center">
+                        <div class="relative flex-1">
+                            <input type="text" name="search" value="{{ $search ?? '' }}"
+                                placeholder="Cari jadwal absensi..."
+                                class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fa-solid fa-search text-gray-400"></i>
+                            </div>
+                        </div>
+                        <button type="submit"
+                            class="ml-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200">
+                            Cari
+                        </button>
+                        @if ($search ?? false)
+                            <a href="{{ route('absensi.index') }}"
+                                class="ml-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200">
+                                Reset
+                            </a>
+                        @endif
+                    </form>
+                </div>
+            </div>
+
+            {{-- Body --}}
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+
                 {{-- Loop Jadwal --}}
                 @foreach ($jadwals as $jadwal)
                     <div
@@ -31,16 +62,9 @@
                             <div class="text-gray-500 dark:text-gray-400 text-xs">
                                 {{ \Carbon\Carbon::parse($jadwal->tanggal)->format('d M Y') }}
                             </div>
-                            <div class="text-gray-500 dark:text-gray-400 text-xs">
-                                <strong class="text-blue-700">Sesi:</strong> {{ $jadwal->postTestSession->title ?? 'N/A' }}
-                            </div>
-                            <div class="text-gray-500 dark:text-gray-400 text-xs">
-                                <strong class="text-blue-700">Durasi:</strong>
-                                {{ $jadwal->postTestSession->duration ?? 'N/A' }} Menit
-                            </div>
                         </div>
 
-                        <div class="h-full flex flex-col justify-between items-end gap-3">
+                        <div class="flex flex-col items-end gap-3">
                             <form action="{{ route('absensi.toggle', $jadwal->id) }}" method="POST" class="h-fit">
                                 @csrf
                                 <label class="relative inline-block w-12 h-6 cursor-pointer">
@@ -110,10 +134,5 @@
                 @endforeach
             </div>
         </div>
-
-
     </div>
-@endsection
-
-@section('scripts')
 @endsection

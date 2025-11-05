@@ -23,12 +23,4 @@ class JadwalAbsensi extends Model
     {
         return $this->hasMany(Absensi::class, 'jadwal_id');
     }
-
-    /**
-     * Relasi ke PostTestSession
-     */
-    public function postTestSession()
-    {
-        return $this->belongsTo(PostTestSession::class, 'post_test_session_id');
-    }
 }

@@ -28,16 +28,9 @@
             {{-- Nama Lengkap --}}
             <div>
                 <x-input-label-append for="name" :value="__('Nama Lengkap')" :append="empty($user->name) ? '<span class=\'text-red-500\'>*</span>' : ''" />
-
-                <x-text-input id="name" type="text" name="name"
-                    class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 
-               focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 
-               rounded-md shadow-sm"
-                    :value="old('name', $user->name)" @readonly(auth()->user()->role !== 'Admin' && $user->isNameFilled()) />
-
+                <x-text-input id="name" type="text" name="name" class="block mt-1 w-full"
+                    :value="old('name', $user->name)" />
                 <x-input-error :messages="$errors->get('name')" class="mt-2" />
-
-                <p class="mt-1 text-gray-600 dark:text-gray-400">{{ $user->name }}</p>
             </div>
 
             {{-- Email --}}
@@ -59,14 +52,12 @@
             {{-- Jabatan --}}
             <div class="mt-4">
                 <x-input-label-append for="jabatan" :value="__('Jabatan')" :append="empty($user->jabatan) ? '<span class=\'text-red-500\'>*</span>' : ''" />
-
-                <select id="jabatan" name="jabatan"
-                    class="block mt-1 w-full rounded-md shadow-sm border-gray-300
+                
+                <select id="jabatan" name="jabatan" class="block mt-1 w-full rounded-md shadow-sm border-gray-300
                             dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
                     <option value="">-- Pilih Jabatan --</option>
-                    @foreach (['BC', 'SBC', 'BsM', 'SBM', 'EM', 'SEM', 'VBM', 'BrM'] as $jabatan)
-                        <option value="{{ $jabatan }}"
-                            {{ old('jabatan', $user->jabatan) === $jabatan ? 'selected' : '' }}>
+                    @foreach (['BC', 'SBC', 'SBM', 'BM'] as $jabatan)
+                        <option value="{{ $jabatan }}" {{ old('jabatan', $user->jabatan) === $jabatan ? 'selected' : '' }}>
                             {{ $jabatan }}
                         </option>
                     @endforeach
@@ -124,7 +115,7 @@
 
             {{-- Alamat --}}
             <div class="mt-4">
-                <x-input-label-append for="alamat" :value="__('Kota')" :append="empty($user->alamat) ? '<span class=\'text-red-500\'>*</span>' : ''" />
+                <x-input-label-append for="alamat" :value="__('Alamat')" :append="empty($user->alamat) ? '<span class=\'text-red-500\'>*</span>' : ''" />
                 <textarea id="alamat" name="alamat"
                     class="block mt-1 w-full rounded-md shadow-sm border-gray-300
                             dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">{{ old('alamat', $user->alamat) }}</textarea>
@@ -229,18 +220,6 @@
             </div>
 
             <x-missing-fields-alert :user="$user" />
-
-            <div
-                class="mt-10 text-sm bg-red-50 dark:bg-red-500/20 border border-red-200 dark:border-gray-700 rounded-md p-4 text-gray-700 dark:text-gray-300">
-                <span class="font-semibold text-red-700 dark:text-red-400">Catatan:</span>
-                <ul class="list-disc list-inside mt-2 space-y-1">
-                    <li>
-                        Nama lengkap tidak dapat diubah setelah diisi. Hanya
-                        <span class="font-medium text-indigo-600 dark:text-indigo-400">Admin</span>
-                        yang dapat mengubahnya.
-                    </li>
-                </ul>
-            </div>
 
             {{-- Tombol Simpan --}}
             <div class="flex items-center justify-end mt-10 gap-5">

@@ -12,50 +12,69 @@ class LaporanSertifikatController extends Controller
      */
     public function index(Request $request)
     {
-        $q = $request->input('q');
-        $company = $request->input('company');
-        $branch = $request->input('branch');
-        $sort = $request->input('sort', 'latest');
-        $perPage = (int) $request->input('per_page', 15);
+        $query = CertificateAward::with(['user', 'folder']);
 
-        // Ambil sertifikat dengan pagination dan filter
-        $sertifikats = CertificateAward::with(['user'])
-            ->when($q, function ($query, $q) {
-                return $query->whereHas('user', function ($qUser) use ($q) {
-                    $qUser->where('name', 'like', '%' . $q . '%')
-                        ->orWhere('email', 'like', '%' . $q . '%');
-                });
-            })
-            ->when($company, function ($query, $company) {
-                return $query->whereHas('user', function ($qUser) use ($company) {
-                    $qUser->where('nama_perusahaan', $company);
-                });
-            })
-            ->when($branch, function ($query, $branch) {
-                return $query->whereHas('user', function ($qUser) use ($branch) {
-                    $qUser->where('cabang', $branch);
-                });
-            })
-            ->when($sort === 'latest', function ($query) {
-                return $query->orderByDesc('awarded_at');
-            })
-            ->when($sort === 'oldest', function ($query) {
-                return $query->orderBy('awarded_at');
-            })
-            ->when($sort === 'name_asc', function ($query) {
-                return $query->join('users', 'certificate_awards.user_id', '=', 'users.id')
-                    ->orderBy('users.name')
-                    ->select('certificate_awards.*');
-            })
-            ->when($sort === 'name_desc', function ($query) {
-                return $query->join('users', 'certificate_awards.user_id', '=', 'users.id')
-                    ->orderByDesc('users.name')
-                    ->select('certificate_awards.*');
-            })
-            ->paginate($perPage);
+        // Filter berdasarkan pencarian nama
+        if ($request->filled('q')) {
+            $query->whereHas('user', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->q . '%');
+            });
+        }
 
-        return view('LaporanSertifikat.index', compact('sertifikats'));
+        // Filter berdasarkan perusahaan
+        if ($request->filled('company')) {
+            $query->whereHas('user', function ($q) use ($request) {
+                $q->where('role', $request->company);
+            });
+        }
+
+        // Sorting
+        $sort = $request->get('sort', 'latest');
+        switch ($sort) {
+            case 'oldest':
+                $query->orderBy('awarded_at', 'asc');
+                break;
+            case 'highest':
+                $query->orderBy('average_score', 'desc');
+                break;
+            case 'lowest':
+                $query->orderBy('average_score', 'asc');
+                break;
+            case 'name_asc':
+                $query->join('users', 'certificate_awards.user_id', '=', 'users.id')
+                    ->orderBy('users.name', 'asc');
+                break;
+            case 'name_desc':
+                $query->join('users', 'certificate_awards.user_id', '=', 'users.id')
+                    ->orderBy('users.name', 'desc');
+                break;
+            case 'awarded_asc':
+                $query->orderBy('awarded_at', 'asc');
+                break;
+            case 'awarded_desc':
+                $query->orderBy('awarded_at', 'desc');
+                break;
+            default:
+                $query->orderBy('awarded_at', 'desc');
+                break;
+        }
+
+        // Pagination
+        $perPage = $request->get('per_page', 20);
+        $sertifikats = $query->paginate($perPage);
+
+        // Aggregates untuk ringkasan
+        $aggregates = CertificateAward::selectRaw('
+            COUNT(*) as total,
+            AVG(average_score) as avg_score,
+            MAX(average_score) as max_score,
+            MIN(average_score) as min_score
+        ')->first();
+
+        return view('LaporanSertifikat.index', compact('sertifikats', 'aggregates'));
     }
+
+    // Method lainnya masih kosong (bisa dihapus jika tidak dipakai)
 
     public function create()
     {

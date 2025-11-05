@@ -11,11 +11,17 @@ class JadwalAbsensiController extends Controller
     /**
      * Menampilkan semua jadwal absensi.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $jadwals = JadwalAbsensi::orderBy('tanggal', 'desc')->get();
+        $search = $request->get('search');
+        $jadwals = JadwalAbsensi::query()
+            ->when($search, function ($query) use ($search) {
+                $query->where('title', 'like', '%' . $search . '%');
+            })
+            ->orderBy('tanggal', 'desc')
+            ->get();
         $postTestSessions = PostTestSession::all(); // Ambil semua sesi post-test
-        return view('jadwal.index', compact('jadwals', 'postTestSessions'));
+        return view('jadwal.index', compact('jadwals', 'postTestSessions', 'search'));
     }
 
     /**
@@ -45,7 +51,7 @@ class JadwalAbsensiController extends Controller
             'is_open' => false, // default tertutup
         ]);
 
-        return  redirect()->route('absensi.index')->with('Alert', 'Jadwal absensi berhasil ditambahkan.');
+        return redirect()->route('absensi.index')->with('Alert', 'Jadwal absensi berhasil ditambahkan.');
     }
 
     /**

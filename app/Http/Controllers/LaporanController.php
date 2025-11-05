@@ -32,7 +32,7 @@ class LaporanController extends Controller
                     });
             })
             ->orderByDesc('created_at')
-            ->paginate(15)
+            ->paginate(10)
             ->appends(['search' => $search]); // agar pagination menyimpan kata kunci pencarian
 
         return view('laporan.index', compact('laporans'));

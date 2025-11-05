@@ -70,17 +70,6 @@
                                     <a href="{{ route('admin.edit', $item->id) }}"
                                         class="w-full px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600">Edit</a>
 
-                                    @if ($item->email_verified_at == null && auth()->user()->id !== $item->id)
-                                        <form action="{{ route('admin.verify', $item->id) }}" method="POST" class="w-full">
-                                            @csrf
-                                            @method('PATCH')
-                                            <button type="submit"
-                                                class="w-full px-3 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600">
-                                                Verifikasi
-                                            </button>
-                                        </form>
-                                    @endif
-
                                     @if (auth()->user()->id !== $item->id)
                                         <button type="button"
                                             onclick="openDeleteModal({{ $item->id }}, '{{ $item->name }}')"

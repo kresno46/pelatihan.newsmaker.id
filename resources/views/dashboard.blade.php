@@ -34,9 +34,7 @@
                     'value' => $jumlahPelatihan,
                     'suffix' => ' Pelatihan',
                     'icon' => 'fa-solid fa-certificate',
-                    'bg_class' => 'bg-emerald-500',
-                    'text_class' => 'text-white',
-                    'border_class' => 'border-emerald-500',
+                    'color' => 'emerald',
                     'route' => 'post-test.index',
                 ],
                 [
@@ -44,9 +42,7 @@
                     'value' => $jumlahJadwalAbsensi,
                     'suffix' => ' Jadwal',
                     'icon' => 'fa-solid fa-list-check',
-                    'bg_class' => 'bg-pink-500',
-                    'text_class' => 'text-white',
-                    'border_class' => 'border-pink-500',
+                    'color' => 'pink',
                     'route' => 'AbsensiUser.index',
                 ],
                 [
@@ -54,9 +50,7 @@
                     'value' => $jumlahAbsensiTerisi,
                     'suffix' => ' Terisi',
                     'icon' => 'fa-solid fa-pen-to-square',
-                    'bg_class' => 'bg-violet-500',
-                    'text_class' => 'text-white',
-                    'border_class' => 'border-violet-500',
+                    'color' => 'violet',
                     'route' => 'AbsensiUser.index',
                 ],
                 [
@@ -64,9 +58,7 @@
                     'value' => $jumlahSession,
                     'suffix' => ' Post Test',
                     'icon' => 'fa-solid fa-question',
-                    'bg_class' => 'bg-red-500',
-                    'text_class' => 'text-white',
-                    'border_class' => 'border-red-500',
+                    'color' => 'red',
                     'route' => 'post-test.index',
                 ],
                 [
@@ -74,9 +66,7 @@
                     'value' => $riwayatUserLogin,
                     'suffix' => ' Kuis',
                     'icon' => 'fa-solid fa-check',
-                    'bg_class' => 'bg-green-500',
-                    'text_class' => 'text-white',
-                    'border_class' => 'border-green-500',
+                    'color' => 'green',
                     'route' => 'riwayat.index',
                 ],
                 [
@@ -84,9 +74,7 @@
                     'value' => $jumlahSertifikatSelesai,
                     'suffix' => ' Sertifikat',
                     'icon' => 'fa-solid fa-certificate',
-                    'bg_class' => 'bg-orange-500',
-                    'text_class' => 'text-white',
-                    'border_class' => 'border-orange-500',
+                    'color' => 'orange',
                     'route' => 'sertifikat.index',
                 ],
             ];
@@ -96,9 +84,7 @@
                     'value' => $jumlahUser,
                     'suffix' => ' User',
                     'icon' => 'fa-solid fa-users',
-                    'bg_class' => 'bg-purple-500',
-                    'text_class' => 'text-white',
-                    'border_class' => 'border-purple-500',
+                    'color' => 'purple',
                     'route' => 'trainer.index',
                 ];
                 $cards[] = [
@@ -106,9 +92,7 @@
                     'value' => $jumlahAdmin,
                     'suffix' => ' Admin',
                     'icon' => 'fa-solid fa-user-shield',
-                    'bg_class' => 'bg-indigo-500',
-                    'text_class' => 'text-white',
-                    'border_class' => 'border-indigo-500',
+                    'color' => 'indigo',
                     'route' => 'admin.index',
                 ];
             }
@@ -116,10 +100,11 @@
 
         @foreach ($cards as $card)
             <div
-                class="bg-white dark:bg-gray-800 border-l-4 {{ $card['border_class'] }} rounded-lg shadow transform transition duration-300 hover:scale-105 hover:shadow-xl cursor-pointer">
+                class="bg-white dark:bg-gray-800 border-l-4 border-{{ $card['color'] }}-500 rounded-lg shadow transform transition duration-300 hover:scale-105 hover:shadow-xl cursor-pointer">
                 <a href="{{ route($card['route']) }}">
                     <div class="flex items-center p-5">
-                        <div class="{{ $card['text_class'] }} px-6 py-5 {{ $card['bg_class'] }} rounded-full">
+                        <div
+                            class="text-{{ $card['color'] }}-500 px-6 py-5 bg-{{ $card['color'] }}-100 dark:bg-{{ $card['color'] }}-900 rounded-full">
                             <i class="{{ $card['icon'] }} text-2xl"></i>
                         </div>
                         <div class="ml-4">
@@ -136,96 +121,160 @@
         @endforeach
     </div>
 
-    @if (Auth::check() && Auth::user()->role === 'Admin')
-        <!-- Graphs Section -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-            <!-- Absensi Graph -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Grafik Absensi</h3>
-                    <a href="{{ route('absensi.index') }}"
-                        class="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">Lihat
-                        Lainnya</a>
-                </div>
-                <div class="relative h-64">
-                    <canvas id="absensiChart"></canvas>
-                </div>
+    <!-- Grafik Section -->
+    <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Grafik Absensi Per Jadwal -->
+        <div
+            class="bg-white dark:bg-gray-800 border rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow duration-300">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-medium text-gray-800 dark:text-white">Absensi Per Tanggal</h3>
+                <a href="{{ route('AbsensiUser.index') }}"
+                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-md transition-colors duration-200">
+                    Lihat Lainnya...
+                    <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </a>
             </div>
-
-            <!-- Post Test Graph -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Grafik Post Test</h3>
-                    <a href="{{ route('posttest.index') }}"
-                        class="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">Lihat
-                        Lainnya</a>
-                </div>
-                <div class="relative h-64">
-                    <canvas id="postTestChart"></canvas>
-                </div>
+            <div class="h-64">
+                <canvas id="absensiChart"></canvas>
             </div>
         </div>
 
-        <!-- Certificate Awards Table -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mt-8">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-semibold text-gray-800 dark:text-white">Laporan Sertifikat</h3>
-                <a href="{{ route('LaporanSertifikat.index') }}"
-                    class="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200">Lihat
-                    Lainnya →</a>
+        <!-- Grafik Post Test Per Tanggal -->
+        <div
+            class="bg-white dark:bg-gray-800 border rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow duration-300">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-medium text-gray-800 dark:text-white">Post Test Per Tanggal</h3>
+                <a href="{{ route('post-test.index') }}"
+                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-red-600 hover:text-red-800 hover:bg-red-50 rounded-md transition-colors duration-200">
+                    Lihat Lainnya...
+                    <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </a>
             </div>
-            <div class="overflow-x-auto">
-                <table class="w-full min-w-[700px] text-sm text-center table-auto">
-                    <thead class="bg-gray-600 text-white dark:bg-gray-700">
-                        <tr>
-                            <th class="px-4 py-3 rounded-l-lg">#</th>
-                            <th class="px-4 py-3">Nama</th>
-                            <th class="px-4 py-3">Batch</th>
-                            <th class="px-4 py-3">Nilai</th>
-                            <th class="px-4 py-3 rounded-r-lg">Tanggal</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($certificateAwards as $index => $certificate)
-                            <tr
-                                class="{{ $loop->odd ? 'bg-white dark:bg-gray-800' : 'bg-gray-100 dark:bg-gray-900' }} border-b border-gray-300 dark:border-gray-700">
-                                <td class="px-4 py-3 text-gray-900 dark:text-gray-100 font-semibold">{{ $index + 1 }}
-                                </td>
-                                <td class="px-4 py-3 text-gray-900 dark:text-gray-100">
-                                    {{ $certificate->user->name ?? '-' }}</td>
-                                <td class="px-4 py-3 text-gray-900 dark:text-gray-100">
-                                    {{ $certificate->batch_number ?? '-' }}</td>
-                                <td class="px-4 py-3 text-gray-900 dark:text-gray-100">
-                                    {{ $certificate->average_score }}/100</td>
-                                <td class="px-4 py-3 text-gray-900 dark:text-gray-100">
-                                    {{ $certificate->awarded_at ? \Carbon\Carbon::parse($certificate->awarded_at)->translatedFormat('d F Y, H:i') : '-' }}
-                                </td>
-                            </tr>
-                        @empty
+            <div class="h-64">
+                <canvas id="postTestChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sertifikat Terbaru Section -->
+    <div class="mt-8">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white flex items-center">
+                        <i class="fas fa-certificate text-blue-500 mr-2"></i>
+                        Sertifikat Terbaru
+                    </h3>
+                    <a href="{{ route('LaporanSertifikat.index') }}"
+                        class="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20 rounded-lg transition-colors duration-200">
+                        Lihat Semua
+                        <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            @if ($latestCertificates->isEmpty())
+                <div class="text-center py-12 text-gray-600 dark:text-gray-300">
+                    <i class="fas fa-certificate text-4xl text-gray-300 dark:text-gray-600 mb-4"></i>
+                    <p>Belum ada sertifikat yang diterbitkan.</p>
+                </div>
+            @else
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead class="bg-gray-50 dark:bg-gray-900/40">
                             <tr>
-                                <td colspan="5" class="px-4 py-4 text-center text-gray-500 dark:text-gray-400">
-                                    Belum ada pengguna yang mengunduh sertifikat.
-                                </td>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    Peserta
+                                </th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    Perusahaan
+                                </th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    Nilai
+                                </th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    Tanggal Sertifikat
+                                </th>
                             </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                            @foreach ($latestCertificates as $certificate)
+                                @php
+                                    switch ($certificate->user->role ?? '') {
+                                        case 'Trainer (SGB)':
+                                            $perusahaan = 'PT Solid Gold Berjangka';
+                                            break;
+                                        case 'Trainer (RFB)':
+                                            $perusahaan = 'PT Rifan Financindo Berjangka';
+                                            break;
+                                        case 'Trainer (EWF)':
+                                            $perusahaan = 'PT Equity World Futures';
+                                            break;
+                                        case 'Trainer (BPF)':
+                                            $perusahaan = 'PT Best Profit Futures';
+                                            break;
+                                        case 'Trainer (KPF)':
+                                            $perusahaan = 'PT Kontak Perkasa Futures';
+                                            break;
+                                        default:
+                                            $perusahaan = '-';
+                                            break;
+                                    }
+                                @endphp
+                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-900/30">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div
+                                                class="w-8 h-8 bg-blue-100 dark:bg-blue-800 rounded-full flex items-center justify-center mr-3">
+                                                <i class="fas fa-user text-blue-600 dark:text-blue-400"></i>
+                                            </div>
+                                            <div>
+                                                <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                                    {{ $certificate->user->name ?? '-' }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                                        {{ $perusahaan }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100">
+                                            {{ $certificate->average_score }}/100
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                                        {{ optional($certificate->awarded_at)->format('d F Y - H:i') }}
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
         </div>
-    @endif
-@endsection
+    </div>
 
-@section('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        // Counter animation
         document.addEventListener("DOMContentLoaded", () => {
-            // Counter animation
             const counters = document.querySelectorAll('.counter');
             counters.forEach(counter => {
                 const updateCount = () => {
                     const target = +counter.getAttribute('data-target');
                     const count = +counter.innerText;
-                    const increment = Math.ceil(target / 50);
+                    const increment = Math.ceil(target / 50); // speed
 
                     if (count < target) {
                         counter.innerText = count + increment;
@@ -237,81 +286,156 @@
                 updateCount();
             });
 
-            @if (Auth::check() && Auth::user()->role === 'Admin')
-                // ===== Fungsi Bikin Grafik Chart.js =====
-                function createChart(canvasId, chartType, labels, data, label, colors) {
-                    const ctx = document.getElementById(canvasId);
-                    if (!ctx) return;
+            // Pastikan Chart.js tersedia sebelum membuat chart
+            if (typeof Chart !== 'undefined') {
+                // Konfigurasi umum untuk chart
+                Chart.defaults.font.family = "'Inter', sans-serif";
+                Chart.defaults.font.size = 12;
+                Chart.defaults.color = '#6b7280';
 
-                    new Chart(ctx, {
-                        type: chartType,
+                // Grafik Absensi Per Tanggal (Bar Chart)
+                const absensiCtx = document.getElementById('absensiChart');
+                if (absensiCtx) {
+                    new Chart(absensiCtx.getContext('2d'), {
+                        type: 'bar',
                         data: {
-                            labels: labels,
+                            labels: @json($absensiLabels),
                             datasets: [{
-                                label: label,
-                                data: data,
-                                backgroundColor: colors.background,
-                                borderColor: colors.border,
-                                borderWidth: 2,
-                                fill: chartType === 'line',
-                                tension: 0.3,
-                                pointRadius: 4,
-                                pointHoverRadius: 6,
+                                label: 'Absensi',
+                                data: @json($absensiData),
+                                backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                                borderColor: 'rgba(59, 130, 246, 1)',
+                                borderWidth: 0,
+                                borderRadius: 4,
+                                borderSkipped: false,
                             }]
                         },
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                tooltip: {
+                                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                    titleColor: '#fff',
+                                    bodyColor: '#fff',
+                                    cornerRadius: 6,
+                                    displayColors: false
+                                }
+                            },
                             scales: {
+                                x: {
+                                    grid: {
+                                        display: false
+                                    },
+                                    ticks: {
+                                        color: '#9ca3af',
+                                        font: {
+                                            size: 11
+                                        }
+                                    }
+                                },
                                 y: {
                                     beginAtZero: true,
+                                    grid: {
+                                        color: 'rgba(156, 163, 175, 0.1)',
+                                        drawBorder: false
+                                    },
                                     ticks: {
+                                        color: '#9ca3af',
+                                        font: {
+                                            size: 11
+                                        },
                                         stepSize: 1
                                     }
                                 }
                             },
-                            plugins: {
-                                legend: {
-                                    display: true,
-                                    labels: {
-                                        color: '#374151' // abu gelap
-                                    }
-                                },
-                                tooltip: {
-                                    mode: 'index',
-                                    intersect: false,
-                                },
-                            },
+                            elements: {
+                                bar: {
+                                    borderRadius: 4
+                                }
+                            }
                         }
                     });
                 }
 
-                // ===== Data dari Controller =====
-                const absensiData = @json($absensiData);
-                const postTestData = @json($postTestData);
-
-                // Jika data kosong, tampilkan minimal label agar chart tidak error
-                const absensiLabels = Object.keys(absensiData).length ? Object.keys(absensiData) : [
-                    'Tidak ada data'
-                ];
-                const absensiValues = Object.values(absensiData).length ? Object.values(absensiData) : [0];
-
-                const postTestLabels = Object.keys(postTestData).length ? Object.keys(postTestData) : [
-                    'Tidak ada data'
-                ];
-                const postTestValues = Object.values(postTestData).length ? Object.values(postTestData) : [0];
-
-                // ===== Buat Chart =====
-                createChart('absensiChart', 'line', absensiLabels, absensiValues, 'Absensi', {
-                    background: 'rgba(16, 185, 129, 0.3)', // hijau toska transparan
-                    border: 'rgb(16, 185, 129)',
-                });
-
-                createChart('postTestChart', 'bar', postTestLabels, postTestValues, 'Post Test', {
-                    background: 'rgba(239, 68, 68, 0.3)', // merah muda transparan
-                    border: 'rgb(239, 68, 68)',
-                });
-            @endif
+                // Grafik Post Test Per Tanggal (Line Chart)
+                const postTestCtx = document.getElementById('postTestChart');
+                if (postTestCtx) {
+                    new Chart(postTestCtx.getContext('2d'), {
+                        type: 'line',
+                        data: {
+                            labels: @json($postTestLabels),
+                            datasets: [{
+                                label: 'Post Test',
+                                data: @json($postTestData),
+                                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                                borderColor: 'rgba(239, 68, 68, 1)',
+                                borderWidth: 2,
+                                fill: true,
+                                tension: 0.4,
+                                pointBackgroundColor: 'rgba(239, 68, 68, 1)',
+                                pointBorderColor: '#fff',
+                                pointBorderWidth: 2,
+                                pointRadius: 4,
+                                pointHoverRadius: 6
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                tooltip: {
+                                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                    titleColor: '#fff',
+                                    bodyColor: '#fff',
+                                    cornerRadius: 6,
+                                    displayColors: false
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    grid: {
+                                        display: false
+                                    },
+                                    ticks: {
+                                        color: '#9ca3af',
+                                        font: {
+                                            size: 11
+                                        }
+                                    }
+                                },
+                                y: {
+                                    beginAtZero: true,
+                                    grid: {
+                                        color: 'rgba(156, 163, 175, 0.1)',
+                                        drawBorder: false
+                                    },
+                                    ticks: {
+                                        color: '#9ca3af',
+                                        font: {
+                                            size: 11
+                                        },
+                                        stepSize: 1
+                                    }
+                                }
+                            },
+                            elements: {
+                                point: {
+                                    hoverBorderWidth: 3
+                                }
+                            }
+                        }
+                    });
+                }
+            } else {
+                console.error('Chart.js tidak tersedia');
+            }
         });
     </script>
 @endsection

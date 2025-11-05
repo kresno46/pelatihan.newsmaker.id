@@ -27,26 +27,59 @@ class AbsensiAdminController extends Controller
             'Trainer (EWF)',
         ];
 
-        $selectedRole = $request->query('role');
-        $search = $request->query('search');
-        $sortBy = $request->query('sort_by', 'name');  // Default to 'name' sorting
+        $query = Absensi::with('user')->where('jadwal_id', $idJadwal);
 
-        $absensiList = Absensi::with('user')
-            ->where('jadwal_id', $idJadwal)
-            ->when($selectedRole, function ($query) use ($selectedRole) {
-                return $query->whereHas('user', function ($query) use ($selectedRole) {
-                    $query->where('role', $selectedRole);
-                });
-            })
-            ->when($search, function ($query) use ($search) {
-                return $query->whereHas('user', function ($query) use ($search) {
-                    $query->where('name', 'like', '%' . $search . '%');
-                });
-            })
-            ->orderBy(User::select('name')->whereColumn('users.id', 'absensis.user_id'), 'asc')  // Correct the sorting
-            ->get();
+        // Filter berdasarkan pencarian nama
+        if ($request->filled('q')) {
+            $query->whereHas('user', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->q . '%');
+            });
+        }
 
-        return view('AbsensiAdmin.index', compact('jadwal', 'rolesPT', 'selectedRole', 'absensiList', 'search', 'sortBy'));
+        // Filter berdasarkan perusahaan
+        if ($request->filled('company')) {
+            $query->whereHas('user', function ($q) use ($request) {
+                $q->where('role', $request->company);
+            });
+        }
+
+        // Sorting
+        $sort = $request->get('sort', 'latest');
+        switch ($sort) {
+            case 'oldest':
+                $query->orderBy('waktu_absen', 'asc');
+                break;
+            case 'name_asc':
+                $query->join('users', 'absensis.user_id', '=', 'users.id')
+                    ->orderBy('users.name', 'asc');
+                break;
+            case 'name_desc':
+                $query->join('users', 'absensis.user_id', '=', 'users.id')
+                    ->orderBy('users.name', 'desc');
+                break;
+            case 'company_asc':
+                $query->join('users', 'absensis.user_id', '=', 'users.id')
+                    ->orderBy('users.role', 'asc');
+                break;
+            case 'company_desc':
+                $query->join('users', 'absensis.user_id', '=', 'users.id')
+                    ->orderBy('users.role', 'desc');
+                break;
+            default:
+                $query->orderBy('waktu_absen', 'desc');
+                break;
+        }
+
+        // Pagination
+        $perPage = $request->get('per_page', 20);
+        $absensiList = $query->paginate($perPage);
+
+        // Aggregates untuk ringkasan
+        $aggregates = Absensi::where('jadwal_id', $idJadwal)->selectRaw('
+            COUNT(*) as total
+        ')->first();
+
+        return view('AbsensiAdmin.index', compact('jadwal', 'rolesPT', 'absensiList', 'aggregates'));
     }
 
     public function delete($idJadwal, $idAbsensi)

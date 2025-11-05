@@ -3,159 +3,179 @@
 @section('namePage', $jadwal->title)
 
 @section('content')
-    <div class="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-lg">
-        <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center gap-4">
-                <a href="{{ route('absensi.index') }}" class="text-lg text-gray-800 dark:text-gray-200">
-                    <i class="fa-solid fa-circle-xmark"></i>
-                </a>
-                <h1 class="text-2xl font-bold text-gray-800 dark:text-white">
+    <header class="w-full bg-white dark:bg-gray-800 shadow rounded-lg mb-5 p-4 sm:p-6">
+        <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                    Laporan Absensi
+                </h2>
+                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
                     {{ $jadwal->title ?? 'Tanpa Nama' }}
-                </h1>
+                </p>
             </div>
 
-            <div class="flex justify-end gap-4 text-sm">
-                <button onclick="openFilterModal()"
-                    class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-all duration-300">
-                    <i class="fa-solid fa-filter"></i> Filter
-                </button>
+            <div class="flex items-center gap-2">
+                <a href="{{ route('absensi.index') }}"
+                    class="px-3 py-2 text-sm rounded border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                    Kembali
+                </a>
 
-                <a href="{{ route('absensi.downloadExcel', $jadwal->id) }}"
-                    class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-all duration-300">
+                {{-- Export bawa filter q & sort & company agar konsisten --}}
+                <a href="{{ route('absensi.downloadExcel', $jadwal->id) }}?q={{ request('q') }}&sort={{ request('sort') }}&company={{ request('company') }}"
+                    class="px-3 py-2 text-sm rounded bg-green-500 hover:bg-green-600 text-white transition">
                     <i class="fa-solid fa-file-excel"></i> Excel
                 </a>
 
-                <a href="{{ route('absensi.downloadPdf', $jadwal->id) }}"
-                    class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-all duration-300">
+                <a href="{{ route('absensi.downloadPdf', $jadwal->id) }}?q={{ request('q') }}&sort={{ request('sort') }}&company={{ request('company') }}"
+                    class="px-3 py-2 text-sm rounded bg-red-500 hover:bg-red-600 text-white transition">
                     <i class="fa-solid fa-file-pdf"></i> PDF
                 </a>
             </div>
         </div>
+    </header>
 
-        <!-- Modal Filter -->
-        <div id="filterModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 z-50">
-            <div class="flex justify-center items-center h-full">
-                <div class="bg-white dark:bg-gray-800 p-5 rounded-lg w-1/3 shadow-lg">
-                    <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Filter Absensi</h2>
-
-                    <form method="GET" action="{{ route('absensiAdmin.index', $jadwal->id) }}">
-                        @csrf
-
-                        <div class="mb-4">
-                            <label for="search"
-                                class="block text-sm font-medium text-gray-700 dark:text-neutral-300">Search</label>
-                            <input type="text" name="search" id="search" value="{{ request('search') }}"
-                                class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-gray-900 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                                placeholder="Search by name...">
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="sort_by" class="block text-sm font-medium text-gray-700 dark:text-neutral-300">Sort
-                                By</label>
-                            <select name="sort_by" id="sort_by"
-                                class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-gray-900 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
-                                <option value="name" {{ request('sort_by') == 'name' ? 'selected' : '' }}>Name</option>
-                                <option value="role" {{ request('sort_by') == 'role' ? 'selected' : '' }}>Role</option>
-                                <option value="time" {{ request('sort_by') == 'time' ? 'selected' : '' }}>Time</option>
-                            </select>
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="role"
-                                class="block text-sm font-medium text-gray-700 dark:text-neutral-300">Role</label>
-                            <select name="role" id="role"
-                                class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-gray-900 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
-                                <option value="">All Roles</option>
-                                @foreach ($rolesPT as $role)
-                                    <option value="{{ $role }}" {{ request('role') == $role ? 'selected' : '' }}>
-                                        {{ $role }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="flex justify-end gap-4 text-sm">
-                            <a href="{{ route('absensiAdmin.index', $jadwal->id) }}"
-                                class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-all duration-300">Reset</a>
-                            <button type="submit"
-                                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-all duration-300">Apply
-                                Filters</button>
-                            <button type="button" onclick="closeFilterModal()"
-                                class="bg-gray-300 hover:bg-gray-400 dark:bg-neutral-700 dark:hover:bg-neutral-600 text-gray-800 dark:text-white px-4 py-2 rounded-lg transition-all duration-300">Cancel</button>
-                        </div>
-                    </form>
-                </div>
+    {{-- Filter & Sort --}}
+    <div class="mb-4 p-4 sm:p-5 bg-white dark:bg-gray-800 rounded-xl shadow">
+        <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-3">
+            <div>
+                <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Cari Peserta</label>
+                <input type="text" name="q" value="{{ request('q') }}"
+                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"
+                    placeholder="Nama...">
             </div>
-        </div>
 
-        <div class="flex flex-col shadow-lg">
-            <div class="-m-1.5 overflow-x-auto">
-                <div class="p-1.5 min-w-full inline-block align-middle">
-                    <div class="border border-gray-200 rounded-lg overflow-hidden dark:border-neutral-700">
-                        <table class="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
-                            <thead class="bg-gray-200 dark:bg-neutral-700">
-                                <tr class="divide-x divide-gray-300 dark:divide-neutral-600">
-                                    <th
-                                        class="px-6 py-3 text-start text-xs font-medium text-gray-700 dark:text-neutral-300 uppercase">
-                                        Nama</th>
-                                    <th
-                                        class="px-6 py-3 text-start text-xs font-medium text-gray-700 dark:text-neutral-300 uppercase">
-                                        Email</th>
-                                    <th
-                                        class="px-6 py-3 text-start text-xs font-medium text-gray-700 dark:text-neutral-300 uppercase">
-                                        Role</th>
-                                    <th
-                                        class="px-6 py-3 text-start text-xs font-medium text-gray-700 dark:text-neutral-300 uppercase">
-                                        Cabang</th>
-                                    <th
-                                        class="px-6 py-3 text-start text-xs font-medium text-gray-700 dark:text-neutral-300 uppercase">
-                                        Waktu Absensi</th>
-                                    <th
-                                        class="px-6 py-3 text-end text-xs font-medium text-gray-700 dark:text-neutral-300 uppercase">
-                                        Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($absensiList as $item)
-                                    <tr
-                                        class="odd:bg-white even:bg-gray-100 hover:bg-gray-100 dark:odd:bg-neutral-800 dark:even:bg-neutral-700 dark:hover:bg-neutral-600 divide-x divide-gray-200 dark:divide-neutral-700 transition-all duration-100">
-                                        <td
-                                            class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-neutral-200">
-                                            {{ $item->user->name }}
-                                        </td>
-                                        <td
-                                            class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-neutral-200">
-                                            {{ $item->user->email }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">
-                                            {{ $item->user->nama_perusahaan }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">
-                                            {{ $item->user->cabang ?? '-' }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">
-                                            {{ \Carbon\Carbon::parse($item->waktu_absen)->locale('id')->translatedFormat('l, d F Y - H:i') }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
-                                            <button onclick="openModalDelete('{{ $item->id }}')"
-                                                class="text-red-500 hover:underline">
-                                                <i class="fa-solid fa-trash"></i> Hapus
-                                            </button>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="5"
-                                            class="px-6 py-4 text-center text-sm text-gray-500 dark:text-neutral-400">
-                                            Tidak ada data absensi.
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+            <div>
+                <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Perusahaan</label>
+                <select name="company"
+                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
+                    @php $company = request('company'); @endphp
+                    <option value="">Semua Perusahaan</option>
+                    <option value="Trainer (SGB)" {{ $company === 'Trainer (SGB)' ? 'selected' : '' }}>PT Solid Gold
+                        Berjangka</option>
+                    <option value="Trainer (RFB)" {{ $company === 'Trainer (RFB)' ? 'selected' : '' }}>PT Rifan Financindo
+                        Berjangka</option>
+                    <option value="Trainer (EWF)" {{ $company === 'Trainer (EWF)' ? 'selected' : '' }}>PT Equity World
+                        Futures</option>
+                    <option value="Trainer (BPF)" {{ $company === 'Trainer (BPF)' ? 'selected' : '' }}>PT Best Profit
+                        Futures</option>
+                    <option value="Trainer (KPF)" {{ $company === 'Trainer (KPF)' ? 'selected' : '' }}>PT Kontak Perkasa
+                        Futures</option>
+                </select>
             </div>
+
+            <div>
+                <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Urutkan</label>
+                <select name="sort"
+                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
+                    @php $sort = request('sort', 'latest'); @endphp
+                    <option value="latest" {{ $sort === 'latest' ? 'selected' : '' }}>Terbaru</option>
+                    <option value="oldest" {{ $sort === 'oldest' ? 'selected' : '' }}>Terlama</option>
+                    <option value="name_asc" {{ $sort === 'name_asc' ? 'selected' : '' }}>Nama A-Z</option>
+                    <option value="name_desc" {{ $sort === 'name_desc' ? 'selected' : '' }}>Nama Z-A</option>
+                    <option value="company_asc" {{ $sort === 'company_asc' ? 'selected' : '' }}>Perusahaan A-Z</option>
+                    <option value="company_desc" {{ $sort === 'company_desc' ? 'selected' : '' }}>Perusahaan Z-A</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Per Halaman</label>
+                @php $per = (int)request('per_page', 20); @endphp
+                <select name="per_page"
+                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
+                    @foreach ([20, 30, 50, 100, 200] as $n)
+                        <option value="{{ $n }}" {{ $per === $n ? 'selected' : '' }}>{{ $n }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="flex items-end gap-2 md:col-span-4">
+                <button type="submit"
+                    class="w-full md:w-auto px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm transition">
+                    Terapkan
+                </button>
+                <a href="{{ route('absensiAdmin.index', $jadwal->id) }}"
+                    class="w-full md:w-auto px-4 py-2 rounded border bg-red-500 hover:bg-red-600 text-white border-gray-300 dark:border-gray-600 text-sm dark:text-gray-200 dark:hover:bg-gray-700 transition">
+                    Reset
+                </a>
+            </div>
+        </form>
+    </div>
+
+    {{-- Ringkasan --}}
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+        @php
+            $agg = $aggregates ?? null;
+            $total = (int) ($agg->total ?? 0);
+        @endphp
+
+        <div class="p-4 bg-white dark:bg-gray-800 rounded-xl shadow">
+            <div class="text-xs text-gray-500 dark:text-gray-400">Total Absensi</div>
+            <div class="text-2xl font-semibold text-gray-900 dark:text-gray-100">{{ $total }}</div>
         </div>
+    </div>
+
+    {{-- Tabel Hasil --}}
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden">
+        @if ($absensiList->isEmpty())
+            <div class="text-center py-12 text-gray-600 dark:text-gray-300">
+                Tidak ada data absensi.
+            </div>
+        @else
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead class="bg-gray-50 dark:bg-gray-900/40">
+                        <tr>
+                            <th
+                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                #</th>
+                            <th
+                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Nama</th>
+                            <th
+                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Perusahaan</th>
+                            <th
+                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Cabang</th>
+                            <th
+                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Waktu Absensi</th>
+                            <th
+                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        @foreach ($absensiList as $index => $item)
+                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-900/30">
+                                <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                                    {{ ($absensiList->firstItem() ?? 1) + $index }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
+                                    {{ optional($item->user)->name ?? '—' }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                                    {{ optional($item->user)->nama_perusahaan ?? '—' }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                                    {{ optional($item->user)->cabang ?? '—' }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                                    {{ optional($item->waktu_absen)->format('Y-m-d H:i') }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                                    <button onclick="openModalDelete('{{ $item->id }}')"
+                                        class="text-red-600 dark:text-red-400 hover:underline">
+                                        Hapus
+                                    </button>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            {{-- Pagination --}}
+            <div class="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
+                {{ $absensiList->links() }}
+            </div>
+        @endif
     </div>
 
     <!-- Modal Delete (hanya satu) -->
@@ -191,14 +211,6 @@
 
 @section('scripts')
     <script>
-        function openFilterModal() {
-            document.getElementById('filterModal').classList.remove('hidden');
-        }
-
-        function closeFilterModal() {
-            document.getElementById('filterModal').classList.add('hidden');
-        }
-
         function openModalDelete(idAbsensi) {
             const idJadwal = "{{ request()->route('idJadwal') }}";
             const form = document.getElementById('deleteForm');

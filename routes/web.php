@@ -22,86 +22,47 @@ use App\Http\Controllers\SummernoteController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserCleanupController;
+use App\Models\Absensi;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('dashboard');
 
-    Route::prefix('ebook')->middleware(['auth', 'verified'])->group(function () {
+    Route::prefix('post-test')->middleware('auth', 'is_admin:Admin')->group(function () {
+        // routes sesi yang sudah kamu punya
+        Route::get('/', [QuizController::class, 'index'])->name('posttest.index');
+        Route::get('/tambah', [QuizController::class, 'create'])->name('posttest.create');
+        Route::post('/', [QuizController::class, 'store'])->name('posttest.store');
 
-        // 📁 Folder Routes
-        Route::get('/', [FolderController::class, 'index'])->name('folder.index');
+        Route::get('/{session}/edit', [QuizController::class, 'edit'])->name('posttest.edit');
+        Route::put('/{session}', [QuizController::class, 'update'])->name('posttest.update');
+        Route::delete('/{session}', [QuizController::class, 'destroy'])->name('posttest.destroy');
+        Route::post('/toggle-status/{slug}', [PostTestController::class, 'toggleStatus'])->name('posttest.toggle');
 
-        Route::middleware('is_admin:Admin')->group(function () {
-            Route::get('/create', [FolderController::class, 'create'])->name('folder.create');
-            Route::post('/store', [FolderController::class, 'store'])->name('folder.store');
-            Route::get('/{folderSlug}/edit', [FolderController::class, 'edit'])->name('folder.edit');
-            Route::put('/{folderSlug}', [FolderController::class, 'update'])->name('folder.update');
-            Route::delete('/{folderSlug}', [FolderController::class, 'destroy'])->name('folder.destroy');
-            // Manual sync from API
-            Route::post('/sync-from-api', [FolderController::class, 'syncFromApi'])->name('folder.sync');
-        });
 
-        // 📚 Ebook & Quiz Routes
-        Route::prefix('{folderSlug}')->middleware('profile.complete')->group(function () {
+        // REPORT
+        Route::get('/{session:slug}/report', [QuizController::class, 'report'])->name('posttest.report');
+        // (opsional) export CSV
+        Route::get('/{session:slug}/report/export', [QuizController::class, 'reportExport'])->name('posttest.report.export');
+        Route::delete('/{session:slug}/report/delete-all-failed', [QuizController::class, 'deleteAllFailed'])->name('posttest.report.deleteAllFailed');
+        Route::delete('/{session:slug}/report/{result}', [QuizController::class, 'deleteResult'])->name('posttest.report.delete');
 
-            // 📄 List eBook dalam Folder
-            Route::get('/', [EbookController::class, 'index'])->name('ebook.index');
-
-            // ➕ Admin - Kelola eBook
-            Route::middleware('is_admin:Admin')->group(function () {
-                Route::get('/create', [EbookController::class, 'create'])->name('ebook.create');
-                Route::post('/store', [EbookController::class, 'store'])->name('ebook.store');
-                Route::get('/{ebookSlug}/edit', [EbookController::class, 'edit'])->name('ebook.edit');
-                Route::put('/{ebookSlug}/update', [EbookController::class, 'update'])->name('ebook.update');
-                Route::delete('/{ebookSlug}/delete', [EbookController::class, 'destroy'])->name('ebook.destroy');
-            });
-
-            // 📄 Tampil Detail eBook
-            Route::get('/{ebookSlug}', [EbookController::class, 'show'])->name('ebook.show');
-
-            // 📥 Download eBook PDF
-            Route::get('/{ebookSlug}/download', [EbookController::class, 'download'])->name('ebook.download');
+        // === nested: /post-test/{session}/edit/question ===
+        Route::prefix('{session}/edit')->group(function () {
+            Route::post('/question', [PostTestController::class, 'questionStore'])
+                ->name('question.store');
+            Route::put('/question/{question}', [PostTestController::class, 'questionUpdate'])
+                ->name('question.update');
+            Route::delete('/question/{question}', [PostTestController::class, 'questionDestroy'])
+                ->name('question.destroy');
         });
     });
 
-    Route::prefix('post-test')
-        ->middleware(['auth', 'is_admin:Admin'])
-        ->name('posttest.')
-        ->group(function () {
-
-            // === CRUD Sesi Post-Test ===
-            Route::get('/', [QuizController::class, 'index'])->name('index');
-            Route::get('/tambah', [QuizController::class, 'create'])->name('create');
-            Route::post('/', [QuizController::class, 'store'])->name('store');
-
-            // Gunakan model binding berdasarkan slug
-            Route::get('/{session:slug}/edit', [QuizController::class, 'edit'])->name('edit');
-            Route::put('/{session:slug}', [QuizController::class, 'update'])->name('update');
-            Route::delete('/{session:slug}', [QuizController::class, 'destroy'])->name('destroy');
-
-            // Toggle status (gunakan controller PostTestController)
-            Route::post('/toggle-status/{session:slug}', [PostTestController::class, 'toggleStatus'])->name('toggle');
-
-            // === REPORT ===
-            Route::get('/{session:slug}/report', [QuizController::class, 'report'])->name('report');
-            Route::get('/{session:slug}/report/export', [QuizController::class, 'reportExport'])->name('report.export');
-            Route::delete('/{session:slug}/report/delete-all-failed', [QuizController::class, 'deleteAllFailed'])->name('report.deleteAllFailed');
-            Route::delete('/{session:slug}/report/{result}', [QuizController::class, 'deleteResult'])->name('report.delete');
-
-            // === NESTED: /post-test/{session:slug}/edit/question ===
-            Route::prefix('{session:slug}/edit')->group(function () {
-                Route::post('/question', [PostTestController::class, 'questionStore'])->name('question.store');
-                Route::put('/question/{question}', [PostTestController::class, 'questionUpdate'])->name('question.update');
-                Route::delete('/question/{question}', [PostTestController::class, 'questionDestroy'])->name('question.destroy');
-            });
-        });
-
     Route::prefix('posttest')->name('post-test.')->middleware('profile.complete')->group(function () {
         Route::get('/', [TestController::class, 'index'])->name('index');
-        Route::middleware('absensi')->middleware('check.patl')->group(function () {
-            Route::get('/{session}', [TestController::class, 'showQuiz'])->name('show');
-            Route::post('/{session}/submit', [TestController::class, 'submitQuiz'])->name('submit');
+        Route::middleware('absensi')->group(function () {
+            Route::get('/{slug}', [TestController::class, 'showQuiz'])->name('show');
+            Route::post('/{slug}/submit', [TestController::class, 'submitQuiz'])->name('submit');
         });
         Route::get('/result/{result}', [TestController::class, 'showResult'])->name('result');
     });
@@ -129,7 +90,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/store', [AdminController::class, 'store'])->name('admin.store');
             Route::get('/{id}/edit', [AdminController::class, 'edit'])->name('admin.edit');
             Route::put('/{id}', [AdminController::class, 'update'])->name('admin.update');
-            Route::patch('/{id}/verify', [AdminController::class, 'verify'])->name('admin.verify');
             Route::delete('/{id}', [AdminController::class, 'destroy'])->name('admin.destroy');
         });
     });
@@ -144,7 +104,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::put('/{id}', [UserController::class, 'update'])->name('trainer.update');
             Route::get('/{id}/show', [UserController::class, 'show'])->name('trainer.show');
             Route::delete('/{id}', [UserController::class, 'destroy'])->name('trainer.destroy');
-            Route::patch('/{id}/verify', [UserController::class, 'verify'])->name('trainer.verify');
         });
     });
 
@@ -159,10 +118,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::prefix('absensi')->group(function () {
                 Route::get('/', [JadwalAbsensiController::class, 'index'])->name('absensi.index');
                 Route::get('/create', [JadwalAbsensiController::class, 'create'])->name('absensi.create');
-                Route::get('/{id}/edit', [JadwalAbsensiController::class, 'edit'])->name('absensi.edit');
                 Route::post('/tambah', [JadwalAbsensiController::class, 'store'])->name('absensi.store');
+                Route::get('/{id}/edit', [JadwalAbsensiController::class, 'edit'])->name('absensi.edit');
                 Route::post('/{id}/toggle', [JadwalAbsensiController::class, 'toggle'])->name('absensi.toggle');
                 Route::put('/{id}/update', [JadwalAbsensiController::class, 'update'])->name('absensi.update');
+
                 Route::delete('/{id}/hapus', [JadwalAbsensiController::class, 'destroy'])->name('absensi.destroy');
 
                 Route::prefix('{idJadwal}')->group(function () {
