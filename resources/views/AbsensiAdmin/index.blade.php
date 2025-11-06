@@ -265,34 +265,46 @@
 @section('scripts')
     @php
         $kantorCabang = [
-            'Trainer (SGB)' => ['Jakarta', 'Semarang', 'Makassar'],
-            'Trainer (RFB)' => [
-                'Palembang',
-                'Balikpapan',
-                'Solo',
-                'Jakarta DBS Tower',
-                'Jakarta AXA Tower',
-                'Medan',
+            'Trainer (SGB)' => [
                 'Semarang',
-                'Surabaya Pakuwon',
-                'Surabaya Ciputra',
+                'Makassar',
+                'Jakarta – TCC Tower', // ditambahkan
+            ],
+
+            'Trainer (RFB)' => [
+                'Medan',
+                'Palembang',
+                'Semarang',
+                'Jakarta',
+                'Surabaya',
                 'Pekanbaru',
                 'Bandung',
+                'Solo',
                 'Yogyakarta',
+                'Balikpapan',
+                'Surabaya II',
+                'Jakarta - AXA Tower 1', // ditambahkan
+                'Jakarta - AXA Tower 2', // ditambahkan
+                'Jakarta - AXA Tower 3', // ditambahkan
+                'Jakarta – DBS Bank Tower', // ditambahkan
+                'Surabaya - Ciputra World Office Tower', // ditambahkan
+                'Surabaya - Pakuwon Tower', // ditambahkan
             ],
+
             'Trainer (EWF)' => [
-                'SCC Jakarta',
-                'Cyber 2 Jakarta',
-                'Surabaya Trilium',
+                'Surabaya Trillium',
                 'Manado',
+                'Jakarta',
                 'Semarang',
                 'Surabaya Praxis',
                 'Cirebon',
+                'SSC Jakarta', // ditambahkan
+                'Jakarta Cyber 2', // ditambahkan
             ],
+
             'Trainer (BPF)' => [
-                'Equity Tower Jakarta',
                 'Jambi',
-                'Jakarta - Pacific Place Mall',
+                'Jakarta – Pacific Place Mall',
                 'Pontianak',
                 'Malang',
                 'Surabaya',
@@ -302,8 +314,17 @@
                 'Banjarmasin',
                 'Bandar Lampung',
                 'Semarang',
+                'Jakarta - Equity Tower', // ditambahkan
             ],
-            'Trainer (KPF)' => ['Jakarta', 'Yogyakarta', 'Bali', 'Makassar', 'Bandung', 'Semarang'],
+
+            'Trainer (KPF)' => [
+                'Yogyakarta',
+                'Bali',
+                'Makassar',
+                'Bandung',
+                'Semarang',
+                'Jakarta - Plaza Marein', // ditambahkan
+            ],
         ];
     @endphp
 

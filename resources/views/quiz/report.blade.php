@@ -289,11 +289,62 @@
     <script>
         @php
             $kantorCabang = [
-                'PT Solid Gold Berjangka' => ['Jakarta', 'Semarang', 'Makassar'],
-                'PT Rifan Financindo Berjangka' => ['Palembang', 'Balikpapan', 'Solo', 'Jakarta DBS Tower', 'Jakarta AXA Tower', 'Medan', 'Semarang', 'Surabaya Pakuwon', 'Surabaya Ciputra', 'Pekanbaru', 'Bandung', 'Yogyakarta'],
-                'PT Equity World Futures' => ['SCC Jakarta', 'Cyber 2 Jakarta', 'Surabaya Trilium', 'Manado', 'Semarang', 'Surabaya Praxis', 'Cirebon'],
-                'PT Best Profit Futures' => ['Equity Tower Jakarta', 'Jambi', 'Jakarta - Pacific Place Mall', 'Pontianak', 'Malang', 'Surabaya', 'Medan', 'Bandung', 'Pekanbaru', 'Banjarmasin', 'Bandar Lampung', 'Semarang'],
-                'PT Kontak Perkasa Futures' => ['Jakarta', 'Yogyakarta', 'Bali', 'Makassar', 'Bandung', 'Semarang'],
+                'PT Solid Gold Berjangka' => [
+                    'Jakarta – TCC Tower', // tambahan
+                    'Semarang',
+                    'Makassar',
+                ],
+
+                'PT Rifan Financindo Berjangka' => [
+                    'Jakarta - AXA Tower 1', // tambahan
+                    'Jakarta - AXA Tower 2', // tambahan
+                    'Jakarta - AXA Tower 3', // tambahan
+                    'Jakarta – DBS Bank Tower', // tambahan
+                    'Bandung',
+                    'Solo',
+                    'Semarang',
+                    'Surabaya - Ciputra World Office Tower', // diperbaiki
+                    'Surabaya - Pakuwon Tower', // diperbaiki
+                    'Yogyakarta',
+                    'Pekanbaru',
+                    'Palembang',
+                    'Medan',
+                    'Balikpapan',
+                ],
+
+                'PT Equity World Futures' => [
+                    'SSC Jakarta', // diperbaiki
+                    'Jakarta Cyber 2', // diperbaiki
+                    'Surabaya Trillum', // diperbaiki
+                    'Manado',
+                    'Semarang',
+                    'Surabaya Praxis',
+                    'Cirebon',
+                ],
+
+                'PT Best Profit Futures' => [
+                    'Jakarta - Equity Tower', // tambahan
+                    'Jambi',
+                    'Jakarta - Pacific Place Mall',
+                    'Pontianak',
+                    'Malang',
+                    'Surabaya',
+                    'Medan',
+                    'Bandung',
+                    'Pekanbaru',
+                    'Banjarmasin',
+                    'Bandar Lampung',
+                    'Semarang',
+                ],
+
+                'PT Kontak Perkasa Futures' => [
+                    'Jakarta - Plaza Marein', // tambahan
+                    'Yogyakarta',
+                    'Bali',
+                    'Makassar',
+                    'Bandung',
+                    'Semarang',
+                ],
             ];
         @endphp
 

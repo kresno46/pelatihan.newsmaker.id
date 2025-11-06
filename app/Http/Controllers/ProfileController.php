@@ -26,11 +26,66 @@ class ProfileController extends Controller
     private function getBranchesByRole($role)
     {
         $branches = [
-            'Trainer (SGB)' => ['Semarang', 'Makassar'],
-            'Trainer (RFB)' => ['Medan', 'Palembang', 'Semarang', 'Jakarta', 'Surabaya', 'Pekanbaru', 'Bandung', 'Solo', 'Yogyakarta', 'Balikpapan', 'Surabaya II'],
-            'Trainer (EWF)' => ['Surabaya Trillium', 'Manado', 'Jakarta', 'Semarang', 'Surabaya Praxis', 'Cirebon'],
-            'Trainer (BPF)' => ['Jambi', 'Jakarta – Pacific Place Mall', 'Pontianak', 'Malang', 'Surabaya', 'Medan', 'Bandung', 'Pekanbaru', 'Banjarmasin', 'Bandar Lampung', 'Semarang'],
-            'Trainer (KPF)' => ['Yogyakarta', 'Bali', 'Makassar', 'Bandung', 'Semarang'],
+            'Trainer (SGB)' => [
+                'Semarang',
+                'Makassar',
+                'Jakarta – TCC Tower', // ditambahkan
+            ],
+
+            'Trainer (RFB)' => [
+                'Medan',
+                'Palembang',
+                'Semarang',
+                'Jakarta',
+                'Surabaya',
+                'Pekanbaru',
+                'Bandung',
+                'Solo',
+                'Yogyakarta',
+                'Balikpapan',
+                'Surabaya II',
+                'Jakarta - AXA Tower 1', // ditambahkan
+                'Jakarta - AXA Tower 2', // ditambahkan
+                'Jakarta - AXA Tower 3', // ditambahkan
+                'Jakarta – DBS Bank Tower', // ditambahkan
+                'Surabaya - Ciputra World Office Tower', // ditambahkan
+                'Surabaya - Pakuwon Tower', // ditambahkan
+            ],
+
+            'Trainer (EWF)' => [
+                'Surabaya Trillium',
+                'Manado',
+                'Jakarta',
+                'Semarang',
+                'Surabaya Praxis',
+                'Cirebon',
+                'SSC Jakarta', // ditambahkan
+                'Jakarta Cyber 2', // ditambahkan
+            ],
+
+            'Trainer (BPF)' => [
+                'Jambi',
+                'Jakarta – Pacific Place Mall',
+                'Pontianak',
+                'Malang',
+                'Surabaya',
+                'Medan',
+                'Bandung',
+                'Pekanbaru',
+                'Banjarmasin',
+                'Bandar Lampung',
+                'Semarang',
+                'Jakarta - Equity Tower', // ditambahkan
+            ],
+
+            'Trainer (KPF)' => [
+                'Yogyakarta',
+                'Bali',
+                'Makassar',
+                'Bandung',
+                'Semarang',
+                'Jakarta - Plaza Marein', // ditambahkan
+            ],
         ];
 
         return $branches[$role] ?? [];

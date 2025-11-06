@@ -667,15 +667,66 @@
 
         // Dynamic cabang options based on company selection
         const kantorCabang = {
-            'Trainer (SGB)': ['Semarang', 'Makassar'],
-            'Trainer (RFB)': ['Medan', 'Palembang', 'Semarang', 'Jakarta', 'Surabaya', 'Pekanbaru', 'Bandung', 'Solo',
-                'Yogyakarta', 'Balikpapan', 'Surabaya II'
+            'Trainer (SGB)': [
+                'Semarang',
+                'Makassar',
+                'Jakarta – TCC Tower', // ditambahkan
             ],
-            'Trainer (EWF)': ['Surabaya Trillium', 'Manado', 'Jakarta', 'Semarang', 'Surabaya Praxis', 'Cirebon'],
-            'Trainer (BPF)': ['Jambi', 'Jakarta - Pacific Place Mall', 'Pontianak', 'Malang', 'Surabaya', 'Medan',
-                'Bandung', 'Pekanbaru', 'Banjarmasin', 'Bandar Lampung', 'Semarang'
+
+            'Trainer (RFB)': [
+                'Medan',
+                'Palembang',
+                'Semarang',
+                'Jakarta', // biarkan tetap utk umum
+                'Pekanbaru',
+                'Bandung',
+                'Solo',
+                'Yogyakarta',
+                'Balikpapan',
+                'Surabaya', // biarkan tetap utk umum
+                'Surabaya II', // biarkan tetap
+                'Jakarta - AXA Tower 1', // ditambahkan
+                'Jakarta - AXA Tower 2', // ditambahkan
+                'Jakarta - AXA Tower 3', // ditambahkan
+                'Jakarta – DBS Bank Tower', // ditambahkan
+                'Surabaya - Ciputra World Office Tower', // ditambahkan
+                'Surabaya - Pakuwon Tower', // ditambahkan
             ],
-            'Trainer (KPF)': ['Yogyakarta', 'Bali', 'Makassar', 'Bandung', 'Semarang']
+
+            'Trainer (EWF)': [
+                'Surabaya Trillum', // diperbaiki penulisan
+                'Manado',
+                'Jakarta', // tetap
+                'Semarang',
+                'Surabaya Praxis',
+                'Cirebon',
+                'SSC Jakarta', // ditambahkan
+                'Jakarta Cyber 2', // ditambahkan
+            ],
+
+            'Trainer (BPF)': [
+                'Jambi',
+                'Jakarta - Pacific Place Mall',
+                'Pontianak',
+                'Malang',
+                'Surabaya',
+                'Medan',
+                'Bandung',
+                'Pekanbaru',
+                'Banjarmasin',
+                'Bandar Lampung',
+                'Semarang',
+                'Jakarta - Equity Tower', // ditambahkan
+            ],
+
+            'Trainer (KPF)': [
+                'Yogyakarta',
+                'Bali',
+                'Makassar',
+                'Bandung',
+                'Semarang',
+                'Jakarta - Plaza Marein', // ditambahkan
+            ]
         };
 
         function updateCabangOptions() {
