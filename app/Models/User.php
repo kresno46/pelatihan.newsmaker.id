@@ -6,8 +6,6 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use App\Models\CertificateAward;
-use App\Models\PostTestResult;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -30,6 +28,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'role',
         'cabang',
+        'email_verified_at',
     ];
 
     /**
@@ -64,7 +63,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * Menghitung berapa batch sertifikat yang telah memenuhi syarat (per 10 eBook dengan avg >= 75).
      *
-     * @param int $minAvg Nilai rata-rata minimum untuk dapat sertifikat
+     * @param  int  $minAvg  Nilai rata-rata minimum untuk dapat sertifikat
      * @return int Jumlah batch sertifikat yang bisa diperoleh
      */
     public function earnedCertificateBatches($minAvg = 60): int
@@ -79,7 +78,9 @@ class User extends Authenticatable implements MustVerifyEmail
         $validBatches = 0;
 
         foreach ($chunks as $chunk) {
-            if ($chunk->count() < 10) break;
+            if ($chunk->count() < 10) {
+                break;
+            }
 
             $avg = $chunk->avg('score');
             if ($avg >= $minAvg) {
@@ -93,7 +94,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * Mengecek apakah user sudah menyelesaikan semua post-test dalam sebuah folder (materi).
      *
-     * @param int $folderId
+     * @param  int  $folderId
      * @return bool
      */
     public function hasCompletedFolder($folderId)
