@@ -46,13 +46,72 @@
                             class="absolute right-0 mt-1 w-64 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10 hidden">
                             <div class="py-1">
                                 @php
-                                    $cabangs = collect();
-                                    foreach ($absensiList as $absensi) {
-                                        if ($absensi->user && $absensi->user->cabang) {
-                                            $cabangs->push($absensi->user->cabang);
+                                    $kantorCabang = [
+                                        'Trainer (SGB)' => ['Semarang', 'Makassar', 'Jakarta – TCC Tower'],
+                                        'Trainer (RFB)' => [
+                                            'Medan',
+                                            'Palembang',
+                                            'Semarang',
+                                            'Jakarta',
+                                            'Surabaya',
+                                            'Pekanbaru',
+                                            'Bandung',
+                                            'Solo',
+                                            'Yogyakarta',
+                                            'Balikpapan',
+                                            'Surabaya II',
+                                            'Jakarta - AXA Tower 1',
+                                            'Jakarta - AXA Tower 2',
+                                            'Jakarta - AXA Tower 3',
+                                            'Jakarta - DBS Bank Tower',
+                                            'Surabaya - Ciputra World Office Tower',
+                                            'Surabaya - Pakuwon Tower',
+                                        ],
+                                        'Trainer (EWF)' => [
+                                            'Surabaya Trillium',
+                                            'Manado',
+                                            'Jakarta',
+                                            'Semarang',
+                                            'Surabaya Praxis',
+                                            'Cirebon',
+                                            'SSC Jakarta',
+                                            'Jakarta Cyber 2',
+                                        ],
+                                        'Trainer (BPF)' => [
+                                            'Jambi',
+                                            'Jakarta - Pacific Place Mall',
+                                            'Pontianak',
+                                            'Malang',
+                                            'Surabaya',
+                                            'Medan',
+                                            'Bandung',
+                                            'Pekanbaru',
+                                            'Banjarmasin',
+                                            'Bandar Lampung',
+                                            'Semarang',
+                                            'Jakarta - Equity Tower',
+                                        ],
+                                        'Trainer (KPF)' => [
+                                            'Yogyakarta',
+                                            'Bali',
+                                            'Makassar',
+                                            'Bandung',
+                                            'Semarang',
+                                            'Jakarta - Plaza Marein',
+                                        ],
+                                    ];
+                                    $selectedCompany = request('company');
+                                    if ($selectedCompany && isset($kantorCabang[$selectedCompany])) {
+                                        $uniqueCabangs = collect($kantorCabang[$selectedCompany])->sort();
+                                    } else {
+                                        $cabangs = collect();
+                                        foreach ($absensiList as $absensi) {
+                                            if ($absensi->user && $absensi->user->cabang) {
+                                                $cabangs->push($absensi->user->cabang); 
+                                            }
                                         }
+                                        $uniqueCabangs = $cabangs->unique()->sort();
                                     }
-                                    $uniqueCabangs = $cabangs->unique()->sort();
                                 @endphp
                                 @foreach ($uniqueCabangs as $cabang)
                                     <a href="{{ route('absensi.downloadExcelPerCabang', $jadwal->id) }}?q={{ request('q') }}&sort={{ request('sort') }}&company={{ request('company') }}&cabang={{ $cabang }}"
@@ -286,7 +345,7 @@
                 'Jakarta - AXA Tower 1', // ditambahkan
                 'Jakarta - AXA Tower 2', // ditambahkan
                 'Jakarta - AXA Tower 3', // ditambahkan
-                'Jakarta – DBS Bank Tower', // ditambahkan
+                'Jakarta - DBS Bank Tower', // ditambahkan
                 'Surabaya - Ciputra World Office Tower', // ditambahkan
                 'Surabaya - Pakuwon Tower', // ditambahkan
             ],
@@ -304,7 +363,7 @@
 
             'Trainer (BPF)' => [
                 'Jambi',
-                'Jakarta – Pacific Place Mall',
+                'Jakarta - Pacific Place Mall',
                 'Pontianak',
                 'Malang',
                 'Surabaya',

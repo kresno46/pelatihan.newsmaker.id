@@ -307,17 +307,22 @@
                 const absensiCtx = document.getElementById('absensiChart');
                 if (absensiCtx) {
                     new Chart(absensiCtx.getContext('2d'), {
-                        type: 'bar',
+                        type: 'line',
                         data: {
                             labels: @json($absensiLabels),
                             datasets: [{
                                 label: 'Absensi',
                                 data: @json($absensiData),
-                                backgroundColor: 'rgba(59, 130, 246, 0.8)',
-                                borderColor: 'rgba(59, 130, 246, 1)',
-                                borderWidth: 0,
-                                borderRadius: 4,
-                                borderSkipped: false,
+                                backgroundColor: 'rgba(39, 80, 245, 0.1)',
+                                borderColor: 'rgba(39, 80, 245, 1)',
+                                borderWidth: 2,
+                                fill: true,
+                                tension: 0.4,
+                                pointBackgroundColor: 'rgba(39, 80, 245, 1)',
+                                pointBorderColor: '#fff',
+                                pointBorderWidth: 2,
+                                pointRadius: 4,
+                                pointHoverRadius: 6
                             }]
                         },
                         options: {
@@ -333,19 +338,6 @@
                                     bodyColor: '#fff',
                                     cornerRadius: 6,
                                     displayColors: false
-                                },
-                                datalabels: {
-                                    anchor: 'center',
-                                    align: 'center',
-                                    color: '#ffffff',
-                                    font: {
-                                        size: 10,
-                                        weight: 'bold'
-                                    },
-                                    rotation: 90,
-                                    formatter: function(value, context) {
-                                        return context.chart.data.labels[context.dataIndex];
-                                    }
                                 }
                             },
                             scales: {
@@ -354,7 +346,10 @@
                                         display: false
                                     },
                                     ticks: {
-                                        display: false
+                                        color: '#9ca3af',
+                                        font: {
+                                            size: 11
+                                        }
                                     }
                                 },
                                 y: {
@@ -373,8 +368,8 @@
                                 }
                             },
                             elements: {
-                                bar: {
-                                    borderRadius: 4
+                                point: {
+                                    hoverBorderWidth: 3
                                 }
                             }
                         }

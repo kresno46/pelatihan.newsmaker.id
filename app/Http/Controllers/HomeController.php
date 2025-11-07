@@ -61,7 +61,7 @@ class HomeController extends Controller
             ->join('jadwal_absensis', 'absensis.jadwal_id', '=', 'jadwal_absensis.id')
             ->groupBy('jadwal_absensis.tanggal')
             ->orderBy('jadwal_absensis.tanggal', 'asc')
-            ->limit(50)
+            ->limit(5)
             ->get();
 
         $absensiLabels = $absensiPerJadwal->pluck('tanggal');
@@ -71,6 +71,7 @@ class HomeController extends Controller
         $postTestPerTanggal = PostTestResult::selectRaw('DATE(created_at) as tanggal, COUNT(id) as jumlah')
             ->groupBy('tanggal')
             ->orderBy('tanggal')
+            ->limit(5)
             ->get();
 
         $postTestLabels = $postTestPerTanggal->pluck('tanggal');

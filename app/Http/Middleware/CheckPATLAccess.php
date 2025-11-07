@@ -2,10 +2,10 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\PostTestSession;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Models\PostTestSession;
 
 class CheckPATLAccess
 {
@@ -17,7 +17,7 @@ class CheckPATLAccess
         // Ambil ID atau slug dari parameter route
         $sessionId = $request->route('id') ?? $request->route('slug');
 
-        if (!$sessionId) {
+        if (! $sessionId) {
             return redirect()->route('post-test.index')
                 ->with('error', 'Session tidak ditemukan.');
         }
@@ -27,7 +27,7 @@ class CheckPATLAccess
             ->orWhere('slug', $sessionId)
             ->first();
 
-        if (!$session) {
+        if (! $session) {
             return redirect()->route('post-test.index')
                 ->with('error', 'Session tidak ditemukan.');
         }
@@ -36,21 +36,21 @@ class CheckPATLAccess
         if ($session->tipe === 'PATL') {
             $user = auth()->user();
 
-            if (!in_array($user->jabatan, ['SBC', 'BsM', 'SBM', 'EM', 'SEM', 'VBM', 'BrM'])) {
+            if (! in_array($user->jabatan, ['SBC', 'BsM', 'SBM', 'EM', 'SEM', 'VBM', 'BrM'])) {
                 return redirect()->route('post-test.index')
                     ->with('error', 'Anda tidak memiliki akses untuk tipe soal PATL.');
             }
         }
 
         // Jika tipe PATD, jabatan BC tidak boleh akses
-        if ($session->tipe === 'PATD') {
-            $user = auth()->user();
+        // if ($session->tipe === 'PATD') {
+        //     $user = auth()->user();
 
-            if ($user->jabatan === 'BC') {
-                return redirect()->route('post-test.index')
-                    ->with('error', 'Anda tidak memiliki akses untuk tipe soal PATD.');
-            }
-        }
+        //     if ($user->jabatan === 'BC') {
+        //         return redirect()->route('post-test.index')
+        //             ->with('error', 'Anda tidak memiliki akses untuk tipe soal PATD.');
+        //     }
+        // }
 
         return $next($request);
     }
