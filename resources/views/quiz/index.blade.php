@@ -3,7 +3,8 @@
 @section('namePage', 'Kuis')
 
 @section('content')
-    <header class="w-full bg-white dark:bg-gray-800 shadow rounded-lg mb-5 p-4 sm:p-6">
+    <header
+        class="w-full bg-white dark:bg-gray-800 shadow rounded-lg mb-5 p-4 sm:p-6 border border-gray-100 dark:border-gray-700">
         <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
@@ -37,7 +38,7 @@
         </div>
     </header>
 
-    <div class="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md">
+    <div class="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700">
         @if ($sessions->isEmpty())
             <div class="text-center py-12 text-gray-600 dark:text-gray-300">
                 <p class="font-medium">{{ __('Belum ada post test.') }}</p>
@@ -47,7 +48,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                 @foreach ($sessions as $item)
                     <div
-                        class="bg-gray-50 dark:bg-gray-900/40 p-5 rounded-lg flex flex-col justify-between gap-4 border border-gray-200 dark:border-gray-700">
+                        class="bg-gray-50 dark:bg-gray-900/40 p-5 rounded-lg flex flex-col justify-between gap-4 border border-gray-100 dark:border-gray-700">
                         <div class="w-full flex items-center justify-between">
                             <div>
                                 <h3 class="font-semibold text-gray-900 dark:text-gray-100">

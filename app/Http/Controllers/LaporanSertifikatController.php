@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\SertifikatExport;
+use App\Exports\SertifikatPerCabangExport;
 use App\Models\CertificateAward;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class LaporanSertifikatController extends Controller
 {

@@ -120,6 +120,15 @@
         </div>
 
         <div class="mt-8 flex justify-end gap-4">
+            @if (is_null($trainer->email_verified_at))
+                <form method="POST" action="{{ route('trainer.verify', $trainer->id) }}" class="inline">
+                    @csrf
+                    <button type="submit"
+                        class="px-5 py-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow">
+                        Verifikasi Email
+                    </button>
+                </form>
+            @endif
             <a href="{{ route('trainer.edit', $trainer->id) }}"
                 class="px-5 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-lg shadow">
                 Edit

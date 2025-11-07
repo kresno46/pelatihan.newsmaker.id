@@ -14,19 +14,19 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $query = User::where('role', '!=', 'Admin');  // Ambil semua user yang bukan Admin
+        $query = User::where('role', '!=', 'Admin');
 
         if ($request->has('search') && $request->search != '') {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', '%' . $search . '%')
-                  ->orWhere('email', 'like', '%' . $search . '%')
-                  ->orWhere('cabang', 'like', '%' . $search . '%')
-                  ->orWhere('role', 'like', '%' . $search . '%');
+                $q->where('name', 'like', '%'.$search.'%')
+                    ->orWhere('email', 'like', '%'.$search.'%')
+                    ->orWhere('cabang', 'like', '%'.$search.'%')
+                    ->orWhere('role', 'like', '%'.$search.'%');
             });
         }
 
-        $trainer = $query->orderBy('created_at', 'DESC')->paginate(10);
+        $trainer = $query->orderBy('created_at', 'DESC')->paginate(25);
 
         return view('trainer.index', compact('trainer'));
     }
@@ -39,6 +39,23 @@ class UserController extends Controller
         $trainer = User::find($id);
 
         return view('trainer.show', compact('trainer'));
+    }
+
+    /**
+     * Manually verify trainer's email.
+     */
+    public function verify($id)
+    {
+        $trainer = User::findOrFail($id);
+
+        if (is_null($trainer->email_verified_at)) {
+            $trainer->email_verified_at = now();
+            $trainer->save();
+
+            return redirect()->route('trainer.show', $trainer->id)->with('Alert', 'Email trainer '.$trainer->name.' berhasil diverifikasi.');
+        }
+
+        return redirect()->route('trainer.show', $trainer->id)->with('Alert', 'Email trainer sudah terverifikasi.');
     }
 
     /**
@@ -61,11 +78,9 @@ class UserController extends Controller
             'jenis_kelamin' => 'nullable|string',
             'tempat_lahir' => 'nullable|string',
             'tanggal_lahir' => 'nullable|date',
-            // 'warga_negara' => 'nullable|string',
             'alamat' => 'nullable|string',
             'no_tlp' => 'nullable|string',
-            // 'pekerjaan' => 'nullable|string',
-            'cabang' => 'nullable|string'
+            'cabang' => 'nullable|string',
         ]);
 
         $trainer = User::create([
@@ -76,14 +91,12 @@ class UserController extends Controller
             'jenis_kelamin' => $validated['jenis_kelamin'] ?? null,
             'tempat_lahir' => $validated['tempat_lahir'] ?? null,
             'tanggal_lahir' => $validated['tanggal_lahir'] ?? null,
-            // 'warga_negara' => $validated['warga_negara'] ?? null,
             'alamat' => $validated['alamat'] ?? null,
             'no_tlp' => $validated['no_tlp'] ?? null,
-            // 'pekerjaan' => $validated['pekerjaan'] ?? null,
             'cabang' => $validated['cabang'] ?? null,
         ]);
 
-        return redirect()->route('trainer.index')->with('Alert', 'Trainer ' . $trainer->name . ' berhasil ditambahkan.');
+        return redirect()->route('trainer.index')->with('Alert', 'Trainer '.$trainer->name.' berhasil ditambahkan.');
     }
 
     /**
@@ -114,11 +127,9 @@ class UserController extends Controller
             'jenis_kelamin' => 'nullable|string',
             'tempat_lahir' => 'nullable|string',
             'tanggal_lahir' => 'nullable|date',
-            // 'warga_negara' => 'nullable|string',
             'alamat' => 'nullable|string',
             'no_tlp' => 'nullable|string',
-            // 'pekerjaan' => 'nullable|string',
-            'cabang' => 'nullable|string'
+            'cabang' => 'nullable|string',
         ]);
 
         $trainer->update([
@@ -128,14 +139,12 @@ class UserController extends Controller
             'jenis_kelamin' => $validated['jenis_kelamin'] ?? $trainer->jenis_kelamin,
             'tempat_lahir' => $validated['tempat_lahir'] ?? $trainer->tempat_lahir,
             'tanggal_lahir' => $validated['tanggal_lahir'] ?? $trainer->tanggal_lahir,
-            // 'warga_negara' => $validated['warga_negara'] ?? $trainer->warga_negara,
             'alamat' => $validated['alamat'] ?? $trainer->alamat,
             'no_tlp' => $validated['no_tlp'] ?? $trainer->no_tlp,
-            // 'pekerjaan' => $validated['pekerjaan'] ?? $trainer->pekerjaan,
             'cabang' => $validated['cabang'] ?? $trainer->cabang,
         ]);
 
-        return redirect()->route('trainer.index')->with('Alert', 'Trainer ' . $trainer->name . ' berhasil diperbarui.');
+        return redirect()->route('trainer.index')->with('Alert', 'Trainer '.$trainer->name.' berhasil diperbarui.');
     }
 
     /**
@@ -146,6 +155,6 @@ class UserController extends Controller
         $trainer = User::findOrFail($id);
         $trainer->delete();
 
-        return redirect()->route('trainer.index')->with('Alert', 'Trainer ' . $trainer->name . ' berhasil dihapus.');
+        return redirect()->route('trainer.index')->with('Alert', 'Trainer '.$trainer->name.' berhasil dihapus.');
     }
 }

@@ -95,6 +95,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/{id}/edit', [UserController::class, 'edit'])->name('trainer.edit');
             Route::put('/{id}', [UserController::class, 'update'])->name('trainer.update');
             Route::get('/{id}/show', [UserController::class, 'show'])->name('trainer.show');
+            Route::post('/{id}/verify', [UserController::class, 'verify'])->name('trainer.verify');
             Route::delete('/{id}', [UserController::class, 'destroy'])->name('trainer.destroy');
         });
     });
