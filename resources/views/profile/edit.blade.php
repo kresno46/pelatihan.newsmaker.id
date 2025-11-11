@@ -69,7 +69,7 @@
             'EWF' => [
                 'SCC Jakarta',
                 'Cyber 2 Jakarta',
-                'Surabaya Trilium',
+                'Surabaya Trillium',
                 'Manado',
                 'Semarang',
                 'Surabaya Praxis',
