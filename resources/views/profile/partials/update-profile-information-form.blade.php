@@ -44,14 +44,6 @@
                 <x-input-error :messages="$errors->get('email')" class="mt-2" />
             </div>
 
-            {{-- Jabatan
-            <div class="mt-4">
-                <x-input-label-append for="jabatan" :value="__('Jabatan')" :append="empty($user->jabatan) ? '<span class=\'text-red-500\'>*</span>' : ''" />
-                <x-text-input id="jabatan" type="text" name="jabatan" class="block mt-1 w-full" readonly
-                    :value="old('jabatan', $user->jabatan)" />
-                <x-input-error :messages="$errors->get('jabatan')" class="mt-2" />
-            </div> --}}
-
             {{-- Jabatan --}}
             <div class="mt-4">
                 <x-input-label-append for="jabatan" :value="__('Jabatan')" :append="empty($user->jabatan) ? '<span class=\'text-red-500\'>*</span>' : ''" />
@@ -110,14 +102,6 @@
                 <x-input-error :messages="$errors->get('tanggal_lahir')" class="mt-2" />
             </div>
 
-            {{-- Warga Negara --}}
-            {{-- <div class="mt-4">
-                <x-input-label-append for="warga_negara" :value="__('Warga Negara')" :append="empty($user->warga_negara) ? '<span class=\'text-red-500\'>*</span>' : ''" />
-                <x-text-input id="warga_negara" type="text" name="warga_negara" class="block mt-1 w-full"
-                    :value="old('warga_negara', $user->warga_negara)" />
-                <x-input-error :messages="$errors->get('warga_negara')" class="mt-2" />
-            </div> --}}
-
             {{-- Alamat --}}
             <div class="mt-4">
                 <x-input-label-append for="alamat" :value="__('Alamat')" :append="empty($user->alamat) ? '<span class=\'text-red-500\'>*</span>' : ''" />
@@ -134,48 +118,6 @@
                     :value="old('no_tlp', $user->no_tlp)" />
                 <x-input-error :messages="$errors->get('no_tlp')" class="mt-2" />
             </div>
-
-            {{-- Pekerjaan --}}
-            {{-- @php
-                $pekerjaanList = [
-                    'Pelajar/Mahasiswa',
-                    'PNS',
-                    'TNI/Polri',
-                    'Pegawai Negeri',
-                    'Karyawan Swasta',
-                    'Wiraswasta',
-                    'Petani',
-                    'Peternak',
-                    'Nelayan',
-                    'Buruh',
-                    'Pensiunan',
-                    'Ibu Rumah Tangga',
-                    'Dokter',
-                    'Perawat',
-                    'Guru/Dosen',
-                    'Sopir',
-                    'Pengacara',
-                    'Arsitek',
-                    'Seniman/Artis',
-                    'Programmer',
-                    'Lainnya',
-                ];
-                $selectedPekerjaan = old('pekerjaan', $user->pekerjaan ?? '');
-            @endphp
-            <div class="mt-4">
-                <x-input-label-append for="pekerjaan" :value="__('Pekerjaan')" :append="empty($user->pekerjaan) ? '<span class=\'text-red-500\'>*</span>' : ''" />
-                <select id="pekerjaan" name="pekerjaan"
-                    class="block mt-1 w-full rounded-md shadow-sm border-gray-300
-                            dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
-                    <option value="">-- Pilih Pekerjaan --</option>
-                    @foreach ($pekerjaanList as $pekerjaan)
-                        <option value="{{ $pekerjaan }}" {{ $selectedPekerjaan == $pekerjaan ? 'selected' : '' }}>
-                            {{ $pekerjaan }}
-                        </option>
-                    @endforeach
-                </select>
-                <x-input-error :messages="$errors->get('pekerjaan')" class="mt-2" />
-            </div> --}}
 
             {{-- Role --}}
             @php
@@ -209,11 +151,19 @@
 
             {{-- Cabang --}}
             <div class="mt-4" id="cabang-container">
-                <x-input-label-append for="cabang" :value="__('Cabang')" />
+                <x-input-label-append for="cabang" :value="__('Cabang')" :append="empty($user->cabang) ? '<span class=\'text-red-500\'>*</span>' : ''" />
                 <select id="cabang" name="cabang"
                     class="block mt-1 w-full rounded-md shadow-sm border-gray-300
                             dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
                     <option value="">-- Pilih Kantor Cabang --</option>
+                    @foreach ($allBranches as $role => $roleBranches)
+                        @foreach ($roleBranches as $branch)
+                            <option value="{{ $branch }}"
+                                {{ old('cabang', $user->cabang) === $branch ? 'selected' : '' }}>
+                                {{ $branch }}
+                            </option>
+                        @endforeach
+                    @endforeach
                 </select>
                 <x-input-error :messages="$errors->get('cabang')" class="mt-2" />
             </div>

@@ -685,6 +685,7 @@
                 'Balikpapan',
                 'Surabaya', // biarkan tetap utk umum
                 'Surabaya II', // biarkan tetap
+                'Jakarta AXA Tower',
                 'Jakarta - AXA Tower 1', // ditambahkan
                 'Jakarta - AXA Tower 2', // ditambahkan
                 'Jakarta - AXA Tower 3', // ditambahkan
@@ -694,7 +695,8 @@
             ],
 
             'Trainer (EWF)': [
-                'Surabaya Trillum', // diperbaiki penulisan
+                'Surabaya Trillium', // diperbaiki penulisan
+                'Surabaya Trilium'
                 'Manado',
                 'Jakarta', // tetap
                 'Semarang',

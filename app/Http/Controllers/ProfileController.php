@@ -19,37 +19,36 @@ class ProfileController extends Controller
 
         // Tentukan cabang berdasarkan role
         $branches = $this->getBranchesByRole($user->role);
+        $allBranches = $this->getAllBranches();
 
-        return view('profile.edit', compact('user', 'branches'));
+        return view('profile.edit', compact('user', 'branches', 'allBranches'));
     }
 
-    private function getBranchesByRole($role)
+    private function getAllBranches()
     {
-        $branches = [
+        return [
+            'Admin' => [],
             'Trainer (SGB)' => [
                 'Semarang',
                 'Makassar',
-                'Jakarta – TCC Tower', // ditambahkan
+                'Jakarta – TCC Tower',
             ],
 
             'Trainer (RFB)' => [
                 'Medan',
                 'Palembang',
                 'Semarang',
-                'Jakarta',
-                'Surabaya',
                 'Pekanbaru',
                 'Bandung',
                 'Solo',
                 'Yogyakarta',
                 'Balikpapan',
-                'Surabaya II',
-                'Jakarta - AXA Tower 1', // ditambahkan
-                'Jakarta - AXA Tower 2', // ditambahkan
-                'Jakarta - AXA Tower 3', // ditambahkan
-                'Jakarta – DBS Bank Tower', // ditambahkan
-                'Surabaya - Ciputra World Office Tower', // ditambahkan
-                'Surabaya - Pakuwon Tower', // ditambahkan
+                'Jakarta - AXA Tower 1',
+                'Jakarta - AXA Tower 2',
+                'Jakarta - AXA Tower 3',
+                'Jakarta - DBS Bank Tower',
+                'Surabaya - Ciputra World Office Tower',
+                'Surabaya - Pakuwon Tower',
             ],
 
             'Trainer (EWF)' => [
@@ -59,8 +58,8 @@ class ProfileController extends Controller
                 'Semarang',
                 'Surabaya Praxis',
                 'Cirebon',
-                'SSC Jakarta', // ditambahkan
-                'Jakarta Cyber 2', // ditambahkan
+                'SSC Jakarta',
+                'Jakarta Cyber 2',
             ],
 
             'Trainer (BPF)' => [
@@ -75,7 +74,7 @@ class ProfileController extends Controller
                 'Banjarmasin',
                 'Bandar Lampung',
                 'Semarang',
-                'Jakarta - Equity Tower', // ditambahkan
+                'Jakarta - Equity Tower',
             ],
 
             'Trainer (KPF)' => [
@@ -84,11 +83,16 @@ class ProfileController extends Controller
                 'Makassar',
                 'Bandung',
                 'Semarang',
-                'Jakarta - Plaza Marein', // ditambahkan
+                'Jakarta - Plaza Marein',
             ],
         ];
+    }
 
-        return $branches[$role] ?? [];
+    private function getBranchesByRole($role)
+    {
+        $allBranches = $this->getAllBranches();
+
+        return $allBranches[$role] ?? [];
     }
 
     /**
@@ -105,11 +109,10 @@ class ProfileController extends Controller
             'jenis_kelamin' => ['nullable', 'in:Pria,Wanita'],
             'tempat_lahir' => ['nullable', 'string', 'max:20'],
             'tanggal_lahir' => ['nullable', 'date'],
-            // 'warga_negara' => ['nullable', 'string', 'max:50'],
             'alamat' => ['nullable', 'string'],
             'no_tlp' => ['nullable', 'string', 'max:20'],
-            // 'pekerjaan' => ['nullable', 'string', 'max:50'],
             'jabatan' => ['nullable', 'in:BC,SBC,SBM,BM'],
+            'role' => ['nullable', 'string', Rule::in(['Trainer (SGB)', 'Trainer (RFB)', 'Trainer (EWF)', 'Trainer (BPF)', 'Trainer (KPF)'])],
             'cabang' => ['nullable', 'string'],
         ]);
 

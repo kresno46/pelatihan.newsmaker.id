@@ -49,21 +49,23 @@
     @php
         $kantorCabang = [
             'RFB' => [
-                'Palembang',
-                'Balikpapan',
-                'Solo',
-                'Jakarta DBS Tower',
-                'Jakarta AXA Tower',
                 'Medan',
+                'Palembang',
                 'Semarang',
-                'Surabaya Pakuwon',
-                'Surabaya Ciputra',
                 'Pekanbaru',
                 'Bandung',
+                'Solo',
                 'Yogyakarta',
+                'Balikpapan',
+                'Jakarta - AXA Tower 1',
+                'Jakarta - AXA Tower 2',
+                'Jakarta - AXA Tower 3',
+                'Jakarta - DBS Bank Tower',
+                'Surabaya - Ciputra World Office Tower',
+                'Surabaya - Pakuwon Tower',
             ],
-            'SGB' => ['Jakarta', 'Semarang', 'Makassar'],
-            'KPF' => ['Jakarta', 'Yogyakarta', 'Bali', 'Makassar', 'Bandung', 'Semarang'],
+            'SGB' => ['Semarang', 'Makassar', 'Jakarta - TCC Tower'],
+            'KPF' => ['Yogyakarta', 'Bali', 'Makassar', 'Bandung', 'Semarang', 'Jakarta - Plaza Marein'],
             'EWF' => [
                 'SCC Jakarta',
                 'Cyber 2 Jakarta',
@@ -74,9 +76,8 @@
                 'Cirebon',
             ],
             'BPF' => [
-                'Equity Tower Jakarta',
                 'Jambi',
-                'Jakarta - Pacific Place Mall',
+                'Jakarta – Pacific Place Mall',
                 'Pontianak',
                 'Malang',
                 'Surabaya',
@@ -86,6 +87,7 @@
                 'Banjarmasin',
                 'Bandar Lampung',
                 'Semarang',
+                'Jakarta - Equity Tower',
             ],
         ];
         $selectedCabang = old('cabang', $user->cabang ?? '');
