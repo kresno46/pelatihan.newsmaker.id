@@ -670,45 +670,48 @@
             'Trainer (SGB)': [
                 'Semarang',
                 'Makassar',
-                'Jakarta – TCC Tower', // ditambahkan
+                'Jakarta',
+                'Jakarta – TCC Tower',
             ],
 
             'Trainer (RFB)': [
                 'Medan',
                 'Palembang',
                 'Semarang',
-                'Jakarta', // biarkan tetap utk umum
                 'Pekanbaru',
                 'Bandung',
                 'Solo',
                 'Yogyakarta',
                 'Balikpapan',
-                'Surabaya', // biarkan tetap utk umum
-                'Surabaya II', // biarkan tetap
-                'Jakarta AXA Tower',
-                'Jakarta - AXA Tower 1', // ditambahkan
-                'Jakarta - AXA Tower 2', // ditambahkan
-                'Jakarta - AXA Tower 3', // ditambahkan
-                'Jakarta – DBS Bank Tower', // ditambahkan
-                'Surabaya - Ciputra World Office Tower', // ditambahkan
-                'Surabaya - Pakuwon Tower', // ditambahkan
+                'Jakarta AXA 1',
+                'Jakarta AXA 2',
+                'Jakarta AXA 3',
+                'Jakarta DBS Tower',
+                'Surabaya Pakuwon',
+                'Jakarta - AXA Tower 1',
+                'Jakarta - AXA Tower 2',
+                'Jakarta - AXA Tower 3',
+                'Jakarta - DBS Bank Tower',
+                'Surabaya - Ciputra World Office Tower',
+                'Surabaya - Pakuwon Tower',
             ],
 
             'Trainer (EWF)': [
-                'Surabaya Trillium', // diperbaiki penulisan
-                'Surabaya Trilium'
+                'Surabaya Trillium',
+                'Surabaya Trilium',
                 'Manado',
-                'Jakarta', // tetap
+                'Jakarta',
                 'Semarang',
                 'Surabaya Praxis',
                 'Cirebon',
-                'SSC Jakarta', // ditambahkan
-                'Jakarta Cyber 2', // ditambahkan
+                'SSC Jakarta',
+                'Cyber 2 Jakarta',
+                'Jakarta Cyber 2',
             ],
 
             'Trainer (BPF)': [
                 'Jambi',
-                'Jakarta - Pacific Place Mall',
+                'Jakarta – Pacific Place Mall',
                 'Pontianak',
                 'Malang',
                 'Surabaya',
@@ -718,7 +721,8 @@
                 'Banjarmasin',
                 'Bandar Lampung',
                 'Semarang',
-                'Jakarta - Equity Tower', // ditambahkan
+                'Jakarta - Equity Tower',
+                'Equity Tower Jakarta',
             ],
 
             'Trainer (KPF)': [
@@ -727,7 +731,8 @@
                 'Makassar',
                 'Bandung',
                 'Semarang',
-                'Jakarta - Plaza Marein', // ditambahkan
+                'Jakarta - Plaza Marein',
+                'Jakarta',
             ]
         };
 
