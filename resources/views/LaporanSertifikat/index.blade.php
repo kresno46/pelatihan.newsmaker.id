@@ -711,7 +711,7 @@
 
             'Trainer (BPF)': [
                 'Jambi',
-                'Jakarta – Pacific Place Mall',
+                'Jakarta - Pacific Place Mall',
                 'Pontianak',
                 'Malang',
                 'Surabaya',
