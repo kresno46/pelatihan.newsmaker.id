@@ -704,7 +704,7 @@
                 'Semarang',
                 'Surabaya Praxis',
                 'Cirebon',
-                'SSC Jakarta',
+                'SCC Jakarta',
                 'Cyber 2 Jakarta',
                 'Jakarta Cyber 2',
             ],
