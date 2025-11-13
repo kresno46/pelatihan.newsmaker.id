@@ -671,7 +671,7 @@
                 'Semarang',
                 'Makassar',
                 'Jakarta',
-                'Jakarta – TCC Tower',
+                'Jakarta - TCC Tower',
             ],
 
             'Trainer (RFB)': [

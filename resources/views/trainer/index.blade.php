@@ -18,8 +18,7 @@
                 <form method="GET" action="{{ route('trainer.index') }}" class="flex items-center gap-2">
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari trainer..."
                         class="px-3 py-2 border border-gray-300 rounded text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                    <button type="submit"
-                        class="px-4 py-2 bg-blue-500 text-white text-xs rounded hover:bg-blue-600">
+                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white text-xs rounded hover:bg-blue-600">
                         Cari
                     </button>
                 </form>
@@ -36,7 +35,8 @@
                         <th class="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-200">#</th>
                         <th class="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-200">Nama</th>
                         <th class="px-6 py-3 text-center text-sm font-medium text-gray-700 dark:text-gray-200">Email</th>
-                        <th class="px-6 py-3 text-center text-sm font-medium text-gray-700 dark:text-gray-200">Perusahaan</th>
+                        <th class="px-6 py-3 text-center text-sm font-medium text-gray-700 dark:text-gray-200">Perusahaan
+                        </th>
                         <th class="px-6 py-3 text-center text-sm font-medium text-gray-700 dark:text-gray-200">Cabang</th>
                         <th class="px-6 py-3 text-center text-sm font-medium text-gray-700 dark:text-gray-200">Akun
                             Terverifikasi</th>

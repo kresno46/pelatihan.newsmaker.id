@@ -14,21 +14,37 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $query = User::where('role', '!=', 'Admin');
+        $query = \App\Models\User::query()->where('role', 'like', 'Trainer%');
 
-        if ($request->has('search') && $request->search != '') {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', '%'.$search.'%')
-                    ->orWhere('email', 'like', '%'.$search.'%')
-                    ->orWhere('cabang', 'like', '%'.$search.'%')
-                    ->orWhere('role', 'like', '%'.$search.'%');
+        // Filter pencarian
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('name', 'like', "%{$request->search}%")
+                    ->orWhere('email', 'like', "%{$request->search}%");
             });
         }
 
-        $trainer = $query->orderBy('created_at', 'DESC')->paginate(25);
+        // Filter berdasarkan role (Trainer RFB / SGB / dll)
+        if ($request->filled('filter_perusahaan')) {
+            $query->where('role', $request->filter_perusahaan);
+        }
 
-        return view('trainer.index', compact('trainer'));
+        // Filter berdasarkan cabang
+        if ($request->filled('filter_cabang')) {
+            $query->where('cabang', $request->filter_cabang);
+        }
+
+        $trainer = $query->paginate(10);
+
+        // Ambil daftar "role" dan "cabang" unik
+        $perusahaanList = \App\Models\User::where('role', 'like', 'Trainer%')
+            ->distinct()->pluck('role');
+
+        $cabangList = \App\Models\User::where('role', 'like', 'Trainer%')
+            ->whereNotNull('cabang')
+            ->distinct()->pluck('cabang');
+
+        return view('trainer.index', compact('trainer', 'perusahaanList', 'cabangList'));
     }
 
     /**
@@ -106,7 +122,26 @@ class UserController extends Controller
     {
         $trainer = User::findOrFail($id);
 
-        return view('trainer.edit', compact('trainer'));
+        $kantorCabang = [
+            'RFB' => [
+                'Medan', 'Palembang', 'Semarang', 'Pekanbaru', 'Bandung', 'Solo', 'Yogyakarta',
+                'Balikpapan', 'Jakarta - AXA Tower 1', 'Jakarta - AXA Tower 2', 'Jakarta - AXA Tower 3',
+                'Jakarta - DBS Bank Tower', 'Surabaya - Ciputra World Office Tower', 'Surabaya - Pakuwon Tower',
+            ],
+            'SGB' => ['Semarang', 'Makassar', 'Jakarta - TCC Tower'],
+            'KPF' => ['Yogyakarta', 'Bali', 'Makassar', 'Bandung', 'Semarang', 'Jakarta - Plaza Marein'],
+            'EWF' => [
+                'SSC Jakarta', 'Cyber 2 Jakarta', 'Surabaya Trillium', 'Manado',
+                'Semarang', 'Surabaya Praxis', 'Cirebon',
+            ],
+            'BPF' => [
+                'Jambi', 'Jakarta - Pacific Place Mall', 'Pontianak', 'Malang', 'Surabaya',
+                'Medan', 'Bandung', 'Pekanbaru', 'Banjarmasin', 'Bandar Lampung', 'Semarang',
+                'Jakarta - Equity Tower',
+            ],
+        ];
+
+        return view('trainer.edit', compact('trainer', 'kantorCabang'));
     }
 
     /**
@@ -129,7 +164,7 @@ class UserController extends Controller
             'tanggal_lahir' => 'nullable|date',
             'alamat' => 'nullable|string',
             'no_tlp' => 'nullable|string',
-            'role' => 'nullable|string|in:Trainer (SGB),Trainer (RFB),Trainer (EWF)Trainer (BPF),Trainer (KPF)',
+            'role' => 'nullable|string|in:Trainer (SGB),Trainer (RFB),Trainer (EWF),Trainer (BPF),Trainer (KPF)',
             'cabang' => 'nullable|string',
         ]);
 

@@ -67,7 +67,7 @@
             'SGB' => ['Semarang', 'Makassar', 'Jakarta - TCC Tower'],
             'KPF' => ['Yogyakarta', 'Bali', 'Makassar', 'Bandung', 'Semarang', 'Jakarta - Plaza Marein'],
             'EWF' => [
-                'SCC Jakarta',
+                'SSC Jakarta',
                 'Cyber 2 Jakarta',
                 'Surabaya Trillium',
                 'Manado',
@@ -77,7 +77,7 @@
             ],
             'BPF' => [
                 'Jambi',
-                'Jakarta – Pacific Place Mall',
+                'Jakarta - Pacific Place Mall',
                 'Pontianak',
                 'Malang',
                 'Surabaya',
