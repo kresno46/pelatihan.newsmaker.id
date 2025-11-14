@@ -82,7 +82,7 @@ class HomeController extends Controller
         // ========================
         $latestCertificates = CertificateAward::with(['user', 'folder'])
             ->orderBy('awarded_at', 'desc')
-            ->limit(10)
+            ->limit(15)
             ->get();
 
         // ========================
