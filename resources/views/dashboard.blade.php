@@ -123,7 +123,7 @@
 
     @if (Auth::check() && Auth::user()->role === 'Admin')
         <!-- Grafik Section -->
-        <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {{-- <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- Grafik Absensi Per Jadwal -->
             <div
                 class="bg-white dark:bg-gray-800 border rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow duration-300">
@@ -159,7 +159,7 @@
                     <canvas id="postTestChart"></canvas>
                 </div>
             </div>
-        </div>
+        </div> --}}
 
         <!-- Sertifikat Terbaru Section -->
         <div class="mt-8">

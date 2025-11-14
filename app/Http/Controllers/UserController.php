@@ -14,37 +14,84 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $query = \App\Models\User::query()->where('role', 'like', 'Trainer%');
+        // Daftar perusahaan dan cabang
+        $kantorCabang = [
+            'Trainer (SGB)' => ['Semarang', 'Makassar', 'Jakarta', 'Jakarta – TCC Tower'],
+            'Trainer (RFB)' => [
+                'Medan', 'Palembang', 'Semarang', 'Pekanbaru', 'Bandung', 'Solo', 'Yogyakarta',
+                'Balikpapan', 'Jakarta AXA 1', 'Jakarta AXA 2', 'Jakarta AXA 3', 'Jakarta DBS Tower',
+                'Surabaya Pakuwon', 'Jakarta - AXA Tower 1', 'Jakarta - AXA Tower 2',
+                'Jakarta - AXA Tower 3', 'Jakarta - DBS Bank Tower', 'Surabaya - Ciputra World Office Tower',
+                'Surabaya - Pakuwon Tower',
+            ],
+            'Trainer (EWF)' => [
+                'Surabaya Trillium', 'Surabaya Trilium', 'Manado', 'Jakarta', 'Semarang', 'Surabaya Praxis',
+                'Cirebon', 'SCC Jakarta', 'Cyber 2 Jakarta', 'Jakarta Cyber 2',
+            ],
+            'Trainer (BPF)' => [
+                'Jambi', 'Jakarta - Pacific Place Mall', 'Pontianak', 'Malang', 'Surabaya', 'Medan', 'Bandung',
+                'Pekanbaru', 'Banjarmasin', 'Bandar Lampung', 'Semarang', 'Jakarta - Equity Tower', 'Equity Tower Jakarta',
+            ],
+            'Trainer (KPF)' => [
+                'Yogyakarta', 'Bali', 'Makassar', 'Bandung', 'Semarang', 'Jakarta - Plaza Marein', 'Jakarta',
+            ],
+        ];
 
-        // Filter pencarian
-        if ($request->filled('search')) {
-            $query->where(function ($q) use ($request) {
-                $q->where('name', 'like', "%{$request->search}%")
-                    ->orWhere('email', 'like', "%{$request->search}%");
-            });
+        // Mapping role ke nama resmi
+        $namaPerusahaan = [
+            'Trainer (SGB)' => 'PT. Solid Gold Berjangka',
+            'Trainer (RFB)' => 'PT. Rifan Financindo Berjangka',
+            'Trainer (EWF)' => 'PT. Equity World Futures',
+            'Trainer (BPF)' => 'PT. Best Profit Futures',
+            'Trainer (KPF)' => 'PT. Kontak Perkasa Futures',
+        ];
+
+        // Ambil list perusahaan untuk dropdown (nama resmi)
+        $dropdownPerusahaanList = array_map(fn ($role) => $namaPerusahaan[$role] ?? $role, array_keys($kantorCabang));
+
+        // Tentukan filter perusahaan asli berdasarkan pilihan nama resmi
+        $filterPerusahaan = array_search($request->filter_perusahaan, $namaPerusahaan) ?: $request->filter_perusahaan;
+
+        // Sorting
+        $sortBy = $request->sort_by ?? 'latest';
+        switch ($sortBy) {
+            case 'oldest':
+                $column = 'created_at';
+                $direction = 'asc';
+                break;
+            case 'name_asc':
+                $column = 'name';
+                $direction = 'asc';
+                break;
+            case 'name_desc':
+                $column = 'name';
+                $direction = 'desc';
+                break;
+            default: // latest
+                $column = 'created_at';
+                $direction = 'desc';
+                break;
         }
 
-        // Filter berdasarkan role (Trainer RFB / SGB / dll)
-        if ($request->filled('filter_perusahaan')) {
-            $query->where('role', $request->filter_perusahaan);
-        }
+        // Query trainer
+        $trainer = User::query()
+            ->when($filterPerusahaan, fn ($q) => $q->where('role', $filterPerusahaan))
+            ->when($request->filter_cabang, fn ($q) => $q->where('cabang', $request->filter_cabang))
+            ->when($request->search, fn ($q) => $q->where('name', 'like', "%{$request->search}%")
+                ->orWhere('email', 'like', "%{$request->search}%"))
+            ->orderBy($column, $direction)
+            ->paginate(20);
 
-        // Filter berdasarkan cabang
-        if ($request->filled('filter_cabang')) {
-            $query->where('cabang', $request->filter_cabang);
-        }
+        // Ambil cabang untuk perusahaan yang dipilih (untuk dropdown cabang)
+        $cabangList = $filterPerusahaan ? ($kantorCabang[$filterPerusahaan] ?? []) : [];
 
-        $trainer = $query->paginate(10);
-
-        // Ambil daftar "role" dan "cabang" unik
-        $perusahaanList = \App\Models\User::where('role', 'like', 'Trainer%')
-            ->distinct()->pluck('role');
-
-        $cabangList = \App\Models\User::where('role', 'like', 'Trainer%')
-            ->whereNotNull('cabang')
-            ->distinct()->pluck('cabang');
-
-        return view('trainer.index', compact('trainer', 'perusahaanList', 'cabangList'));
+        return view('trainer.index', compact(
+            'trainer',
+            'dropdownPerusahaanList',
+            'cabangList',
+            'kantorCabang',
+            'namaPerusahaan'
+        ));
     }
 
     /**
@@ -131,7 +178,7 @@ class UserController extends Controller
             'SGB' => ['Semarang', 'Makassar', 'Jakarta - TCC Tower'],
             'KPF' => ['Yogyakarta', 'Bali', 'Makassar', 'Bandung', 'Semarang', 'Jakarta - Plaza Marein'],
             'EWF' => [
-                'SSC Jakarta', 'Cyber 2 Jakarta', 'Surabaya Trillium', 'Manado',
+                'SCC Jakarta', 'Cyber 2 Jakarta', 'Surabaya Trillium', 'Manado',
                 'Semarang', 'Surabaya Praxis', 'Cirebon',
             ],
             'BPF' => [
@@ -193,5 +240,31 @@ class UserController extends Controller
         $trainer->delete();
 
         return redirect()->route('trainer.index')->with('Alert', 'Trainer '.$trainer->name.' berhasil dihapus.');
+    }
+
+    /**
+     * Array daftar cabang per perusahaan
+     */
+    private function kantorCabang()
+    {
+        return [
+            'Trainer (SGB)' => ['Semarang', 'Makassar', 'Jakarta', 'Jakarta – TCC Tower'],
+            'Trainer (RFB)' => [
+                'Medan', 'Palembang', 'Semarang', 'Pekanbaru', 'Bandung', 'Solo', 'Yogyakarta',
+                'Balikpapan', 'Jakarta AXA 1', 'Jakarta AXA 2', 'Jakarta AXA 3', 'Jakarta DBS Tower',
+                'Surabaya Pakuwon', 'Jakarta - AXA Tower 1', 'Jakarta - AXA Tower 2', 'Jakarta - AXA Tower 3',
+                'Jakarta - DBS Bank Tower', 'Surabaya - Ciputra World Office Tower', 'Surabaya - Pakuwon Tower',
+            ],
+            'Trainer (EWF)' => [
+                'Surabaya Trillium', 'Surabaya Trilium', 'Manado', 'Jakarta', 'Semarang',
+                'Surabaya Praxis', 'Cirebon', 'SSC Jakarta', 'Cyber 2 Jakarta', 'Jakarta Cyber 2',
+            ],
+            'Trainer (BPF)' => [
+                'Jambi', 'Jakarta - Pacific Place Mall', 'Pontianak', 'Malang', 'Surabaya', 'Medan',
+                'Bandung', 'Pekanbaru', 'Banjarmasin', 'Bandar Lampung', 'Semarang',
+                'Jakarta - Equity Tower', 'Equity Tower Jakarta',
+            ],
+            'Trainer (KPF)' => ['Yogyakarta', 'Bali', 'Makassar', 'Bandung', 'Semarang', 'Jakarta - Plaza Marein', 'Jakarta'],
+        ];
     }
 }

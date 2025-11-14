@@ -3,140 +3,182 @@
 @section('namePage', 'Detail ' . $trainer->name)
 
 @section('content')
-    <div class="max-w-4xl mx-auto bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl">
-        <h1 class="text-3xl font-bold mb-8 text-gray-800 dark:text-white border-b pb-4">Detail {{ $trainer->name ?? '-' }}
-        </h1>
+    <div class="w-full">
+        <!-- Header Section -->
+        <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl shadow-lg p-8 mb-8 text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold mb-2">Detail Trainer</h1>
+                    <p class="text-blue-100 text-lg">{{ $trainer->name ?? '-' }}</p>
+                    <div class="flex items-center mt-3">
+                        <span
+                            class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-white/20 backdrop-blur-sm">
+                            @switch($trainer->jabatan)
+                                @case('BC')
+                                    Business Consultant
+                                @break
 
-        <div class="grid md:grid-cols-2 gap-6 text-gray-700 dark:text-gray-200">
-            <div>
-                <div class="mb-4">
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Nama Lengkap</p>
-                    <p class="text-lg font-semibold">{{ $trainer->name ?? '-' }}</p>
-                </div>
+                                @case('SBC')
+                                    Senior Business Consultant
+                                @break
 
-                <div class="mb-4">
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Email</p>
-                    <p class="text-lg font-semibold">{{ $trainer->email ?? '-' }}</p>
-                </div>
+                                @case('BSM')
+                                    Business Support Manager
+                                @break
 
-                <div class="mb-4">
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Jenis Kelamin</p>
-                    <p class="text-lg font-semibold">{{ $trainer->jenis_kelamin ?? '-' }}</p>
-                </div>
+                                @case('BM')
+                                    Branch Manager
+                                @break
 
-                <div class="mb-4">
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Tempat Lahir</p>
-                    <p class="text-lg font-semibold">{{ $trainer->tempat_lahir ?? '-' }}</p>
-                </div>
-
-                <div class="mb-4">
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Tanggal Lahir</p>
-                    <p class="text-lg font-semibold">
-                        {{ $trainer->tanggal_lahir ? \Carbon\Carbon::parse($trainer->tanggal_lahir)->format('d M Y') : '-' }}
-                    </p>
-                </div>
-
-                {{-- <div class="mb-4">
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Warga Negara</p>
-                    <p class="text-lg font-semibold">{{ $trainer->warga_negara ?? '-' }}</p>
-                </div> --}}
-
-                <div class="mb-4">
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Status Verifikasi Email</p>
-                    <p>
-                        <span>{{ $trainer->email_verified_at ? \Carbon\Carbon::parse($trainer->email_verified_at)->format('d M Y H:i    ') : '' }}</span>
-                        {{ is_null($trainer->email_verified_at) ? '' : ' ──── ' }} <span
-                            class="mt-1 inline-block py-1 px-4 rounded-full text-xs font-medium
-                            {{ is_null($trainer->email_verified_at) ? 'bg-yellow-200 text-yellow-700' : 'bg-green-200 text-green-800' }}">
-                            {{ is_null($trainer->email_verified_at) ? 'Belum Terverifikasi' : 'Terverifikasi' }}
+                                @default
+                                    -
+                            @endswitch
                         </span>
-                    </p>
+                    </div>
                 </div>
-            </div>
-
-            <div>
-                <div class="mb-4">
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Alamat</p>
-                    <p class="text-lg font-semibold">{{ $trainer->alamat ?? '-' }}</p>
-                </div>
-
-                <div class="mb-4">
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Jabatan</p>
-                    <p class="text-lg font-semibold">
-                        @switch($trainer->jabatan)
-                            @case('BC')
-                                Business Consultant
-                            @break
-
-                            @case('SBC')
-                                SBC
-                            @break
-
-                            @case('BSM')
-                                BSM
-                            @break
-
-                            @case('BM')
-                                BM
-                            @break
-
-                            @default
-                                -
-                        @endswitch
-                    </p>
-                </div>
-
-                <div class="mb-4">
-                    <p class="text-sm text-gray-500 dark:text-gray-400">No. Telepon</p>
-                    <p class="text-lg font-semibold">{{ $trainer->no_tlp ?? '-' }}</p>
-                </div>
-
-                {{-- <div class="mb-4">
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Pekerjaan</p>
-                    <p class="text-lg font-semibold">{{ $trainer->pekerjaan ?? '-' }}</p>
-                </div> --}}
-
-                <div class="mb-4">
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Cabang</p>
-                    <p class="text-lg font-semibold">
-                        {{ $trainer->cabang }}
-                    </p>
-                </div>
-
-                <div class="mb-4">
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Dibuat Pada</p>
-                    <p class="text-lg font-semibold">
-                        {{ $trainer->created_at ? $trainer->created_at->format('d M Y H:i') : '-' }}
-                    </p>
-                </div>
-
-                <div class="mb-4">
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Diperbarui Pada</p>
-                    <p class="text-lg font-semibold">
-                        {{ $trainer->updated_at ? $trainer->updated_at->format('d M Y H:i') : '-' }}
-                    </p>
+                <div class="hidden md:block">
+                    <div class="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                        <i class="fas fa-user text-4xl text-white"></i>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="mt-8 flex justify-end gap-4">
-            @if (is_null($trainer->email_verified_at))
-                <form method="POST" action="{{ route('trainer.verify', $trainer->id) }}" class="inline">
-                    @csrf
-                    <button type="submit"
-                        class="px-5 py-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow">
-                        Verifikasi Email
-                    </button>
-                </form>
-            @endif
-            <a href="{{ route('trainer.edit', $trainer->id) }}"
-                class="px-5 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-lg shadow">
-                Edit
-            </a>
-            <a href="{{ route('trainer.index') }}"
-                class="px-5 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold rounded-lg shadow dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500">
-                Kembali
-            </a>
+        <!-- Information Cards -->
+        <div class="grid lg:grid-cols-3 gap-8">
+            <!-- Personal Information -->
+            <div class="lg:col-span-2">
+                <div
+                    class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+                    <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-6">
+                        <h3 class="text-xl font-semibold text-white flex items-center">
+                            <i class="fas fa-user-circle mr-3"></i>
+                            Informasi Pribadi
+                        </h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Nama
+                                        Lengkap</label>
+                                    <p class="text-gray-900 dark:text-white font-semibold text-lg">
+                                        {{ $trainer->name ?? '-' }}</p>
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Email</label>
+                                    <p class="text-gray-900 dark:text-white">{{ $trainer->email ?? '-' }}</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Jenis
+                                        Kelamin</label>
+                                    <p class="text-gray-900 dark:text-white">{{ $trainer->jenis_kelamin ?? '-' }}</p>
+                                </div>
+                            </div>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Tempat
+                                        Lahir</label>
+                                    <p class="text-gray-900 dark:text-white">{{ $trainer->tempat_lahir ?? '-' }}</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Tanggal
+                                        Lahir</label>
+                                    <p class="text-gray-900 dark:text-white">
+                                        {{ $trainer->tanggal_lahir ? \Carbon\Carbon::parse($trainer->tanggal_lahir)->format('d M Y') : '-' }}
+                                    </p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Status
+                                        Verifikasi Email</label>
+                                    <div class="flex items-center mt-2">
+                                        <span
+                                            class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {{ is_null($trainer->email_verified_at) ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800' }}">
+                                            <i
+                                                class="fas {{ is_null($trainer->email_verified_at) ? 'fa-clock' : 'fa-check-circle' }} mr-1"></i>
+                                            {{ is_null($trainer->email_verified_at) ? 'Belum Terverifikasi' : 'Terverifikasi' }}
+                                        </span>
+                                        @if (!is_null($trainer->email_verified_at))
+                                            <span
+                                                class="ml-3 text-sm text-gray-600 dark:text-gray-400">{{ \Carbon\Carbon::parse($trainer->email_verified_at)->format('d M Y H:i') }}</span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Professional Information & Actions -->
+            <div class="space-y-6">
+                <!-- Professional Info Card -->
+                <div
+                    class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+                    <div class="bg-gradient-to-r from-purple-500 to-purple-600 p-6">
+                        <h3 class="text-xl font-semibold text-white flex items-center">
+                            <i class="fas fa-briefcase mr-3"></i>
+                            Profesional
+                        </h3>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Alamat</label>
+                            <p class="text-gray-900 dark:text-white">{{ $trainer->alamat ?? '-' }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">No.
+                                Telepon</label>
+                            <p class="text-gray-900 dark:text-white">{{ $trainer->no_tlp ?? '-' }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Cabang</label>
+                            <p class="text-gray-900 dark:text-white">{{ $trainer->cabang ?? '-' }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Bergabung
+                                Sejak</label>
+                            <p class="text-gray-900 dark:text-white">
+                                {{ $trainer->created_at ? $trainer->created_at->format('d M Y') : '-' }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions Card -->
+                <div
+                    class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+                    <div class="bg-gradient-to-r from-green-500 to-green-600 p-6">
+                        <h3 class="text-xl font-semibold text-white flex items-center">
+                            <i class="fas fa-bolt mr-3"></i>
+                            Aksi Cepat
+                        </h3>
+                    </div>
+                    <div class="p-6 space-y-3">
+                        @if (is_null($trainer->email_verified_at))
+                            <form method="POST" action="{{ route('trainer.verify', $trainer->id) }}" class="block">
+                                @csrf
+                                <button type="submit"
+                                    class="w-full inline-flex items-center justify-center px-4 py-3 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg shadow-md transition duration-200 transform hover:scale-105">
+                                    <i class="fas fa-check-circle mr-2"></i>
+                                    Verifikasi Email
+                                </button>
+                            </form>
+                        @endif
+                        <a href="{{ route('trainer.edit', $trainer->id) }}"
+                            class="w-full inline-flex items-center justify-center px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow-md transition duration-200 transform hover:scale-105">
+                            <i class="fas fa-edit mr-2"></i>
+                            Edit Profil
+                        </a>
+                        <a href="{{ route('trainer.index') }}"
+                            class="w-full inline-flex items-center justify-center px-4 py-3 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium rounded-lg shadow-md transition duration-200 transform hover:scale-105">
+                            <i class="fas fa-arrow-left mr-2"></i>
+                            Kembali ke Daftar
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 @endsection
