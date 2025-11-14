@@ -26,16 +26,22 @@
         </div>
     </header>
 
-    <form method="GET" action="{{ route('trainer.index') }}" class="mb-5 bg-white p-4 sm:p-5 rounded-xl shadow-lg">
+    <form method="GET" action="{{ route('trainer.index') }}"
+        class="mb-5 bg-white dark:bg-gray-800 p-4 sm:p-5 rounded-xl shadow-lg">
+
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
             {{-- Filter Perusahaan --}}
             <div>
-                <label class="block text-sm font-semibold mb-1">Perusahaan</label>
+                <label class="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200">Perusahaan</label>
                 <select name="filter_perusahaan" id="filter_perusahaan"
-                    class="w-full border-gray-300 rounded-md shadow-sm text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    <option value="">-- Semua Perusahaan --</option>
+                    class="w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 
+                       text-gray-800 dark:text-gray-200 rounded-md shadow-sm text-sm
+                       focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="" class="dark:bg-gray-700">-- Semua Perusahaan --</option>
+
                     @foreach ($dropdownPerusahaanList as $perusahaan)
-                        <option value="{{ $perusahaan }}"
+                        <option value="{{ $perusahaan }}" class="dark:bg-gray-700"
                             {{ request('filter_perusahaan') == $perusahaan ? 'selected' : '' }}>
                             {{ $perusahaan }}
                         </option>
@@ -45,42 +51,55 @@
 
             {{-- Filter Cabang --}}
             <div>
-                <label class="block text-sm font-semibold mb-1">Cabang</label>
+                <label class="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200">Cabang</label>
                 <select name="filter_cabang" id="filter_cabang"
-                    class="w-full border-gray-300 rounded-md shadow-sm text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    <option value="">-- Semua Cabang --</option>
+                    class="w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 
+                       text-gray-800 dark:text-gray-200 rounded-md shadow-sm text-sm
+                       focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+
+                    <option value="" class="dark:bg-gray-700">-- Semua Cabang --</option>
+
                     @if (request('filter_perusahaan'))
                         @php
                             $roleKey = array_search(request('filter_perusahaan'), $namaPerusahaan) ?? null;
                             $cabangs = $roleKey ? $kantorCabang[$roleKey] ?? [] : [];
                         @endphp
+
                         @foreach ($cabangs as $cabang)
-                            <option value="{{ $cabang }}" {{ request('filter_cabang') == $cabang ? 'selected' : '' }}>
+                            <option value="{{ $cabang }}" class="dark:bg-gray-700"
+                                {{ request('filter_cabang') == $cabang ? 'selected' : '' }}>
                                 {{ $cabang }}
                             </option>
                         @endforeach
+
                     @endif
                 </select>
             </div>
 
             {{-- Search --}}
             <div>
-                <label class="block text-sm font-semibold mb-1">Cari Trainer</label>
+                <label class="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200">Cari Trainer</label>
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Nama atau email..."
-                    class="w-full border-gray-300 rounded-md shadow-sm text-sm px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    class="w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700
+                       text-gray-800 dark:text-gray-200 rounded-md shadow-sm text-sm px-3 py-2
+                       placeholder-gray-400 dark:placeholder-gray-500
+                       focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
             </div>
 
             {{-- Sort --}}
             <div>
-                <label class="block text-sm font-semibold mb-1">Urutkan</label>
+                <label class="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200">Urutkan</label>
                 <select name="sort_by"
-                    class="w-full border-gray-300 rounded-md shadow-sm text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    class="w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 
+                       text-gray-800 dark:text-gray-200 rounded-md shadow-sm text-sm
+                       focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     <option value="latest" {{ request('sort_by') == 'latest' ? 'selected' : '' }}>Terbaru</option>
                     <option value="oldest" {{ request('sort_by') == 'oldest' ? 'selected' : '' }}>Terlama</option>
                     <option value="name_asc" {{ request('sort_by') == 'name_asc' ? 'selected' : '' }}>Nama A-Z</option>
                     <option value="name_desc" {{ request('sort_by') == 'name_desc' ? 'selected' : '' }}>Nama Z-A</option>
                 </select>
             </div>
+
         </div>
 
         {{-- Tombol --}}
@@ -89,14 +108,17 @@
                 class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm font-medium transition duration-200 text-center">
                 Reset
             </a>
+
             <button type="submit"
                 class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium transition duration-200">
                 Filter
             </button>
         </div>
+
     </form>
 
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-gray-300">
+
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-gray-300 dark:border-gray-800">
         <!-- Mobile Card View -->
         <div class="block md:hidden p-4 space-y-4">
             @forelse ($trainer as $item)
