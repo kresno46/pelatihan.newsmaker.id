@@ -111,7 +111,7 @@ class ProfileController extends Controller
             'tanggal_lahir' => ['nullable', 'date'],
             'alamat' => ['nullable', 'string'],
             'no_tlp' => ['nullable', 'string', 'max:20'],
-            'jabatan' => ['nullable', 'in:BC,SBC,SBM,BM'],
+            'jabatan' => ['nullable', 'in:BC,SBC,BsM,SBM,EM,SEM,VBM,BrM'],
             'role' => ['nullable', 'string', Rule::in(['Trainer (SGB)', 'Trainer (RFB)', 'Trainer (EWF)', 'Trainer (BPF)', 'Trainer (KPF)'])],
             'cabang' => ['nullable', 'string'],
         ]);

@@ -211,6 +211,7 @@ class UserController extends Controller
             'tanggal_lahir' => 'nullable|date',
             'alamat' => 'nullable|string',
             'no_tlp' => 'nullable|string',
+            'jabatan' => 'nullable|string|in:BC,SBC,BsM,SBM,EM,SEM,VBM,BrM',
             'role' => 'nullable|string|in:Trainer (SGB),Trainer (RFB),Trainer (EWF),Trainer (BPF),Trainer (KPF)',
             'cabang' => 'nullable|string',
         ]);
@@ -224,6 +225,7 @@ class UserController extends Controller
             'tanggal_lahir' => $validated['tanggal_lahir'] ?? $trainer->tanggal_lahir,
             'alamat' => $validated['alamat'] ?? $trainer->alamat,
             'no_tlp' => $validated['no_tlp'] ?? $trainer->no_tlp,
+            'jabatan' => $validated['jabatan'] ?? $trainer->jabatan,
             'role' => $validated['role'] ?? $trainer->role,
             'cabang' => $validated['cabang'] ?? $trainer->cabang,
         ]);
