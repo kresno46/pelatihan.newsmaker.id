@@ -122,6 +122,13 @@ class ProfileController extends Controller
                 ->withInput();
         }
 
+        // 🚫 Jika user sudah punya jabatan, jangan izinkan mengubahnya
+        if ($user->jabatan !== null && $request->jabatan !== $user->jabatan) {
+            return Redirect::back()
+                ->with('error', 'Jabatan tidak dapat diubah karena sudah ditetapkan.')
+                ->withInput();
+        }
+
         $validatedData = $validator->validated();
 
         // Update atribut user

@@ -16,11 +16,12 @@ class JadwalAbsensiController extends Controller
         $search = $request->get('search');
         $jadwals = JadwalAbsensi::with('postTestSession') // Eager load relasi postTestSession
             ->when($search, function ($query) use ($search) {
-                $query->where('title', 'like', '%' . $search . '%');
+                $query->where('title', 'like', '%'.$search.'%');
             })
             ->orderBy('tanggal', 'desc')
             ->get();
         $postTestSessions = PostTestSession::all(); // Ambil semua sesi post-test
+
         return view('jadwal.index', compact('jadwals', 'postTestSessions', 'search'));
     }
 
@@ -30,6 +31,7 @@ class JadwalAbsensiController extends Controller
     public function create()
     {
         $postTestSessions = PostTestSession::all(); // Ambil semua sesi post-test
+
         return view('jadwal.create', compact('postTestSessions'));
     }
 
@@ -39,7 +41,7 @@ class JadwalAbsensiController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required|string|max:255',
+            'title' => 'required|string|max:50',
             'tanggal' => 'required|date',
             'post_test_session_id' => 'required|exists:post_test_sessions,id',
         ]);
@@ -61,6 +63,7 @@ class JadwalAbsensiController extends Controller
     {
         $jadwal = JadwalAbsensi::findOrFail($id);
         $postTestSessions = PostTestSession::all(); // Ambil semua sesi post-test
+
         return view('jadwal.edit', compact('jadwal', 'postTestSessions'));
     }
 
@@ -72,7 +75,7 @@ class JadwalAbsensiController extends Controller
         $jadwal = JadwalAbsensi::findOrFail($id);
 
         $request->validate([
-            'title' => 'required|string|max:255',
+            'title' => 'required|string|max:50',
             'tanggal' => 'required|date',
             'post_test_session_id' => 'required|exists:post_test_sessions,id',
         ]);
@@ -83,7 +86,7 @@ class JadwalAbsensiController extends Controller
             'post_test_session_id' => $request->post_test_session_id,
         ]);
 
-        return redirect()->route('absensi.index')->with('Alert', 'Jadwal ' . $jadwal->title . ' berhasil diperbarui.');
+        return redirect()->route('absensi.index')->with('Alert', 'Jadwal '.$jadwal->title.' berhasil diperbarui.');
     }
 
     /**
@@ -94,7 +97,7 @@ class JadwalAbsensiController extends Controller
         $jadwal = JadwalAbsensi::findOrFail($id);
         $jadwal->delete();
 
-        return back()->with('Alert', 'Jadwal ' . $jadwal->title . ' berhasil dihapus.');
+        return back()->with('Alert', 'Jadwal '.$jadwal->title.' berhasil dihapus.');
     }
 
     /**
@@ -103,7 +106,7 @@ class JadwalAbsensiController extends Controller
     public function toggle($id)
     {
         $jadwal = JadwalAbsensi::findOrFail($id);
-        $jadwal->is_open = !$jadwal->is_open;
+        $jadwal->is_open = ! $jadwal->is_open;
         $jadwal->save();
 
         return back();

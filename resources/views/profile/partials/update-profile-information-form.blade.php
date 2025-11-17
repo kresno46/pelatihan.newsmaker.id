@@ -48,7 +48,7 @@
             <div class="mt-4">
                 <x-input-label-append for="jabatan" :value="__('Jabatan')" :append="empty($user->jabatan) ? '<span class=\'text-red-500\'>*</span>' : ''" />
 
-                <select id="jabatan" name="jabatan"
+                <select id="jabatan" name="jabatan" @if (auth()->user()->jabatan) disabled @endif
                     class="block mt-1 w-full rounded-md shadow-sm border-gray-300
                             dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
                     <option value="">-- Pilih Jabatan --</option>
@@ -59,6 +59,11 @@
                         </option>
                     @endforeach
                 </select>
+                @if (auth()->user()->jabatan)
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                        Jabatan tidak dapat diubah.
+                    </p>
+                @endif
 
                 <x-input-error :messages="$errors->get('jabatan')" class="mt-2" />
             </div>

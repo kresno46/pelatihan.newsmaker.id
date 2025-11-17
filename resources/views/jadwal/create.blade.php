@@ -24,8 +24,7 @@
             <div class="mb-4">
                 <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Judul Sesi</label>
                 <input type="text" name="title" id="title" value="{{ old('title') }}"
-                    class="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 mt-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                    required>
+                    class="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 mt-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                 @error('title')
                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                 @enderror
@@ -35,8 +34,7 @@
             <div class="mb-4">
                 <label for="tanggal" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tanggal</label>
                 <input type="date" name="tanggal" id="tanggal" value="{{ old('tanggal') }}"
-                    class="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 mt-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                    required>
+                    class="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 mt-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                 @error('tanggal')
                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                 @enderror
