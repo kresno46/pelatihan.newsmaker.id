@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\PostTestSession;
 use App\Models\PostTestResult;
+use App\Models\PostTestSession;
+use Illuminate\Http\Request;
 
 class TestController extends Controller
 {
     public function index(Request $request)
     {
-        $tipe = $request->get('tipe', 'PATD'); // default PATD
+        $tipe = $request->get('tipe', 'PATL'); // default PATD
         $userId = auth()->id();
 
         $tests = PostTestSession::where('tipe', $tipe)->get()->map(function ($test) use ($userId) {
@@ -19,7 +19,7 @@ class TestController extends Controller
                 ->latest()
                 ->first();
 
-            if (!$result) {
+            if (! $result) {
                 $test->progres = 'Belum Dikerjakan';
             } elseif ($result->score < 60) {
                 $test->progres = 'Nilai di Bawah 60';
@@ -42,7 +42,7 @@ class TestController extends Controller
         $session = PostTestSession::where('slug', $slug)->with('questions')->firstOrFail();
 
         // Proteksi: cek status
-        if (!$session->status) { // Status now boolean
+        if (! $session->status) { // Status now boolean
             return redirect()->route('post-test.index')
                 ->with('error', 'Post test ini saat ini tidak tersedia.');
         }
@@ -62,7 +62,7 @@ class TestController extends Controller
 
         $key = "quiz_{$session->id}_questions_user_{$userId}";
 
-        if (!session()->has($key)) {
+        if (! session()->has($key)) {
             $questions = $session->questions()->inRandomOrder()->get();
             session([$key => $questions->pluck('id')->toArray()]);
         } else {
@@ -77,7 +77,7 @@ class TestController extends Controller
         }
 
         $startKey = "quiz_{$session->id}_start_time_user_{$userId}";
-        if (!session()->has($startKey)) {
+        if (! session()->has($startKey)) {
             session([$startKey => now()]);
         }
 
@@ -87,14 +87,14 @@ class TestController extends Controller
     // Submit Kuis
     public function submitQuiz(Request $request, $slug)
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             abort(403, 'Unauthorized.');
         }
 
         $session = PostTestSession::where('slug', $slug)->with('questions')->firstOrFail();
 
         // Proteksi: cek status
-        if (!$session->status) { // Status now boolean
+        if (! $session->status) { // Status now boolean
             return redirect()->route('post-test.index')
                 ->with('error', 'Post test ini saat ini tidak tersedia.');
         }
@@ -133,9 +133,9 @@ class TestController extends Controller
 
         // Simpan hasil baru
         $result = PostTestResult::create([
-            'user_id'    => $userId,
+            'user_id' => $userId,
             'session_id' => $session->id,
-            'score'      => $score,
+            'score' => $score,
         ]);
 
         return redirect()->route('post-test.result', $result->id)
