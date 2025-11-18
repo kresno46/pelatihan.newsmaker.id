@@ -4,11 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CertificateAward;
 use App\Models\PostTestResult;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
 
 class SertifikatController extends Controller
 {
@@ -69,7 +65,7 @@ class SertifikatController extends Controller
             'Trainer (SGB)' => 'sertifikat.sgb',
             'Trainer (KPF)' => 'sertifikat.kpf',
             'Trainer (EWF)' => 'sertifikat.ewf',
-            'Trainer (BPF)' => 'sertifikat.bpf',
+            'Trainer (BPF)' => 'sertifikat.BPF',
             default => 'sertifikat.default',
         };
 
@@ -119,6 +115,7 @@ class SertifikatController extends Controller
     {
         // Menentukan batch_number otomatis dengan mencari yang terbesar dan menambahkannya
         $lastBatchNumber = CertificateAward::where('user_id', $userId)->max('batch_number');
+
         return $lastBatchNumber ? $lastBatchNumber + 1 : 1;
     }
 }

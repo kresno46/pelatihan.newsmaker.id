@@ -41,7 +41,7 @@ class JadwalAbsensiController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required|string|max:50',
+            'title' => 'required|string|max:100',
             'tanggal' => 'required|date',
             'post_test_session_id' => 'required|exists:post_test_sessions,id',
         ]);
@@ -75,7 +75,7 @@ class JadwalAbsensiController extends Controller
         $jadwal = JadwalAbsensi::findOrFail($id);
 
         $request->validate([
-            'title' => 'required|string|max:50',
+            'title' => 'required|string|max:100',
             'tanggal' => 'required|date',
             'post_test_session_id' => 'required|exists:post_test_sessions,id',
         ]);
