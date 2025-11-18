@@ -31,8 +31,8 @@
                 <x-text-input id="name" type="text" name="name" class="block mt-1 w-full" readonly
                     :value="old('name', $user->name)" />
                 <x-input-error :messages="$errors->get('name')" class="mt-2" />
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    Nama lengkap tidak dapat diubah. Jika ada kesalahan, hubungi administrator.
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400 italic">
+                    ~ Nama lengkap tidak dapat diubah. Jika ada kesalahan, hubungi administrator. ~
                 </p>
             </div>
 
@@ -48,21 +48,70 @@
             <div class="mt-4">
                 <x-input-label-append for="jabatan" :value="__('Jabatan')" :append="empty($user->jabatan) ? '<span class=\'text-red-500\'>*</span>' : ''" />
 
-                <select id="jabatan" name="jabatan" @if (auth()->user()->jabatan) disabled @endif
-                    class="block mt-1 w-full rounded-md shadow-sm border-gray-300
-                            dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
-                    <option value="">-- Pilih Jabatan --</option>
-                    @foreach (['BC', 'SBC', 'BsM', 'SBM', 'EM', 'SEM', 'VBM', 'BrM'] as $jabatan)
-                        <option value="{{ $jabatan }}"
-                            {{ old('jabatan', $user->jabatan) === $jabatan ? 'selected' : '' }}>
-                            {{ $jabatan }}
-                        </option>
-                    @endforeach
-                </select>
                 @if (auth()->user()->jabatan)
-                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        Jabatan tidak dapat diubah.
+                    {{-- Jika user sudah punya jabatan → tidak bisa diubah --}}
+                    @php
+                        $jabatanMap = [
+                            'Admin' => 'Administrator',
+                            'Owner' => 'Owner',
+                            'CEO' => 'Chief Executive Officer',
+                            'CBO' => 'Chief Business Officer',
+                            'BrM' => 'Branch Manager',
+                            'VBM' => 'Vice Business Manager',
+                            'SVBM' => 'Senior Vice Business Manager',
+                            'SEM' => 'Senior Executive Manager',
+                            'EM' => 'Executive Manager',
+                            'SBM' => 'Senior Business Manager',
+                            'BsM' => 'Business Manager',
+                            'SBC' => 'Senior Business Consultant',
+                            'BC' => 'Business Consultant',
+                        ];
+
+                        $jabatanValue = $user->jabatan;
+                        $jabatanText = $jabatanMap[$jabatanValue] ?? $jabatanValue;
+                    @endphp
+
+                    {{-- TAMPILKAN NAMA JABATAN PENUH — TETAPI VALUE ASLI TETAP SINGKATAN --}}
+                    <x-text-input id="jabatan" type="text" class="block mt-1 w-full" readonly :value="$jabatanText" />
+
+                    {{-- Hidden input untuk tetap mengirim singkatan ke server --}}
+                    <input type="hidden" name="jabatan" value="{{ $jabatanValue }}">
+
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400 italic">
+                        ~ Jabatan tidak dapat diubah. Jika ada kesalahan, hubungi administrator. ~
                     </p>
+                @else
+                    @php
+                        $jabatanMap = [
+                            'Admin' => 'Administrator',
+                            'Owner' => 'Owner',
+                            'CEO' => 'Chief Executive Officer',
+                            'CBO' => 'Chief Business Officer',
+                            'BrM' => 'Branch Manager',
+                            'VBM' => 'Vice Business Manager',
+                            'SVBM' => 'Senior Vice Business Manager',
+                            'SEM' => 'Senior Executive Manager',
+                            'EM' => 'Executive Manager',
+                            'SBM' => 'Senior Business Manager',
+                            'BsM' => 'Business Manager',
+                            'SBC' => 'Senior Business Consultant',
+                            'BC' => 'Business Consultant',
+                        ];
+                        $pilihan = ['BC', 'SBC', 'BsM', 'SBM', 'EM', 'SEM', 'VBM', 'BrM'];
+                    @endphp
+
+                    <select id="jabatan" name="jabatan"
+                        class="block mt-1 w-full rounded-md shadow-sm border-gray-300
+        dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600">
+                        <option value="">-- Pilih Jabatan --</option>
+
+                        @foreach ($pilihan as $kode)
+                            <option value="{{ $kode }}"
+                                {{ old('jabatan', $user->jabatan) === $kode ? 'selected' : '' }}>
+                                {{ $jabatanMap[$kode] }}
+                            </option>
+                        @endforeach
+                    </select>
                 @endif
 
                 <x-input-error :messages="$errors->get('jabatan')" class="mt-2" />
