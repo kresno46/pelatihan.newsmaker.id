@@ -10,7 +10,7 @@ class TestController extends Controller
 {
     public function index(Request $request)
     {
-        $tipe = $request->get('tipe', 'PATL'); // default PATD
+        $tipe = $request->get('tipe', 'PATD'); // default PATD
         $userId = auth()->id();
 
         $tests = PostTestSession::where('tipe', $tipe)->get()->map(function ($test) use ($userId) {

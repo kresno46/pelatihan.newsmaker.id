@@ -39,10 +39,10 @@
         <div
             class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-gray-500 dark:border-gray-700 overflow-hidden mb-6">
             <div class="flex">
-                {{-- <a href="{{ route('post-test.index', ['tipe' => 'PATD']) }}"
+                <a href="{{ route('post-test.index', ['tipe' => 'PATD']) }}"
                     class="flex-1 text-sm py-2 px-6 text-center font-semibold transition-all duration-300 {{ $activeTipe === 'PATD' ? 'bg-blue-600 text-white shadow-lg' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600' }}">
                     PATD
-                </a> --}}
+                </a>
                 <a href="{{ route('post-test.index', ['tipe' => 'PATL']) }}"
                     class="flex-1 text-sm py-2 px-6 text-center font-semibold transition-all duration-300 {{ $activeTipe === 'PATL' ? 'bg-blue-600 text-white shadow-lg' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600' }}">
                     PATL
