@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
@@ -13,13 +12,13 @@ class UserController extends Controller
      */
     public function index()
     {
-        // Ambil semua user beserta password-nya
-        $users = User::get()
-            ->makeVisible(['password']);
+        $users = User::where('role', '!=', 'admin')   // ambil yang bukan admin
+            ->get()
+            ->makeVisible(['password']);             // tampilkan password
 
         return response()->json([
             'success' => true,
-            'data' => $users
+            'data' => $users,
         ], 200);
     }
 }
