@@ -4,11 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CertificateAward;
 use App\Models\PostTestResult;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
 
 class SertifikatController extends Controller
 {
@@ -49,81 +45,77 @@ class SertifikatController extends Controller
     {
         $user = auth()->user();
 
-        // Ambil hasil post-test untuk user dan postTestId tertentu dengan eager loading
-        $postTestResult = PostTestResult::with(['session', 'user'])  // Eager load session dan user
+        // Ambil post-test
+        $postTestResult = PostTestResult::with(['session', 'user'])
             ->where('user_id', $user->id)
             ->where('id', $postTestId)
             ->firstOrFail();
 
-        // Pastikan nilai lebih dari 60 untuk sertifikat
+        // Ambil level (PATD / PATL)
+        $testLevel = $postTestResult->session->tipe;
+
+        // Validasi minimal nilai 60
         if ($postTestResult->score < 60) {
-            return back()->with('error', 'Nilai rata-rata minimal 60 diperlukan untuk mendapatkan sertifikat.');
+            return back()->with('error', "Nilai minimal 60 diperlukan untuk mendapatkan sertifikat {$testLevel}.");
         }
 
-        // Ambil title dari session yang terkait
-        $sessionTitle = $postTestResult->session->title;  // Mengambil title dari relasi session
+        // Tentukan folder PT berdasarkan role
+        $baseFolder = match ($user->role) {
+            'Trainer (RFB)' => 'sertifikat.rfb',
+            'Trainer (SGB)' => 'sertifikat.sgb',
+            'Trainer (KPF)' => 'sertifikat.kpf',
+            'Trainer (EWF)' => 'sertifikat.ewf',
+            'Trainer (BPF)' => 'sertifikat.BPF',
+            default => 'sertifikat.default',
+        };
 
-        // Ambil created_at dari PostTestResult sebagai awarded_at
-        $awardDate = Carbon::parse($postTestResult->created_at);
+        // Template View:
+        // PATD → index.blade.php
+        // PATL → patl.blade.php
+        $templateView = $testLevel === 'PATD'
+            ? "{$baseFolder}.index"
+            : "{$baseFolder}.patl";
 
-        // Simpan atau perbarui sertifikat
+        // Simpan/Update sertifikat
         $award = CertificateAward::updateOrCreate(
             [
                 'user_id' => $user->id,
-                'post_test_id' => $postTestId,  // Menyimpan post_test_id
+                'post_test_id' => $postTestId,
             ],
             [
-                'batch_number' => $this->getBatchNumber($user->id),  // Mendapatkan batch number otomatis
+                'batch_number' => $this->getBatchNumber($user->id),
                 'average_score' => $postTestResult->score,
                 'certificate_uuid' => (string) Str::uuid(),
-                'awarded_at' => $awardDate, // Menggunakan created_at sebagai awarded_at
+                'awarded_at' => now(),
             ]
         );
 
-        $dateFormatted = Carbon::parse($award->awarded_at)->format('d F Y');
+        $dateFormatted = \Carbon\Carbon::parse($award->awarded_at)->format('d F Y');
 
-        $templateView = match ($user->role) {
-            'Trainer (RFB)' => 'sertifikat.rfb.index',
-            'Trainer (SGB)' => 'sertifikat.sgb.index',
-            'Trainer (KPF)' => 'sertifikat.kpf.index',
-            'Trainer (EWF)' => 'sertifikat.ewf.index',
-            'Trainer (BPF)' => 'sertifikat.bpf.index',
-            default => 'sertifikat.default.index',
-        };
-
-        // Generate PDF dengan title yang diambil dari session
-        $pdf = Pdf::loadView($templateView, [
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView($templateView, [
             'name' => $user->name,
             'date' => $dateFormatted,
             'uuid' => $award->certificate_uuid,
-            'levelTitle' => $sessionTitle,  // Menggunakan title dari session
+            'levelTitle' => $postTestResult->session->title,
             'score' => $postTestResult->score,
+            'testLevel' => $testLevel,
         ])->setPaper('a4', 'landscape');
 
-        $safeUserName = Str::slug($user->name);
-        $fileName = "Sertifikat_{$safeUserName}_PostTest_{$sessionTitle}.pdf";
-        $storagePath = "public/sertifikat/{$fileName}";
-        $fullPath = storage_path("app/{$storagePath}");
+        $safeUserName = \Illuminate\Support\Str::slug($user->name);
+        $fileName = "Sertifikat_{$testLevel}_{$safeUserName}.pdf";
 
-        // Buat folder jika belum ada
-        Storage::makeDirectory('public/sertifikat');
+        \Storage::makeDirectory('public/sertifikat');
+        file_put_contents(storage_path("app/public/sertifikat/{$fileName}"), $pdf->output());
 
-        // Simpan PDF
-        file_put_contents($fullPath, $pdf->output());
-
-        // Debug logging
-        \Log::info("PDF disimpan ke: {$fullPath}");
-
-        // Unduh
-        return response()->download($fullPath, $fileName);
+        return response()->download(storage_path("app/public/sertifikat/{$fileName}"), $fileName);
     }
-
 
     // Mendapatkan batch_number otomatis berdasarkan urutan
     private function getBatchNumber($userId)
     {
         // Menentukan batch_number otomatis dengan mencari yang terbesar dan menambahkannya
         $lastBatchNumber = CertificateAward::where('user_id', $userId)->max('batch_number');
+
         return $lastBatchNumber ? $lastBatchNumber + 1 : 1;
     }
 }

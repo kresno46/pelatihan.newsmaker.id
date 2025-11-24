@@ -68,7 +68,7 @@
                 <!-- Navigation - Main Menu -->
                 <nav>
                     <ul class="flex flex-col space-y-2">
-                        <li class="text-sm text-gray-500 uppercase tracking-wide">Menu</li>
+                        <li class="text-sm text-gray-500 uppercase tracking-wide">Dashboard</li>
                         <li>
                             <a href="{{ route('dashboard') }}"
                                 class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
@@ -89,16 +89,6 @@
                     <nav>
                         <ul class="flex flex-col space-y-2">
                             <li class="text-sm text-gray-500 uppercase tracking-wide">Edukasi</li>
-                            {{-- <li>
-                                <a href="{{ route('folder.index') }}"
-                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
-                            {{ request()->routeIs('ebook.*') || request()->routeIs('quiz.*') || request()->routeIs('folder.*')
-                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
-                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                    <i class="fa-solid fa-book"></i>
-                                    <span>{{ __('eBook') }}</span>
-                                </a>
-                            </li> --}}
                             <li>
                                 <a href="{{ route('AbsensiUser.index') }}"
                                     class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
@@ -130,16 +120,6 @@
                     <nav>
                         <ul class="flex flex-col space-y-2">
                             <li class="text-sm text-gray-500 uppercase tracking-wide">Menu</li>
-                            {{-- <li>
-                                <a href="{{ route('folder.index') }}"
-                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
-                            {{ request()->routeIs('ebook.*') || request()->routeIs('quiz.*') || request()->routeIs('folder.*')
-                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
-                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                    <i class="fa-solid fa-book"></i>
-                                    <span>{{ __('eBook') }}</span>
-                                </a>
-                            </li> --}}
                             <li>
                                 <a href="{{ route('posttest.index') }}"
                                     class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
@@ -300,7 +280,8 @@
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button type="submit"
-                                    class="w-full text-left px-4 py-2 text-white bg-red-600 hover:bg-red-700"> Keluar
+                                    class="w-full text-left px-4 py-2 text-white bg-red-600 hover:bg-red-700">
+                                    Keluar
                                 </button>
                             </form>
                         </div>
@@ -332,7 +313,7 @@
                     <!-- Navigation - Main Menu -->
                     <nav class="my-4">
                         <ul class="flex flex-col space-y-2">
-                            <li class="text-sm text-gray-500 uppercase tracking-wide">Menu</li>
+                            <li class="text-sm text-gray-500 uppercase tracking-wide">Dashboard</li>
                             <li>
                                 <a href="{{ route('dashboard') }}"
                                     class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
@@ -353,16 +334,6 @@
                         <nav class="my-4">
                             <ul class="flex flex-col space-y-2">
                                 <li class="text-sm text-gray-500 uppercase tracking-wide">Edukasi</li>
-                                {{-- <li>
-                                    <a href="{{ route('folder.index') }}"
-                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
-                            {{ request()->routeIs('ebook.*') || request()->routeIs('quiz.*') || request()->routeIs('folder.*')
-                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
-                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                        <i class="fa-solid fa-book"></i>
-                                        <span>{{ __('eBook') }}</span>
-                                    </a>
-                                </li> --}}
                                 <li>
                                     <a href="{{ route('AbsensiUser.index') }}"
                                         class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
@@ -394,16 +365,6 @@
                         <nav class="my-4">
                             <ul class="flex flex-col space-y-2">
                                 <li class="text-sm text-gray-500 uppercase tracking-wide">Menu</li>
-                                {{-- <li>
-                                    <a href="{{ route('folder.index') }}"
-                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
-                            {{ request()->routeIs('ebook.*') || request()->routeIs('quiz.*') || request()->routeIs('folder.*')
-                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
-                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                        <i class="fa-solid fa-book"></i>
-                                        <span>{{ __('eBook') }}</span>
-                                    </a>
-                                </li> --}}
                                 <li>
                                     <a href="{{ route('posttest.index') }}"
                                         class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
@@ -495,14 +456,14 @@
                                     </a>
                                 </li>
                                 <li>
-                                    {{-- <a href="{{ route('riwayat.index') }}"
+                                    <a href="{{ route('riwayat.index') }}"
                                         class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                             {{ request()->routeIs('riwayat.*')
                                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
                                         <i class="fa-solid fa-clock-rotate-left"></i>
                                         <span>Riwayat Saya</span>
-                                    </a> --}}
+                                    </a>
                                 </li>
                             @endif
                         </ul>

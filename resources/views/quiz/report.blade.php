@@ -23,18 +23,46 @@
                     {{ __('Kembali') }}
                 </a>
 
-                {{-- Export bawa filter q & sort & company & branch agar konsisten --}}
-                <a href="{{ route('posttest.report.export', $session->slug) }}?q={{ request('q') }}&sort={{ request('sort') }}&company={{ request('company') }}&branch={{ request('branch') }}"
-                    class="px-3 py-2 text-sm rounded bg-green-500 hover:bg-green-600 text-white transition">
-                    {{ __('Export CSV') }}
-                </a>
+                {{-- Export bawa filter q & sort & company agar konsisten --}}
+                <div class="flex gap-2">
+                    <a href="{{ route('posttest.report.export', $session->slug) }}?q={{ request('q') }}&sort={{ request('sort') }}&company={{ request('company') }}&cabang={{ request('cabang') }}"
+                        class="px-3 py-2 text-sm rounded bg-green-500 hover:bg-green-600 text-white transition">
+                        {{ __('Export CSV') }}
+                    </a>
+
+                    {{-- Download per cabang --}}
+                    @if ($branches->isNotEmpty())
+                        <div class="relative">
+                            <button type="button" id="downloadDropdown"
+                                class="px-3 py-2 text-sm rounded bg-blue-500 hover:bg-blue-600 text-white transition flex items-center gap-1">
+                                {{ __('Download per Cabang') }}
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            <div id="downloadMenu"
+                                class="absolute right-0 mt-1 w-64 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10 hidden">
+                                <div class="py-1">
+                                    @foreach ($branches as $branch)
+                                        <a href="{{ route('posttest.report.export', $session->slug) }}?q={{ request('q') }}&sort={{ request('sort') }}&company={{ request('company') }}&cabang={{ $branch }}"
+                                            class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                            {{ $branch }}
+                                        </a>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                </div>
             </div>
         </div>
     </header>
 
     {{-- Filter & Sort --}}
     <div class="mb-4 p-4 sm:p-5 bg-white dark:bg-gray-800 rounded-xl shadow">
-        <form method="GET" class="grid grid-cols-1 md:grid-cols-6 gap-3">
+        <form method="GET" class="grid grid-cols-1 md:grid-cols-5 gap-3" id="filterForm">
+            <input type="hidden" name="page" value="1">
             <div>
                 <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">{{ __('Cari Peserta') }}</label>
                 <input type="text" name="q" value="{{ $filters['q'] ?? request('q') }}"
@@ -43,53 +71,70 @@
             </div>
 
             <div>
-                <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">{{ __('Filter Perusahaan') }}</label>
-                <select name="company" id="company"
+                <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">{{ __('Perusahaan') }}</label>
+                <select name="company" id="companySelect"
                     class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
-                    @php $company = $filters['company'] ?? request('company', ''); @endphp
-                    <option value="" {{ $company === '' ? 'selected' : '' }}>Semua Perusahaan</option>
-                    @foreach ($companies as $companyName)
-                        <option value="{{ $companyName }}" {{ $company === $companyName ? 'selected' : '' }}>{{ $companyName }}</option>
-                    @endforeach
+                    @php $company = $filters['company'] ?? request('company'); @endphp
+                    <option value="">{{ __('Semua Perusahaan') }}</option>
+                    <option value="PT Solid Gold Berjangka" {{ $company === 'PT Solid Gold Berjangka' ? 'selected' : '' }}>
+                        PT Solid Gold Berjangka</option>
+                    <option value="PT Rifan Financindo Berjangka"
+                        {{ $company === 'PT Rifan Financindo Berjangka' ? 'selected' : '' }}>PT Rifan Financindo Berjangka
+                    </option>
+                    <option value="PT Equity World Futures" {{ $company === 'PT Equity World Futures' ? 'selected' : '' }}>
+                        PT Equity World Futures</option>
+                    <option value="PT Best Profit Futures" {{ $company === 'PT Best Profit Futures' ? 'selected' : '' }}>PT
+                        Best Profit Futures</option>
+                    <option value="PT Kontak Perkasa Futures"
+                        {{ $company === 'PT Kontak Perkasa Futures' ? 'selected' : '' }}>PT Kontak Perkasa Futures</option>
                 </select>
             </div>
 
             <div>
-                <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">{{ __('Filter Cabang') }}</label>
-                <select name="branch" id="branch"
+                <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">{{ __('Cabang') }}</label>
+                <select name="cabang" id="cabangSelect"
                     class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
-                    @php $branch = $filters['branch'] ?? request('branch', ''); @endphp
-                    <option value="" {{ $branch === '' ? 'selected' : '' }}>Semua Cabang</option>
-                    @if($branches)
-                        @foreach ($branches as $b)
-                            <option value="{{ $b }}" {{ $branch === $b ? 'selected' : '' }}>{{ $b }}</option>
-                        @endforeach
+                    @php $cabang = $filters['cabang'] ?? request('cabang'); @endphp
+                    <option value="">{{ __('Semua Cabang') }}</option>
+                    @if ($cabang)
+                        <option value="{{ $cabang }}" selected>{{ $cabang }}</option>
                     @endif
                 </select>
             </div>
 
             <div>
                 <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">{{ __('Urutkan') }}</label>
-                <select name="sort" id="sort"
+                <select name="sort"
                     class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
                     @php $sort = $filters['sort'] ?? request('sort', 'latest'); @endphp
                     <option value="latest" {{ $sort === 'latest' ? 'selected' : '' }}>{{ __('Terbaru') }}</option>
+                    <option value="oldest" {{ $sort === 'oldest' ? 'selected' : '' }}>{{ __('Terlama') }}</option>
+                    <option value="highest" {{ $sort === 'highest' ? 'selected' : '' }}>{{ __('Skor Tertinggi') }}
+                    </option>
+                    <option value="lowest" {{ $sort === 'lowest' ? 'selected' : '' }}>{{ __('Skor Terendah') }}</option>
+                    <option value="lulus_first" {{ $sort === 'lulus_first' ? 'selected' : '' }}>Lulus Dahulu</option>
+                    <option value="tidak_lulus_first" {{ $sort === 'tidak_lulus_first' ? 'selected' : '' }}>Tidak Lulus
+                        Dahulu</option>
+                    <option value="cabang_asc" {{ $sort === 'cabang_asc' ? 'selected' : '' }}>Cabang A-Z</option>
+                    <option value="cabang_desc" {{ $sort === 'cabang_desc' ? 'selected' : '' }}>Cabang Z-A</option>
+                    <option value="nama_asc" {{ $sort === 'nama_asc' ? 'selected' : '' }}>Nama A-Z</option>
+                    <option value="nama_desc" {{ $sort === 'nama_desc' ? 'selected' : '' }}>Nama Z-A</option>
                 </select>
             </div>
 
             <div>
                 <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">{{ __('Per Halaman') }}</label>
-                @php $per = (int)($filters['per_page'] ?? request('per_page', 12)); @endphp
+                @php $per = (int)($filters['per_page'] ?? request('per_page', 20)); @endphp
                 <select name="per_page"
                     class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
-                    @foreach ([10, 12, 15, 20, 30, 50, 100, 200] as $n)
+                    @foreach ([20, 30, 50, 100, 200] as $n)
                         <option value="{{ $n }}" {{ $per === $n ? 'selected' : '' }}>{{ $n }}
                         </option>
                     @endforeach
                 </select>
             </div>
 
-            <div class="flex items-end gap-2">
+            <div class="flex items-end gap-2 md:col-span-5">
                 <button type="submit"
                     class="w-full md:w-auto px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm transition">
                     {{ __('Terapkan') }}
@@ -132,7 +177,8 @@
 
     {{-- Tombol Hapus Semua Tidak Lulus --}}
     <div class="mb-4">
-        <form action="{{ route('posttest.report.deleteAllFailed', ['session' => $session->slug]) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus semua hasil post test yang tidak lulus?');">
+        <form action="{{ route('posttest.report.deleteAllFailed', ['session' => $session->slug]) }}" method="POST"
+            onsubmit="return confirm('Yakin ingin menghapus semua hasil post test yang tidak lulus?');">
             @csrf
             @method('DELETE')
             <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded">
@@ -203,24 +249,28 @@
                                     {{ $r->score }}
                                 </td>
                                 <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-                                @if($r->score >= 60)
-                                    <span class="text-green-600 font-semibold">{{ 'Lulus' }}</span>
-                                @else
-                                    <span class="text-red-600 font-semibold">{{ 'Tidak Lulus' }}</span>
-                                @endif
-                            </td>
-                            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-                                @if($r->score < 60)
-                                <form action="{{ route('posttest.report.delete', ['session' => $session->slug, 'result' => $r->id]) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus hasil post test user ini?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-800 font-semibold">Hapus</button>
-                                </form>
-                                @endif
-                            </td>
-                            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-                                {{ optional($r->created_at)->format('Y-m-d H:i') }}
-                            </td>
+                                    @if ($r->score >= 60)
+                                        <span class="text-green-600 font-semibold">{{ 'Lulus' }}</span>
+                                    @else
+                                        <span class="text-red-600 font-semibold">{{ 'Tidak Lulus' }}</span>
+                                    @endif
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                                    @if ($r->score < 60)
+                                        <form
+                                            action="{{ route('posttest.report.delete', ['session' => $session->slug, 'result' => $r->id]) }}"
+                                            method="POST"
+                                            onsubmit="return confirm('Yakin ingin menghapus hasil post test user ini?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                class="text-red-600 hover:text-red-800 font-semibold">Hapus</button>
+                                        </form>
+                                    @endif
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                                    {{ optional($r->created_at)->format('Y-m-d H:i') }}
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -236,92 +286,105 @@
 @endsection
 
 @section('scripts')
-    @php
-        $kantorCabang = [
-            'RFB' => [
-                'Palembang',
-                'Balikpapan',
-                'Solo',
-                'Jakarta DBS Tower',
-                'Jakarta AXA Tower',
-                'Jakarta AXA 1',
-                'Jakarta AXA 2',
-                'Jakarta AXA 3',
-                'Medan',
-                'Semarang',
-                'Surabaya Pakuwon',
-                'Surabaya Ciputra',
-                'Pekanbaru',
-                'Bandung',
-                'Yogyakarta',
-            ],
-            'SGB' => ['Jakarta', 'Semarang', 'Makassar'],
-            'KPF' => ['Jakarta', 'Yogyakarta', 'Bali', 'Makassar', 'Bandung', 'Semarang'],
-            'EWF' => [
-                'SCC Jakarta',
-                'Cyber 2 Jakarta',
-                'Surabaya Trilium',
-                'Manado',
-                'Semarang',
-                'Surabaya Praxis',
-                'Cirebon',
-            ],
-            'BPF' => [
-                'Equity Tower Jakarta',
-                'Jambi',
-                'Jakarta - Pacific Place Mall',
-                'Pontianak',
-                'Malang',
-                'Surabaya',
-                'Medan',
-                'Bandung',
-                'Pekanbaru',
-                'Banjarmasin',
-                'Bandar Lampung',
-                'Semarang',
-            ],
-        ];
-        $companyToRole = [
-            'PT Rifan Financindo Berjangka' => 'RFB',
-            'PT Solid Gold Berjangka' => 'SGB',
-            'PT Kontak Perkasa Futures' => 'KPF',
-            'PT Best Profit Futures' => 'BPF',
-            'PT Equity World Futures' => 'EWF',
-        ];
-        $selectedCabang = $filters['branch'] ?? request('branch', '');
-    @endphp
-
     <script>
+        @php
+            $kantorCabang = [
+                'PT Solid Gold Berjangka' => [
+                    'Jakarta – TCC Tower', // tambahan
+                    'Semarang',
+                    'Makassar',
+                ],
+
+                'PT Rifan Financindo Berjangka' => [
+                    'Jakarta - AXA Tower 1', // tambahan
+                    'Jakarta - AXA Tower 2', // tambahan
+                    'Jakarta - AXA Tower 3', // tambahan
+                    'Jakarta – DBS Bank Tower', // tambahan
+                    'Bandung',
+                    'Solo',
+                    'Semarang',
+                    'Surabaya - Ciputra World Office Tower', // diperbaiki
+                    'Surabaya - Pakuwon Tower', // diperbaiki
+                    'Yogyakarta',
+                    'Pekanbaru',
+                    'Palembang',
+                    'Medan',
+                    'Balikpapan',
+                ],
+
+                'PT Equity World Futures' => [
+                    'SSC Jakarta', // diperbaiki
+                    'Jakarta Cyber 2', // diperbaiki
+                    'Surabaya Trillum', // diperbaiki
+                    'Manado',
+                    'Semarang',
+                    'Surabaya Praxis',
+                    'Cirebon',
+                ],
+
+                'PT Best Profit Futures' => [
+                    'Jakarta - Equity Tower', // tambahan
+                    'Jambi',
+                    'Jakarta - Pacific Place Mall',
+                    'Pontianak',
+                    'Malang',
+                    'Surabaya',
+                    'Medan',
+                    'Bandung',
+                    'Pekanbaru',
+                    'Banjarmasin',
+                    'Bandar Lampung',
+                    'Semarang',
+                ],
+
+                'PT Kontak Perkasa Futures' => [
+                    'Jakarta - Plaza Marein', // tambahan
+                    'Yogyakarta',
+                    'Bali',
+                    'Makassar',
+                    'Bandung',
+                    'Semarang',
+                ],
+            ];
+        @endphp
+
         document.addEventListener('DOMContentLoaded', function() {
             const dataCabang = @json($kantorCabang);
-            const companyToRole = @json($companyToRole);
-            const selectedCabang = @json($selectedCabang);
-            const companySelect = document.getElementById('company');
-            const branchSelect = document.getElementById('branch');
+            const companySelect = document.getElementById('companySelect');
+            const cabangSelect = document.getElementById('cabangSelect');
 
-            function updateBranchOptions(companyName) {
-                branchSelect.innerHTML = '<option value="">Semua Cabang</option>';
-                if (companyName && companyToRole[companyName]) {
-                    const roleKey = companyToRole[companyName];
-                    if (dataCabang[roleKey]) {
-                        dataCabang[roleKey].forEach(c => {
-                            const opt = document.createElement('option');
-                            opt.value = c;
-                            opt.textContent = c;
-                            if (c === selectedCabang) opt.selected = true;
-                            branchSelect.appendChild(opt);
-                        });
-                    }
+            function updateCabangOptions() {
+                const selectedCompany = companySelect.value;
+                cabangSelect.innerHTML = '<option value="">-- Pilih Cabang --</option>';
+
+                if (selectedCompany && dataCabang[selectedCompany]) {
+                    dataCabang[selectedCompany].forEach(cabang => {
+                        const option = document.createElement('option');
+                        option.value = cabang;
+                        option.textContent = cabang;
+                        cabangSelect.appendChild(option);
+                    });
                 }
             }
 
-            if (companySelect && companySelect.value) {
-                updateBranchOptions(companySelect.value);
-            }
+            companySelect.addEventListener('change', updateCabangOptions);
+            updateCabangOptions(); // Initialize on page load
 
-            companySelect?.addEventListener('change', function() {
-                updateBranchOptions(this.value);
-            });
+            // Dropdown toggle for download per cabang
+            const downloadDropdown = document.getElementById('downloadDropdown');
+            const downloadMenu = document.getElementById('downloadMenu');
+
+            if (downloadDropdown && downloadMenu) {
+                downloadDropdown.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    downloadMenu.classList.toggle('hidden');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function() {
+                    downloadMenu.classList.add('hidden');
+                });
+            }
         });
     </script>
 @endsection

@@ -18,6 +18,10 @@ class CertificateAward extends Model
         'awarded_at',
     ];
 
+    protected $casts = [
+        'awarded_at' => 'datetime',
+    ];
+
     /**
      * Relasi ke tabel users
      */
@@ -26,13 +30,11 @@ class CertificateAward extends Model
         return $this->belongsTo(User::class);
     }
 
-
-
     /**
-     * Relasi ke tabel post_test_results
+     * Relasi ke tabel folder_ebooks (batch_number → id)
      */
-    public function postTestResult(): BelongsTo
+    public function folder(): BelongsTo
     {
-        return $this->belongsTo(PostTestResult::class, 'post_test_id');
+        return $this->belongsTo(FolderEbook::class, 'batch_number');
     }
 }

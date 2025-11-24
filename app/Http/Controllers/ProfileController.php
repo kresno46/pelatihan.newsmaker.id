@@ -19,21 +19,80 @@ class ProfileController extends Controller
 
         // Tentukan cabang berdasarkan role
         $branches = $this->getBranchesByRole($user->role);
+        $allBranches = $this->getAllBranches();
 
-        return view('profile.edit', compact('user', 'branches'));
+        return view('profile.edit', compact('user', 'branches', 'allBranches'));
+    }
+
+    private function getAllBranches()
+    {
+        return [
+            'Admin' => [],
+            'Trainer (SGB)' => [
+                'Semarang',
+                'Makassar',
+                'Jakarta – TCC Tower',
+            ],
+
+            'Trainer (RFB)' => [
+                'Medan',
+                'Palembang',
+                'Semarang',
+                'Pekanbaru',
+                'Bandung',
+                'Solo',
+                'Yogyakarta',
+                'Balikpapan',
+                'Jakarta - AXA Tower 1',
+                'Jakarta - AXA Tower 2',
+                'Jakarta - AXA Tower 3',
+                'Jakarta - DBS Bank Tower',
+                'Surabaya - Ciputra World Office Tower',
+                'Surabaya - Pakuwon Tower',
+            ],
+
+            'Trainer (EWF)' => [
+                'Surabaya Trillium',
+                'Manado',
+                'Jakarta',
+                'Semarang',
+                'Surabaya Praxis',
+                'Cirebon',
+                'SSC Jakarta',
+                'Jakarta Cyber 2',
+            ],
+
+            'Trainer (BPF)' => [
+                'Jambi',
+                'Jakarta – Pacific Place Mall',
+                'Pontianak',
+                'Malang',
+                'Surabaya',
+                'Medan',
+                'Bandung',
+                'Pekanbaru',
+                'Banjarmasin',
+                'Bandar Lampung',
+                'Semarang',
+                'Jakarta - Equity Tower',
+            ],
+
+            'Trainer (KPF)' => [
+                'Yogyakarta',
+                'Bali',
+                'Makassar',
+                'Bandung',
+                'Semarang',
+                'Jakarta - Plaza Marein',
+            ],
+        ];
     }
 
     private function getBranchesByRole($role)
     {
-        $branches = [
-            'Trainer (SGB)' => ['Semarang', 'Makassar'],
-            'Trainer (RFB)' => ['Medan', 'Palembang', 'Semarang', 'Jakarta', 'Surabaya', 'Pekanbaru', 'Bandung', 'Solo', 'Yogyakarta', 'Balikpapan', 'Surabaya II'],
-            'Trainer (EWF)' => ['Surabaya Trillium', 'Manado', 'Jakarta', 'Semarang', 'Surabaya Praxis', 'Cirebon'],
-            'Trainer (BPF)' => ['Jambi', 'Jakarta – Pacific Place Mall', 'Pontianak', 'Malang', 'Surabaya', 'Medan', 'Bandung', 'Pekanbaru', 'Banjarmasin', 'Bandar Lampung', 'Semarang'],
-            'Trainer (KPF)' => ['Yogyakarta', 'Bali', 'Makassar', 'Bandung', 'Semarang'],
-        ];
+        $allBranches = $this->getAllBranches();
 
-        return $branches[$role] ?? [];
+        return $allBranches[$role] ?? [];
     }
 
     /**
@@ -43,22 +102,17 @@ class ProfileController extends Controller
     {
         $user = $request->user();
 
-        // Jika nama sudah diisi dan user bukan admin, cegah update nama
-        $isAdmin = auth()->user()->role === 'Admin';
-        $nameRules = (!$isAdmin && $user->isNameFilled()) ? [] : ['nullable', 'string', 'max:50'];
-
         // Validasi data manual
         $validator = Validator::make($request->all(), [
-            'name' => $nameRules,
+            'name' => ['nullable', 'string', 'max:50'],
             'email' => ['nullable', 'email', 'max:50', Rule::unique('users')->ignore($user->id)],
             'jenis_kelamin' => ['nullable', 'in:Pria,Wanita'],
             'tempat_lahir' => ['nullable', 'string', 'max:20'],
             'tanggal_lahir' => ['nullable', 'date'],
-            // 'warga_negara' => ['nullable', 'string', 'max:50'],
             'alamat' => ['nullable', 'string'],
             'no_tlp' => ['nullable', 'string', 'max:20'],
-            // 'pekerjaan' => ['nullable', 'string', 'max:50'],
-            'jabatan' => ['nullable', 'in:BC,SBC,SBM,BM'],
+            'jabatan' => ['nullable', 'in:BC,SBC,BsM,SBM,EM,SEM,VBM,BrM'],
+            'role' => ['nullable', 'string', Rule::in(['Trainer (SGB)', 'Trainer (RFB)', 'Trainer (EWF)', 'Trainer (BPF)', 'Trainer (KPF)'])],
             'cabang' => ['nullable', 'string'],
         ]);
 
@@ -68,12 +122,14 @@ class ProfileController extends Controller
                 ->withInput();
         }
 
-        $validatedData = $validator->validated();
-
-        // Jika nama sudah diisi dan user bukan admin, hapus dari data yang akan diupdate
-        if (!$isAdmin && $user->isNameFilled()) {
-            unset($validatedData['name']);
+        // 🚫 Jika user sudah punya jabatan, jangan izinkan mengubahnya
+        if ($user->jabatan !== null && $request->jabatan !== $user->jabatan) {
+            return Redirect::back()
+                ->with('error', 'Jabatan tidak dapat diubah karena sudah ditetapkan.')
+                ->withInput();
         }
+
+        $validatedData = $validator->validated();
 
         // Update atribut user
         $user->fill($validatedData);

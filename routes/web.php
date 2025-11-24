@@ -1,15 +1,9 @@
-<?php
+  <?php
 
 use App\Http\Controllers\AbsensiAdminController;
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\EbookController;
-use App\Http\Controllers\EmailController;
-use App\Http\Controllers\FolderController;
-use App\Http\Controllers\FolderOutlookController;
-use App\Http\Controllers\OutlookController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\JadwalAbsenController;
 use App\Http\Controllers\JadwalAbsensiController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\LaporanSertifikatController;
@@ -17,54 +11,15 @@ use App\Http\Controllers\PostTestController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\RiwayatController;
-use App\Http\Controllers\SertifikatController;
 use App\Http\Controllers\SummernoteController;
 use App\Http\Controllers\TestController;
-use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserCleanupController;
+use App\Http\Controllers\UserController;
 use App\Models\Absensi;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('dashboard');
-
-    Route::prefix('ebook')->middleware(['auth', 'verified'])->group(function () {
-
-        // 📁 Folder Routes
-        Route::get('/', [FolderController::class, 'index'])->name('folder.index');
-
-        Route::middleware('is_admin:Admin')->group(function () {
-            Route::get('/create', [FolderController::class, 'create'])->name('folder.create');
-            Route::post('/store', [FolderController::class, 'store'])->name('folder.store');
-            Route::get('/{folderSlug}/edit', [FolderController::class, 'edit'])->name('folder.edit');
-            Route::put('/{folderSlug}', [FolderController::class, 'update'])->name('folder.update');
-            Route::delete('/{folderSlug}', [FolderController::class, 'destroy'])->name('folder.destroy');
-            // Manual sync from API
-            Route::post('/sync-from-api', [FolderController::class, 'syncFromApi'])->name('folder.sync');
-        });
-
-        // 📚 Ebook & Quiz Routes
-        Route::prefix('{folderSlug}')->middleware('profile.complete')->group(function () {
-
-            // 📄 List eBook dalam Folder
-            Route::get('/', [EbookController::class, 'index'])->name('ebook.index');
-
-            // ➕ Admin - Kelola eBook
-            Route::middleware('is_admin:Admin')->group(function () {
-                Route::get('/create', [EbookController::class, 'create'])->name('ebook.create');
-                Route::post('/store', [EbookController::class, 'store'])->name('ebook.store');
-                Route::get('/{ebookSlug}/edit', [EbookController::class, 'edit'])->name('ebook.edit');
-                Route::put('/{ebookSlug}/update', [EbookController::class, 'update'])->name('ebook.update');
-                Route::delete('/{ebookSlug}/delete', [EbookController::class, 'destroy'])->name('ebook.destroy');
-            });
-
-            // 📄 Tampil Detail eBook
-            Route::get('/{ebookSlug}', [EbookController::class, 'show'])->name('ebook.show');
-
-            // 📥 Download eBook PDF
-            Route::get('/{ebookSlug}/download', [EbookController::class, 'download'])->name('ebook.download');
-        });
-    });
 
     Route::prefix('post-test')->middleware('auth', 'is_admin:Admin')->group(function () {
         // routes sesi yang sudah kamu punya
@@ -76,7 +31,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('/{session}', [QuizController::class, 'update'])->name('posttest.update');
         Route::delete('/{session}', [QuizController::class, 'destroy'])->name('posttest.destroy');
         Route::post('/toggle-status/{slug}', [PostTestController::class, 'toggleStatus'])->name('posttest.toggle');
-
 
         // REPORT
         Route::get('/{session:slug}/report', [QuizController::class, 'report'])->name('posttest.report');
@@ -98,7 +52,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::prefix('posttest')->name('post-test.')->middleware('profile.complete')->group(function () {
         Route::get('/', [TestController::class, 'index'])->name('index');
-        Route::middleware('absensi')->group(function () {
+        Route::middleware(['absensi', 'CheckPATLAccess'])->group(function () {
             Route::get('/{slug}', [TestController::class, 'showQuiz'])->name('show');
             Route::match(['GET', 'POST'], '/{slug}/question/{number}', [TestController::class, 'showQuestion'])->name('question');
             Route::post('/{slug}/submit', [TestController::class, 'submitQuiz'])->name('submit');
@@ -142,8 +96,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/{id}/edit', [UserController::class, 'edit'])->name('trainer.edit');
             Route::put('/{id}', [UserController::class, 'update'])->name('trainer.update');
             Route::get('/{id}/show', [UserController::class, 'show'])->name('trainer.show');
+            Route::post('/{id}/verify', [UserController::class, 'verify'])->name('trainer.verify');
             Route::delete('/{id}', [UserController::class, 'destroy'])->name('trainer.destroy');
-            Route::patch('/{id}/verify', [UserController::class, 'verify'])->name('trainer.verify');
         });
     });
 
@@ -157,21 +111,28 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
             Route::prefix('absensi')->group(function () {
                 Route::get('/', [JadwalAbsensiController::class, 'index'])->name('absensi.index');
+                Route::get('/create', [JadwalAbsensiController::class, 'create'])->name('absensi.create');
                 Route::post('/tambah', [JadwalAbsensiController::class, 'store'])->name('absensi.store');
+                Route::get('/{id}/edit', [JadwalAbsensiController::class, 'edit'])->name('absensi.edit');
                 Route::post('/{id}/toggle', [JadwalAbsensiController::class, 'toggle'])->name('absensi.toggle');
                 Route::put('/{id}/update', [JadwalAbsensiController::class, 'update'])->name('absensi.update');
+
                 Route::delete('/{id}/hapus', [JadwalAbsensiController::class, 'destroy'])->name('absensi.destroy');
 
                 Route::prefix('{idJadwal}')->group(function () {
                     Route::get('/', [AbsensiAdminController::class, 'indexAdmin'])->name('absensiAdmin.index');
                     Route::get('/pdf', [AbsensiAdminController::class, 'downloadPdf'])->name('absensi.downloadPdf');
                     Route::get('/excel', [AbsensiAdminController::class, 'downloadExcel'])->name('absensi.downloadExcel');
+                    Route::get('/pdf-per-cabang', [AbsensiAdminController::class, 'downloadPdfPerCabang'])->name('absensi.downloadPdfPerCabang');
+                    Route::get('/excel-per-cabang', [AbsensiAdminController::class, 'downloadExcelPerCabang'])->name('absensi.downloadExcelPerCabang');
                     Route::delete('/{idAbsensi}/delete', [AbsensiAdminController::class, 'delete'])->name('absensiAdmin.delete');
                 });
             });
 
             Route::prefix('sertifikat')->group(function () {
                 Route::get('/', [LaporanSertifikatController::class, 'index'])->name('LaporanSertifikat.index');
+                Route::get('/export', [LaporanSertifikatController::class, 'export'])->name('LaporanSertifikat.export');
+                Route::get('/export-per-cabang', [LaporanSertifikatController::class, 'exportPerCabang'])->name('LaporanSertifikat.exportPerCabang');
                 Route::delete('/{id}/delete', [LaporanSertifikatController::class, 'destroy'])->name('LaporanSertifikat.destroy');
             });
         });
@@ -199,4 +160,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/hapus-akun-tidak-verifikasi', [UserCleanupController::class, 'deleteUnverifiedUsers'])->name('user.delete');
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

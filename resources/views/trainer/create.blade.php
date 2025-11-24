@@ -32,6 +32,23 @@
                 </select>
             </div>
 
+            {{-- Jabatan --}}
+            <div class="mb-4">
+                <label for="jabatan" class="block text-sm font-medium text-gray-700 dark:text-white">Jabatan</label>
+                <select name="jabatan" id="jabatan"
+                    class="mt-1 block w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    <option value="">-- Pilih Jabatan --</option>
+                    <option value="BC">BC</option>
+                    <option value="SBC">SBC</option>
+                    <option value="BsM">BsM</option>
+                    <option value="SBM">SBM</option>
+                    <option value="EM">EM</option>
+                    <option value="SEM">SEM</option>
+                    <option value="VBM">VBM</option>
+                    <option value="BrM">BrM</option>
+                </select>
+            </div>
+
             <div class="mb-4">
                 <label for="role" class="block text-sm font-medium text-gray-700 dark:text-white">Perusahaan</label>
                 <select name="role" id="role" required
@@ -45,11 +62,11 @@
                 </select>
             </div>
 
-            <div class="mb-4" id="cabangContainer" style="display: none;">
+            <div class="mb-4" id="cabang-container" style="display: none;">
                 <label for="cabang" class="block text-sm font-medium text-gray-700 dark:text-white">Cabang</label>
                 <select name="cabang" id="cabang"
                     class="mt-1 block w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                    <!-- Opsi cabang akan ditambahkan dengan JavaScript -->
+                    <option value="">-- Pilih Kantor Cabang --</option>
                 </select>
             </div>
 
@@ -94,11 +111,11 @@
         // Script untuk menampilkan cabang berdasarkan role
         document.getElementById('role').addEventListener('change', function() {
             const role = this.value;
-            const cabangContainer = document.getElementById('cabangContainer');
+            const cabangContainer = document.getElementById('cabang-container');
             const cabangSelect = document.getElementById('cabang');
 
             // Reset nilai cabang select
-            cabangSelect.innerHTML = '<option value="">-- Pilih Cabang --</option>';
+            cabangSelect.innerHTML = '<option value="">-- Pilih Kantor Cabang --</option>';
 
             if (role === 'Trainer (SGB)') {
                 cabangContainer.style.display = 'block';
