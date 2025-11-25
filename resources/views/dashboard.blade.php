@@ -29,24 +29,24 @@
         <!-- Example Card Template -->
         @php
             $cards = [
+                // [
+                //     'title' => 'Jumlah Pelatihan Tersedia',
+                //     'value' => $jumlahPelatihan,
+                //     'suffix' => ' Pelatihan',
+                //     'icon' => 'fa-solid fa-certificate',
+                //     'color' => 'emerald',
+                //     'route' => 'post-test.index',
+                // ],
+                // [
+                //     'title' => 'Jumlah Daftar Absensi',
+                //     'value' => $jumlahJadwalAbsensi,
+                //     'suffix' => ' Jadwal',
+                //     'icon' => 'fa-solid fa-list-check',
+                //     'color' => 'pink',
+                //     'route' => 'AbsensiUser.index',
+                // ],
                 [
-                    'title' => 'Jumlah Pelatihan Tersedia',
-                    'value' => $jumlahPelatihan,
-                    'suffix' => ' Pelatihan',
-                    'icon' => 'fa-solid fa-certificate',
-                    'color' => 'emerald',
-                    'route' => 'post-test.index',
-                ],
-                [
-                    'title' => 'Jumlah Daftar Absensi',
-                    'value' => $jumlahJadwalAbsensi,
-                    'suffix' => ' Jadwal',
-                    'icon' => 'fa-solid fa-list-check',
-                    'color' => 'pink',
-                    'route' => 'AbsensiUser.index',
-                ],
-                [
-                    'title' => 'Mengisi Absensi',
+                    'title' => 'Absensi',
                     'value' => $jumlahAbsensiTerisi,
                     'suffix' => ' Terisi',
                     'icon' => 'fa-solid fa-pen-to-square',
@@ -54,23 +54,23 @@
                     'route' => 'AbsensiUser.index',
                 ],
                 [
-                    'title' => 'Jumlah Post Test',
+                    'title' => 'Post Test',
                     'value' => $jumlahSession,
                     'suffix' => ' Post Test',
                     'icon' => 'fa-solid fa-question',
                     'color' => 'red',
                     'route' => 'post-test.index',
                 ],
+                // [
+                //     'title' => 'Kuis Dikerjakan',
+                //     'value' => $riwayatUserLogin,
+                //     'suffix' => ' Kuis',
+                //     'icon' => 'fa-solid fa-check',
+                //     'color' => 'green',
+                //     'route' => 'riwayat.index',
+                // ],
                 [
-                    'title' => 'Kuis Dikerjakan',
-                    'value' => $riwayatUserLogin,
-                    'suffix' => ' Kuis',
-                    'icon' => 'fa-solid fa-check',
-                    'color' => 'green',
-                    'route' => 'riwayat.index',
-                ],
-                [
-                    'title' => 'Sertifikat di download',
+                    'title' => 'Download Sertifikat',
                     'value' => $jumlahSertifikatSelesai,
                     'suffix' => ' Sertifikat',
                     'icon' => 'fa-solid fa-certificate',
@@ -79,22 +79,22 @@
                 ],
             ];
             if (Auth::check() && Auth::user()->role === 'Admin') {
-                $cards[] = [
-                    'title' => 'Jumlah User',
-                    'value' => $jumlahUser,
-                    'suffix' => ' User',
-                    'icon' => 'fa-solid fa-users',
-                    'color' => 'purple',
-                    'route' => 'trainer.index',
-                ];
-                $cards[] = [
-                    'title' => 'Jumlah Admin',
-                    'value' => $jumlahAdmin,
-                    'suffix' => ' Admin',
-                    'icon' => 'fa-solid fa-user-shield',
-                    'color' => 'indigo',
-                    'route' => 'admin.index',
-                ];
+                // $cards[] = [
+                //     'title' => 'Jumlah User',
+                //     'value' => $jumlahUser,
+                //     'suffix' => ' User',
+                //     'icon' => 'fa-solid fa-users',
+                //     'color' => 'purple',
+                //     'route' => 'trainer.index',
+                // ];
+                // $cards[] = [
+                //     'title' => 'Jumlah Admin',
+                //     'value' => $jumlahAdmin,
+                //     'suffix' => ' Admin',
+                //     'icon' => 'fa-solid fa-user-shield',
+                //     'color' => 'indigo',
+                //     'route' => 'admin.index',
+                // ];
             }
         @endphp
 
