@@ -130,7 +130,7 @@ class TestController extends Controller
 
         $currentAnswer = $answers[$currentQuestion->id] ?? null;
 
-        return view('post-test.attempt', compact('session', 'currentQuestion', 'number', 'totalQuestions', 'currentAnswer'));
+        return view('post-test.attempt', compact('session', 'questions', 'currentQuestion', 'number', 'totalQuestions', 'currentAnswer'));
     }
 
     // Submit Kuis
