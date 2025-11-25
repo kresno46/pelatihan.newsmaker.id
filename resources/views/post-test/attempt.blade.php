@@ -124,9 +124,9 @@
                 <button type="button" onclick="hideModal()"
                     class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Batal</button>
 
-                <form id="submitForm" action="{{ route('post-test.submit', ['slug' => $session->slug]) }}" method="POST" class="inline">
+                <form id="submitForm" action="{{ route('post-test.submit', ['slug' => $session->slug]) }}" method="POST" class="inline" onsubmit="clearData()">
                     @csrf
-                    <button type="submit" onclick="clearData()"
+                    <button type="submit"
                         class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
                         Ya, Selesai
                     </button>
@@ -201,28 +201,26 @@
         }
 
         function showModal() {
-            const selectedRadio = document.querySelector('input[type=radio]:checked');
-            if (selectedRadio) {
-                // Save current answer first via AJAX
-                const formData = new FormData();
-                formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
-                formData.append('question_id', '{{ $currentQuestion->id }}');
-                formData.append('answer', selectedRadio.value);
+            const form = document.getElementById('quizForm');
+            // Hapus input jawaban tersembunyi lama jika ada
+            const hiddenInputs = form.querySelectorAll('input[type=hidden][name^="answer"]');
+            hiddenInputs.forEach(input => input.remove());
 
-                fetch(window.location.href, {
-                    method: 'POST',
-                    body: formData
-                }).then(response => {
-                    // Show modal after saving
-                    document.getElementById('confirmModal').classList.remove('hidden');
-                }).catch(error => {
-                    console.error('Error saving answer:', error);
-                    // Still show modal even if error
-                    document.getElementById('confirmModal').classList.remove('hidden');
-                });
-            } else {
-                document.getElementById('confirmModal').classList.remove('hidden');
+            // Ambil semua jawaban dari localStorage
+            const answerKey = 'quiz_answers_{{ $session->id }}_user_{{ auth()->id() }}';
+            const answers = JSON.parse(localStorage.getItem(answerKey) || '{}');
+
+            // Tambahkan jawaban sebagai input tersembunyi
+            for (const [questionId, answer] of Object.entries(answers)) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = `answer[${questionId}]`;
+                input.value = answer;
+                form.appendChild(input);
             }
+
+            // Tampilkan modal konfirmasi
+            document.getElementById('confirmModal').classList.remove('hidden');
         }
 
         function hideModal() {
