@@ -178,10 +178,11 @@ class TestController extends Controller
         $total = $session->questions->count();
 
         foreach ($session->questions as $question) {
-            // Pastikan tipe id soal dan kunci jawaban konsisten
+            // Pastikan tipe id soal dan kunci jawaban konsisten dan hilangkan spasi
             $questionId = (string) $question->id;
-            $userAnswer = $answers[$questionId] ?? null;
-            if ($userAnswer && strtoupper($userAnswer) === strtoupper($question->correct_option)) {
+            $userAnswer = isset($answers[$questionId]) ? trim(strtoupper($answers[$questionId])) : null;
+            $correctOption = trim(strtoupper($question->correct_option));
+            if ($userAnswer && $userAnswer === $correctOption) {
                 $correct++;
             }
         }
