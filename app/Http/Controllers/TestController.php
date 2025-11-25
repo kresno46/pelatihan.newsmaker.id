@@ -175,10 +175,12 @@ class TestController extends Controller
 
         // Hitung skor
         $correct = 0;
-        $total = count($session->questions);
+        $total = $session->questions->count();
 
         foreach ($session->questions as $question) {
-            $userAnswer = $answers[$question->id] ?? null;
+            // Pastikan tipe id soal dan kunci jawaban konsisten
+            $questionId = (string) $question->id;
+            $userAnswer = $answers[$questionId] ?? null;
             if ($userAnswer && strtoupper($userAnswer) === strtoupper($question->correct_option)) {
                 $correct++;
             }
