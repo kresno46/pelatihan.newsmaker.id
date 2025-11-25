@@ -170,13 +170,16 @@ class TestController extends Controller
         $answerKey = "quiz_answers_{$session->id}_user_{$userId}";
         $answers = session($answerKey, []);
 
+        // Ambil jawaban dari request input jika ada, kalau tidak gunakan session
+        $answers = $request->input('answer', session($answerKey, []));
+
         // Hitung skor
         $correct = 0;
         $total = count($session->questions);
 
         foreach ($session->questions as $question) {
             $userAnswer = $answers[$question->id] ?? null;
-            if ($userAnswer && strtoupper($userAnswer) === $question->correct_option) {
+            if ($userAnswer && strtoupper($userAnswer) === strtoupper($question->correct_option)) {
                 $correct++;
             }
         }
