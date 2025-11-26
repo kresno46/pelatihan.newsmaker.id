@@ -210,17 +210,35 @@ class QuizController extends Controller
 
     public function deleteResult(PostTestSession $session, PostTestResult $result)
     {
+        \Log::info('DeleteResult called', [
+            'session_id' => $session->id,
+            'result_id'  => $result->id,
+            'result_session_id' => $result->session_id,
+            'result_score' => $result->score,
+        ]);
+
         // Ensure the result belongs to the session
         if ($result->session_id !== $session->id) {
+            \Log::warning('Result session_id does not match', [
+                'session_id' => $session->id,
+                'result_session_id' => $result->session_id,
+            ]);
             abort(404);
         }
 
         // Only allow deleting if score < 60
         if ($result->score >= 60) {
+            \Log::warning('Attempt to delete result with score >= 60', [
+                'score' => $result->score,
+            ]);
             return back()->with('error', 'Tidak dapat menghapus hasil yang lulus.');
         }
 
         $result->delete();
+
+        \Log::info('Result deleted successfully', [
+            'result_id' => $result->id
+        ]);
 
         return back()->with('success', 'Hasil post test berhasil dihapus.');
     }
