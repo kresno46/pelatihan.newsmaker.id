@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\PostTestSession;
+use App\Models\PostTestResult;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,7 +37,16 @@ class CheckPATLAccess
         if ($session->tipe === 'PATL') {
             $user = auth()->user();
 
-            if (! in_array($user->jabatan, ['SBC', 'BsM', 'SBM', 'EM', 'SEM', 'VBM', 'BrM'])) {
+            // Cek apakah user sudah lulus PATD
+            $hasPassedPATD = PostTestResult::where('user_id', $user->id)
+                ->whereHas('session', function ($query) {
+                    $query->where('tipe', 'PATD');
+                })
+                ->where('score', '>=', 60)
+                ->exists();
+
+            // Jika belum lulus PATD dan jabatan tidak termasuk yang diizinkan, tolak akses
+            if (! $hasPassedPATD && ! in_array($user->jabatan, ['SBC', 'BsM', 'SBM', 'EM', 'SEM', 'VBM', 'BrM'])) {
                 return redirect()->route('post-test.index')
                     ->with('error', 'Anda tidak memiliki akses untuk tipe soal PATL.');
             }
