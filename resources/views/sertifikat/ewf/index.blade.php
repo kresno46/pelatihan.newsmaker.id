@@ -113,10 +113,10 @@
             <td>
                 <div class="date-sign">
                     <p class="date">Jakarta, {{ $date }}</p>
-                    <img class="stamp" src="{{ public_path('sertifikat-stamp/EWF/STAMPEWF.png') }}" alt="Stamp">
-                    <p class="ttd">AGUNG KURNIAWAN</p>
+                    <img class="stamp" src="{{ public_path('sertifikat-stamp/EWF/STAMP EWF.png') }}" alt="Stamp">
+                    <p class="ttd">FADLY KHAIRUZZADHI, M.H.</p>
                     <hr class="signature-line">
-                    <p class="title">Direktur Utama</p>
+                    <p class="title">Direktur Kepatuhan</p>
                     <div class="cert-id">ID Sertifikat: {{ $uuid }}</div>
                 </div>
             </td>
