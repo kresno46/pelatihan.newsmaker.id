@@ -11,6 +11,10 @@ class WebviewController extends Controller
             'title' => 'AiSG',
             'url' => 'https://aisg23.replit.app/',
         ],
+        'nmai23' => [
+            'title' => 'NMAi 23',
+            'url' => 'https://nm23ai.replit.app/',
+        ],
         'bias23' => [
             'title' => 'BIAS23',
             'url' => 'https://bias23.com/',
@@ -32,4 +36,3 @@ class WebviewController extends Controller
         ]);
     }
 }
-

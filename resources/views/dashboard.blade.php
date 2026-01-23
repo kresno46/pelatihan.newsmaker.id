@@ -147,6 +147,13 @@
                 'href' => route('webview.show', ['tool' => 'aisg']),
             ],
             [
+                'title' => 'NMAi 23',
+                'desc' => 'Buka aplikasi NMAi 23.',
+                'icon' => 'fa-solid fa-window-maximize',
+                'color' => 'slate',
+                'href' => route('webview.show', ['tool' => 'nmai23']),
+            ],
+            [
                 'title' => 'BIAS23',
                 'desc' => 'Buka aplikasi BIAS23.',
                 'icon' => 'fa-solid fa-window-maximize',
