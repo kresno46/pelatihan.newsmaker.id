@@ -189,6 +189,45 @@
 
                 <nav>
                     <ul class="flex flex-col space-y-2">
+                        <li class="text-sm text-gray-500 uppercase tracking-wide">Tools</li>
+                        <li>
+                            <a href="{{ route('webview.show', ['tool' => 'aisg']) }}"
+                                class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('webview.show') && request()->route('tool') === 'aisg'
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                <i class="fa-solid fa-window-maximize"></i>
+                                <span>AiSG</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('webview.show', ['tool' => 'bias23']) }}"
+                                class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('webview.show') && request()->route('tool') === 'bias23'
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                <i class="fa-solid fa-window-maximize"></i>
+                                <span>BIAS23</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('webview.show', ['tool' => 'risk-guard']) }}"
+                                class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('webview.show') && request()->route('tool') === 'risk-guard'
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                <i class="fa-solid fa-window-maximize"></i>
+                                <span>Risk Guard</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+
+                <hr class="border-gray-300 dark:border-gray-700">
+
+                <nav>
+                    <ul class="flex flex-col space-y-2">
+                        <li class="text-sm text-gray-500 uppercase tracking-wide">Akun</li>
                         <li>
                             <a href="{{ route('profile.edit') }}"
                                 class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
@@ -434,6 +473,45 @@
 
                     <nav class="my-4">
                         <ul class="flex flex-col space-y-2">
+                            <li class="text-sm text-gray-500 uppercase tracking-wide">Tools</li>
+                            <li>
+                                <a href="{{ route('webview.show', ['tool' => 'aisg']) }}"
+                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('webview.show') && request()->route('tool') === 'aisg'
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                    <i class="fa-solid fa-window-maximize"></i>
+                                    <span>AiSG</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('webview.show', ['tool' => 'bias23']) }}"
+                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('webview.show') && request()->route('tool') === 'bias23'
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                    <i class="fa-solid fa-window-maximize"></i>
+                                    <span>BIAS23</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('webview.show', ['tool' => 'risk-guard']) }}"
+                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('webview.show') && request()->route('tool') === 'risk-guard'
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                    <i class="fa-solid fa-window-maximize"></i>
+                                    <span>Risk Guard</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+
+                    <hr class="border-gray-300 dark:border-gray-700">
+
+                    <nav class="my-4">
+                        <ul class="flex flex-col space-y-2">
+                            <li class="text-sm text-gray-500 uppercase tracking-wide">Akun</li>
                             <li>
                                 <a href="{{ route('profile.edit') }}"
                                     class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
@@ -472,7 +550,8 @@
             </div>
 
             <!-- Page Content -->
-            <main class="flex-1 p-6">
+            <main
+                class="{{ request()->routeIs('webview.show') ? 'flex-1 flex flex-col min-h-0 p-0 overflow-hidden' : 'flex-1 p-6' }}">
                 @if (session('success'))
                     <div class="mb-6 rounded-lg border-l-2 border-green-600 bg-green-100 dark:bg-green-900/50 p-4 text-green-800 dark:text-green-200"
                         x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 5000)">

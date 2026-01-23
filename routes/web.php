@@ -15,11 +15,14 @@ use App\Http\Controllers\SummernoteController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\UserCleanupController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WebviewController;
 use App\Models\Absensi;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('dashboard');
+
+    Route::get('/tools/{tool}', [WebviewController::class, 'show'])->name('webview.show');
 
     Route::prefix('post-test')->middleware('auth', 'is_admin:Admin')->group(function () {
         // routes sesi yang sudah kamu punya
