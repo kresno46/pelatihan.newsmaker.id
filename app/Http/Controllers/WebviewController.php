@@ -21,7 +21,7 @@ class WebviewController extends Controller
         ],
         'risk-guard' => [
             'title' => 'Risk Guard',
-            'url' => 'https://martingale-risk-guard.replit.app/',
+            'url' => 'https://martingalerg.replit.app/',
         ],
     ];
 
