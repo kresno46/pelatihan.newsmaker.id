@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\PostTestResult;
 
 class CertificateAward extends Model
 {
@@ -36,5 +37,13 @@ class CertificateAward extends Model
     public function folder(): BelongsTo
     {
         return $this->belongsTo(FolderEbook::class, 'batch_number');
+    }
+
+    /**
+     * Relasi ke tabel post_test_results (post_test_id -> id)
+     */
+    public function postTestResult(): BelongsTo
+    {
+        return $this->belongsTo(PostTestResult::class, 'post_test_id');
     }
 }

@@ -15,7 +15,7 @@ class LaporanSertifikatController extends Controller
      */
     public function index(Request $request)
     {
-        $query = CertificateAward::with(['user', 'folder']);
+        $query = CertificateAward::with(['user', 'folder', 'postTestResult.session']);
 
         // Filter berdasarkan pencarian nama
         if ($request->filled('q')) {
@@ -35,6 +35,13 @@ class LaporanSertifikatController extends Controller
         if ($request->filled('cabang')) {
             $query->whereHas('user', function ($q) use ($request) {
                 $q->where('cabang', $request->cabang);
+            });
+        }
+
+        // Filter berdasarkan kategori (PATD/PATL)
+        if ($request->filled('kategori')) {
+            $query->whereHas('postTestResult.session', function ($q) use ($request) {
+                $q->where('tipe', $request->kategori);
             });
         }
 
@@ -150,7 +157,7 @@ class LaporanSertifikatController extends Controller
      */
     public function export(Request $request)
     {
-        $query = CertificateAward::with(['user', 'folder']);
+        $query = CertificateAward::with(['user', 'folder', 'postTestResult.session']);
 
         // Filter berdasarkan pencarian nama
         if ($request->filled('q')) {
@@ -170,6 +177,13 @@ class LaporanSertifikatController extends Controller
         if ($request->filled('cabang')) {
             $query->whereHas('user', function ($q) use ($request) {
                 $q->where('cabang', $request->cabang);
+            });
+        }
+
+        // Filter berdasarkan kategori (PATD/PATL)
+        if ($request->filled('kategori')) {
+            $query->whereHas('postTestResult.session', function ($q) use ($request) {
+                $q->where('tipe', $request->kategori);
             });
         }
 
@@ -235,7 +249,7 @@ class LaporanSertifikatController extends Controller
             return redirect()->back()->with('error', 'Cabang harus dipilih untuk export per cabang.');
         }
 
-        $query = CertificateAward::with(['user', 'folder'])
+        $query = CertificateAward::with(['user', 'folder', 'postTestResult.session'])
             ->whereHas('user', function ($q) use ($cabang) {
                 $q->where('cabang', $cabang);
             });
@@ -251,6 +265,13 @@ class LaporanSertifikatController extends Controller
         if ($request->filled('company')) {
             $query->whereHas('user', function ($q) use ($request) {
                 $q->where('role', $request->company);
+            });
+        }
+
+        // Filter berdasarkan kategori (PATD/PATL)
+        if ($request->filled('kategori')) {
+            $query->whereHas('postTestResult.session', function ($q) use ($request) {
+                $q->where('tipe', $request->kategori);
             });
         }
 

@@ -28,7 +28,7 @@
 
     {{-- Filter & Sort --}}
     <div class="mb-4 p-4 sm:p-5 bg-white dark:bg-gray-800 rounded-xl shadow">
-        <form method="GET" class="grid grid-cols-1 md:grid-cols-5 gap-3" id="filterForm">
+        <form method="GET" class="grid grid-cols-1 md:grid-cols-6 gap-3" id="filterForm">
             <input type="hidden" name="page" value="1">
             <div>
                 <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Cari Peserta</label>
@@ -69,6 +69,17 @@
             </div>
 
             <div>
+                <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Kategori</label>
+                <select name="kategori"
+                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
+                    @php $kategori = request('kategori'); @endphp
+                    <option value="">Semua Kategori</option>
+                    <option value="PATD" {{ $kategori === 'PATD' ? 'selected' : '' }}>PATD</option>
+                    <option value="PATL" {{ $kategori === 'PATL' ? 'selected' : '' }}>PATL</option>
+                </select>
+            </div>
+
+            <div>
                 <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Urutkan</label>
                 <select name="sort"
                     class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
@@ -100,7 +111,7 @@
                 </select>
             </div>
 
-            <div class="flex items-end gap-2 md:col-span-5">
+            <div class="flex items-end gap-2 md:col-span-6">
                 <button type="submit"
                     class="w-full md:w-auto px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm transition">
                     Terapkan
@@ -193,6 +204,9 @@
                                 Cabang</th>
                             <th
                                 class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Kategori</th>
+                            <th
+                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 Nilai</th>
                             <th
                                 class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -234,6 +248,8 @@
                                 <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">{{ $perusahaan }}</td>
                                 <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
                                     {{ optional($item->user)->cabang ?? '-' }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                                    {{ optional(optional($item->postTestResult)->session)->tipe ?? '-' }}</td>
                                 <td class="px-4 py-3 text-sm font-semibold text-gray-900 dark:text-gray-100">
                                     {{ $item->average_score }}/100</td>
                                 <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
