@@ -10,9 +10,9 @@
                     {{ __('Laporan Post Test') }}
                 </h2>
                 <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                    {{ $session->title ?? '—' }}
+                    {{ $session->title ?? '-' }}
                     @if (!empty($session->duration))
-                        • {{ __('Durasi') }} {{ $session->duration }} {{ __('menit') }}
+                        - {{ __('Durasi') }} {{ $session->duration }} {{ __('menit') }}
                     @endif
                 </p>
             </div>
@@ -163,22 +163,22 @@
         </div>
         <div class="p-4 bg-white dark:bg-gray-800 rounded-xl shadow">
             <div class="text-xs text-gray-500 dark:text-gray-400">{{ __('Rata-rata Skor') }}</div>
-            <div class="text-2xl font-semibold text-gray-900 dark:text-gray-100">{{ $avg ?? '—' }}</div>
+            <div class="text-2xl font-semibold text-gray-900 dark:text-gray-100">{{ $avg ?? '-' }}</div>
         </div>
         <div class="p-4 bg-white dark:bg-gray-800 rounded-xl shadow">
             <div class="text-xs text-gray-500 dark:text-gray-400">{{ __('Skor Tertinggi') }}</div>
-            <div class="text-2xl font-semibold text-gray-900 dark:text-gray-100">{{ $max ?? '—' }}</div>
+            <div class="text-2xl font-semibold text-gray-900 dark:text-gray-100">{{ $max ?? '-' }}</div>
         </div>
         <div class="p-4 bg-white dark:bg-gray-800 rounded-xl shadow">
             <div class="text-xs text-gray-500 dark:text-gray-400">{{ __('Skor Terendah') }}</div>
-            <div class="text-2xl font-semibold text-gray-900 dark:text-gray-100">{{ $min ?? '—' }}</div>
+            <div class="text-2xl font-semibold text-gray-900 dark:text-gray-100">{{ $min ?? '-' }}</div>
         </div>
     </div>
 
     {{-- Tombol Hapus Semua Tidak Lulus --}}
     <div class="mb-4">
         <form action="{{ route('posttest.report.deleteAllFailed', ['session' => $session->slug]) }}" method="POST"
-            onsubmit="return confirm('Yakin ingin menghapus semua hasil post test yang tidak lulus?');">
+            onsubmit="return confirm('Yakin ingin menghapus semua hasil post test yang tidak lulus-');">
             @csrf
             @method('DELETE')
             <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded">
@@ -234,7 +234,7 @@
                                     {{ ($results->firstItem() ?? 1) + $i }}
                                 </td>
                                 <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
-                                    {{ optional($r->user)->name ?? '—' }}
+                                    {{ optional($r->user)->name ?? '-' }}
                                 </td>
                                 <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
                                     {{ $r->user->nama_perusahaan }}
@@ -260,7 +260,7 @@
                                         <form
                                             action="{{ route('posttest.report.delete', ['session' => $session->slug, 'result' => $r->id]) }}"
                                             method="POST"
-                                            onsubmit="return confirm('Yakin ingin menghapus hasil post test user ini?');">
+                                            onsubmit="return confirm('Yakin ingin menghapus hasil post test user ini-');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
@@ -290,7 +290,7 @@
         @php
             $kantorCabang = [
                 'PT Solid Gold Berjangka' => [
-                    'Jakarta – TCC Tower', // tambahan
+                    'Jakarta - TCC Tower', // tambahan
                     'Semarang',
                     'Makassar',
                 ],
@@ -299,7 +299,7 @@
                     'Jakarta - AXA Tower 1', // tambahan
                     'Jakarta - AXA Tower 2', // tambahan
                     'Jakarta - AXA Tower 3', // tambahan
-                    'Jakarta – DBS Bank Tower', // tambahan
+                    'Jakarta - DBS Bank Tower', // tambahan
                     'Bandung',
                     'Solo',
                     'Semarang',

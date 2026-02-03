@@ -82,6 +82,8 @@ class QuizController extends Controller
         $perPage = (int) $request->input('per_page', 20) ?: 20;
         $company = trim((string) $request->input('company', '')); // filter berdasarkan NAMA PERUSAHAAN
         $cabang = trim((string) $request->input('cabang', '')); // filter berdasarkan CABANG
+        // Normalisasi variasi dash dari dropdown/URL agar match dengan data DB
+        $cabang = str_replace(["\u{2013}", "\u{2014}", "\u{2212}"], '-', $cabang);
 
         // Konversi filter perusahaan → kode role (karena query ke kolom users.role)
         $roleFilter = array_search($company, $roleToCompany, true) ?: null;
@@ -204,6 +206,8 @@ class QuizController extends Controller
         $sort = $request->input('sort', 'latest');       // latest|oldest|highest|lowest
         $company = trim((string) $request->input('company', '')); // filter berdasarkan NAMA PERUSAHAAN
         $cabang = trim((string) $request->input('cabang', '')); // filter berdasarkan CABANG
+        // Normalisasi variasi dash dari dropdown/URL agar match dengan data DB
+        $cabang = str_replace(["\u{2013}", "\u{2014}", "\u{2212}"], '-', $cabang);
 
         // Konversi filter perusahaan → kode role (karena query ke kolom users.role)
         $roleFilter = array_search($company, [
