@@ -6,10 +6,13 @@
     RewriteEngine On
 
     <IfModule LiteSpeed>
+        # Disable LSCache for auth/session-critical routes.
         CacheDisable public /login
         CacheDisable public /logout
         CacheDisable public /register
         CacheDisable public /password
+        # Temporary hard-disable for all pages to rule out cache stripping cookies.
+        CacheDisable public /
     </IfModule>
 
     # Handle Authorization Header
