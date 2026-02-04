@@ -14,8 +14,11 @@ class AuthenticatedSessionController extends Controller
     /**
      * Display the login view.
      */
-    public function create(): View
+    public function create(Request $request): View
     {
+        // Touch session to ensure a session cookie is issued on GET /login.
+        $request->session()->put('login_viewed_at', now()->timestamp);
+
         return view('auth.login');
     }
 
