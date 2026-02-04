@@ -5,6 +5,13 @@
 
     RewriteEngine On
 
+    <IfModule LiteSpeed>
+        CacheDisable public /login
+        CacheDisable public /logout
+        CacheDisable public /register
+        CacheDisable public /password
+    </IfModule>
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
