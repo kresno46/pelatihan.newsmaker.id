@@ -76,6 +76,7 @@
                     <option value="">Semua Kategori</option>
                     <option value="PATD" {{ $kategori === 'PATD' ? 'selected' : '' }}>PATD</option>
                     <option value="PATL" {{ $kategori === 'PATL' ? 'selected' : '' }}>PATL</option>
+                    <option value="PATD_PATL" {{ $kategori === 'PATD_PATL' ? 'selected' : '' }}>PATD &amp; PATL</option>
                 </select>
             </div>
 

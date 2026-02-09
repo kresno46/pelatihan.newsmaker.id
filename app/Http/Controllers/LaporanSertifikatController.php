@@ -40,9 +40,21 @@ class LaporanSertifikatController extends Controller
 
         // Filter berdasarkan kategori (PATD/PATL)
         if ($request->filled('kategori')) {
-            $query->whereHas('postTestResult.session', function ($q) use ($request) {
-                $q->where('tipe', $request->kategori);
-            });
+            if ($request->kategori === 'PATD_PATL') {
+                $query->whereIn('user_id', function ($sub) {
+                    $sub->from('certificate_awards as ca')
+                        ->join('post_test_results as ptr', 'ca.post_test_id', '=', 'ptr.id')
+                        ->join('post_test_sessions as pts', 'ptr.session_id', '=', 'pts.id')
+                        ->select('ca.user_id')
+                        ->groupBy('ca.user_id')
+                        ->havingRaw("SUM(CASE WHEN pts.tipe = 'PATD' THEN 1 ELSE 0 END) > 0")
+                        ->havingRaw("SUM(CASE WHEN pts.tipe = 'PATL' THEN 1 ELSE 0 END) > 0");
+                });
+            } else {
+                $query->whereHas('postTestResult.session', function ($q) use ($request) {
+                    $q->where('tipe', $request->kategori);
+                });
+            }
         }
 
         // Sorting
@@ -182,9 +194,21 @@ class LaporanSertifikatController extends Controller
 
         // Filter berdasarkan kategori (PATD/PATL)
         if ($request->filled('kategori')) {
-            $query->whereHas('postTestResult.session', function ($q) use ($request) {
-                $q->where('tipe', $request->kategori);
-            });
+            if ($request->kategori === 'PATD_PATL') {
+                $query->whereIn('user_id', function ($sub) {
+                    $sub->from('certificate_awards as ca')
+                        ->join('post_test_results as ptr', 'ca.post_test_id', '=', 'ptr.id')
+                        ->join('post_test_sessions as pts', 'ptr.session_id', '=', 'pts.id')
+                        ->select('ca.user_id')
+                        ->groupBy('ca.user_id')
+                        ->havingRaw("SUM(CASE WHEN pts.tipe = 'PATD' THEN 1 ELSE 0 END) > 0")
+                        ->havingRaw("SUM(CASE WHEN pts.tipe = 'PATL' THEN 1 ELSE 0 END) > 0");
+                });
+            } else {
+                $query->whereHas('postTestResult.session', function ($q) use ($request) {
+                    $q->where('tipe', $request->kategori);
+                });
+            }
         }
 
         // Sorting
@@ -270,9 +294,21 @@ class LaporanSertifikatController extends Controller
 
         // Filter berdasarkan kategori (PATD/PATL)
         if ($request->filled('kategori')) {
-            $query->whereHas('postTestResult.session', function ($q) use ($request) {
-                $q->where('tipe', $request->kategori);
-            });
+            if ($request->kategori === 'PATD_PATL') {
+                $query->whereIn('user_id', function ($sub) {
+                    $sub->from('certificate_awards as ca')
+                        ->join('post_test_results as ptr', 'ca.post_test_id', '=', 'ptr.id')
+                        ->join('post_test_sessions as pts', 'ptr.session_id', '=', 'pts.id')
+                        ->select('ca.user_id')
+                        ->groupBy('ca.user_id')
+                        ->havingRaw("SUM(CASE WHEN pts.tipe = 'PATD' THEN 1 ELSE 0 END) > 0")
+                        ->havingRaw("SUM(CASE WHEN pts.tipe = 'PATL' THEN 1 ELSE 0 END) > 0");
+                });
+            } else {
+                $query->whereHas('postTestResult.session', function ($q) use ($request) {
+                    $q->where('tipe', $request->kategori);
+                });
+            }
         }
 
         // Sorting
