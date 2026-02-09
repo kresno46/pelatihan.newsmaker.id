@@ -207,7 +207,7 @@
                                     Cabang</th>
                                 <th
                                     class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    Tanggal Sertifikat</th>
+                                    Status</th>
                                 <th
                                     class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                     Aksi</th>
@@ -246,7 +246,7 @@
                                     <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
                                         {{ optional($item->user)->cabang ?? '-' }}</td>
                                     <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-                                        {{ optional($item->awarded_at)->format('d F Y - H:i') }}</td>
+                                        Sudah mengikuti PATD dan PATL</td>
                                     <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
                                         <button type="button"
                                             onclick="showDetailModal(
