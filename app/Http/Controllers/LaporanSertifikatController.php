@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exports\SertifikatExport;
 use App\Exports\SertifikatPerCabangExport;
 use App\Models\CertificateAward;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -16,6 +17,7 @@ class LaporanSertifikatController extends Controller
     public function index(Request $request)
     {
         $query = CertificateAward::with(['user', 'folder', 'postTestResult.session']);
+        $showNameOnly = $request->filled('kategori') && $request->kategori === 'PATD_PATL';
 
         // Filter berdasarkan pencarian nama
         if ($request->filled('q')) {
@@ -41,7 +43,7 @@ class LaporanSertifikatController extends Controller
         // Filter berdasarkan kategori (PATD/PATL)
         if ($request->filled('kategori')) {
             if ($request->kategori === 'PATD_PATL') {
-                $query->whereIn('user_id', function ($sub) {
+                $eligibleUserIds = function ($sub) {
                     $sub->from('certificate_awards as ca')
                         ->join('post_test_results as ptr', 'ca.post_test_id', '=', 'ptr.id')
                         ->join('post_test_sessions as pts', 'ptr.session_id', '=', 'pts.id')
@@ -49,7 +51,17 @@ class LaporanSertifikatController extends Controller
                         ->groupBy('ca.user_id')
                         ->havingRaw("SUM(CASE WHEN pts.tipe = 'PATD' THEN 1 ELSE 0 END) > 0")
                         ->havingRaw("SUM(CASE WHEN pts.tipe = 'PATL' THEN 1 ELSE 0 END) > 0");
-                });
+                };
+
+                $latestAwardIds = function ($sub) use ($eligibleUserIds) {
+                    $sub->from('certificate_awards as ca')
+                        ->selectRaw('MAX(ca.id) as id')
+                        ->whereIn('ca.user_id', $eligibleUserIds)
+                        ->groupBy('ca.user_id');
+                };
+
+                $query->whereIn('user_id', $eligibleUserIds)
+                    ->whereIn('id', $latestAwardIds);
             } else {
                 $query->whereHas('postTestResult.session', function ($q) use ($request) {
                     $q->where('tipe', $request->kategori);
@@ -116,7 +128,7 @@ class LaporanSertifikatController extends Controller
             MIN(average_score) as min_score
         ')->first();
 
-        return view('LaporanSertifikat.index', compact('sertifikats', 'aggregates'));
+        return view('LaporanSertifikat.index', compact('sertifikats', 'aggregates', 'showNameOnly'));
     }
 
     // Method lainnya masih kosong (bisa dihapus jika tidak dipakai)

@@ -180,109 +180,205 @@
         </div>
     </div>
 
+
     {{-- Tabel Hasil --}}
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden">
-        @if ($sertifikats->isEmpty())
-            <div class="text-center py-12 text-gray-600 dark:text-gray-300">
-                Belum ada pengguna yang mengunduh sertifikat.
-            </div>
-        @else
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead class="bg-gray-50 dark:bg-gray-900/40">
-                        <tr>
-                            <th
-                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                #</th>
-                            <th
-                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                Nama</th>
-                            <th
-                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                Perusahaan</th>
-                            <th
-                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                Cabang</th>
-                            <th
-                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                Kategori</th>
-                            <th
-                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                Nilai</th>
-                            <th
-                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                Tanggal Sertifikat</th>
-                            <th
-                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                        @foreach ($sertifikats as $index => $item)
-                            @php
-                                switch ($item->user->role) {
-                                    case 'Trainer (SGB)':
-                                        $perusahaan = 'PT Solid Gold Berjangka';
-                                        break;
-                                    case 'Trainer (RFB)':
-                                        $perusahaan = 'PT Rifan Financindo Berjangka';
-                                        break;
-                                    case 'Trainer (EWF)':
-                                        $perusahaan = 'PT Equity World Futures';
-                                        break;
-                                    case 'Trainer (BPF)':
-                                        $perusahaan = 'PT Best Profit Futures';
-                                        break;
-                                    case 'Trainer (KPF)':
-                                        $perusahaan = 'PT Kontak Perkasa Futures';
-                                        break;
-                                    default:
-                                        $perusahaan = '-';
-                                        break;
-                                }
-                            @endphp
-                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-900/30">
-                                <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-                                    {{ ($sertifikats->firstItem() ?? 1) + $index }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
-                                    {{ optional($item->user)->name ?? '—' }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">{{ $perusahaan }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-                                    {{ optional($item->user)->cabang ?? '-' }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-                                    {{ optional(optional($item->postTestResult)->session)->tipe ?? '-' }}</td>
-                                <td class="px-4 py-3 text-sm font-semibold text-gray-900 dark:text-gray-100">
-                                    {{ $item->average_score }}/100</td>
-                                <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-                                    {{ optional($item->awarded_at)->format('d F Y - H:i') }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-                                    <button type="button"
-                                        onclick="showDetailModal(
-                                            '{{ optional($item->user)->name ?? '-' }}',
-                                            '{{ $perusahaan }}',
-                                            '{{ $item->average_score }}',
-                                            '{{ $item->certificate_uuid }}',
-                                            '{{ optional($item->awarded_at)->format('Y-m-d H:i') }}'
-                                        )"
-                                        class="text-blue-600 dark:text-blue-400 hover:underline transition-all duration-300">
-                                        Detail
-                                    </button>
-                                    <span class="text-gray-500 dark:text-gray-400">|</span>
-                                    <button class="text-red-600 dark:text-red-400 hover:underline"
-                                        onclick="showDeleteModal('{{ route('LaporanSertifikat.destroy', $item->id) }}')">
-                                        Hapus
-                                    </button>
-                                </td>
+        @if ($showNameOnly ?? false)
+            @if ($sertifikats->isEmpty())
+                <div class="text-center py-12 text-gray-600 dark:text-gray-300">
+                    Belum ada pengguna yang mengunduh sertifikat.
+                </div>
+            @else
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead class="bg-gray-50 dark:bg-gray-900/40">
+                            <tr>
+                                <th
+                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    #</th>
+                                <th
+                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    Nama</th>
+                                <th
+                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    Perusahaan</th>
+                                <th
+                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    Cabang</th>
+                                <th
+                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    Tanggal Sertifikat</th>
+                                <th
+                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    Aksi</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                            @foreach ($sertifikats as $index => $item)
+                                @php
+                                    switch ($item->user->role) {
+                                        case 'Trainer (SGB)':
+                                            $perusahaan = 'PT Solid Gold Berjangka';
+                                            break;
+                                        case 'Trainer (RFB)':
+                                            $perusahaan = 'PT Rifan Financindo Berjangka';
+                                            break;
+                                        case 'Trainer (EWF)':
+                                            $perusahaan = 'PT Equity World Futures';
+                                            break;
+                                        case 'Trainer (BPF)':
+                                            $perusahaan = 'PT Best Profit Futures';
+                                            break;
+                                        case 'Trainer (KPF)':
+                                            $perusahaan = 'PT Kontak Perkasa Futures';
+                                            break;
+                                        default:
+                                            $perusahaan = '-';
+                                            break;
+                                    }
+                                @endphp
+                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-900/30">
+                                    <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                                        {{ ($sertifikats->firstItem() ?? 1) + $index }}</td>
+                                    <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
+                                        {{ optional($item->user)->name ?? 'â€”' }}</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">{{ $perusahaan }}</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                                        {{ optional($item->user)->cabang ?? '-' }}</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                                        {{ optional($item->awarded_at)->format('d F Y - H:i') }}</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                                        <button type="button"
+                                            onclick="showDetailModal(
+                                                '{{ optional($item->user)->name ?? '-' }}',
+                                                '{{ $perusahaan }}',
+                                                '{{ $item->average_score }}',
+                                                '{{ $item->certificate_uuid }}',
+                                                '{{ optional($item->awarded_at)->format('Y-m-d H:i') }}'
+                                            )"
+                                            class="text-blue-600 dark:text-blue-400 hover:underline transition-all duration-300">
+                                            Detail
+                                        </button>
+                                        <span class="text-gray-500 dark:text-gray-400">|</span>
+                                        <button class="text-red-600 dark:text-red-400 hover:underline"
+                                            onclick="showDeleteModal('{{ route('LaporanSertifikat.destroy', $item->id) }}')">
+                                            Hapus
+                                        </button>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
 
-            {{-- Pagination --}}
-            <div class="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
-                {{ $sertifikats->links() }}
-            </div>
+                {{-- Pagination --}}
+                <div class="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
+                    {{ $sertifikats->links() }}
+                </div>
+            @endif
+        @else
+            @if ($sertifikats->isEmpty())
+                <div class="text-center py-12 text-gray-600 dark:text-gray-300">
+                    Belum ada pengguna yang mengunduh sertifikat.
+                </div>
+            @else
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead class="bg-gray-50 dark:bg-gray-900/40">
+                            <tr>
+                                <th
+                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    #</th>
+                                <th
+                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    Nama</th>
+                                <th
+                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    Perusahaan</th>
+                                <th
+                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    Cabang</th>
+                                <th
+                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    Kategori</th>
+                                <th
+                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    Nilai</th>
+                                <th
+                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    Tanggal Sertifikat</th>
+                                <th
+                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                            @foreach ($sertifikats as $index => $item)
+                                @php
+                                    switch ($item->user->role) {
+                                        case 'Trainer (SGB)':
+                                            $perusahaan = 'PT Solid Gold Berjangka';
+                                            break;
+                                        case 'Trainer (RFB)':
+                                            $perusahaan = 'PT Rifan Financindo Berjangka';
+                                            break;
+                                        case 'Trainer (EWF)':
+                                            $perusahaan = 'PT Equity World Futures';
+                                            break;
+                                        case 'Trainer (BPF)':
+                                            $perusahaan = 'PT Best Profit Futures';
+                                            break;
+                                        case 'Trainer (KPF)':
+                                            $perusahaan = 'PT Kontak Perkasa Futures';
+                                            break;
+                                        default:
+                                            $perusahaan = '-';
+                                            break;
+                                    }
+                                @endphp
+                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-900/30">
+                                    <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                                        {{ ($sertifikats->firstItem() ?? 1) + $index }}</td>
+                                    <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
+                                        {{ optional($item->user)->name ?? 'â€”' }}</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">{{ $perusahaan }}</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                                        {{ optional($item->user)->cabang ?? '-' }}</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                                        {{ optional(optional($item->postTestResult)->session)->tipe ?? '-' }}</td>
+                                    <td class="px-4 py-3 text-sm font-semibold text-gray-900 dark:text-gray-100">
+                                        {{ $item->average_score }}/100</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                                        {{ optional($item->awarded_at)->format('d F Y - H:i') }}</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                                        <button type="button"
+                                            onclick="showDetailModal(
+                                                '{{ optional($item->user)->name ?? '-' }}',
+                                                '{{ $perusahaan }}',
+                                                '{{ $item->average_score }}',
+                                                '{{ $item->certificate_uuid }}',
+                                                '{{ optional($item->awarded_at)->format('Y-m-d H:i') }}'
+                                            )"
+                                            class="text-blue-600 dark:text-blue-400 hover:underline transition-all duration-300">
+                                            Detail
+                                        </button>
+                                        <span class="text-gray-500 dark:text-gray-400">|</span>
+                                        <button class="text-red-600 dark:text-red-400 hover:underline"
+                                            onclick="showDeleteModal('{{ route('LaporanSertifikat.destroy', $item->id) }}')">
+                                            Hapus
+                                        </button>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                {{-- Pagination --}}
+                <div class="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
+                    {{ $sertifikats->links() }}
+                </div>
+            @endif
         @endif
     </div>
 
