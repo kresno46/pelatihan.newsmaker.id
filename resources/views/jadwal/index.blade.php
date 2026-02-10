@@ -71,7 +71,7 @@
                                     {{ $jadwal->postTestSession->title }}<br>
                                     <strong class="text-blue-500">Durasi Test:</strong>
                                     {{ $jadwal->postTestSession->duration ?? '30 menit' }} menit
-                                    ({{ $jadwal->postTestSession->questions_count ?? '20' }} pertanyaan)
+                                    ({{ $jadwal->postTestSession->questions_count ?? 0 }} pertanyaan)
                                 </div>
                             </div>
                             <div class="text-gray-500 dark:text-gray-400 text-xs">
