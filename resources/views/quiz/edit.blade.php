@@ -115,6 +115,7 @@
     <div class="mt-6 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md" x-data="{
         openQuestion: {{ $errors->hasBag('createQuestion') ? 'true' : 'false' }},
         openEdit: {{ $errors->hasBag('updateQuestion') ? 'true' : 'false' }},
+        openDelete: false,
         edit: {
             id: {{ old('question_id') ? (int) old('question_id') : 'null' }},
             question_text: @json(old('question_text')),
@@ -123,6 +124,9 @@
             option_c: @json(old('option_c')),
             option_d: @json(old('option_d')),
             correct_option: @json(old('correct_option')),
+            action: null
+        },
+        del: {
             action: null
         }
     }" x-cloak>
@@ -218,11 +222,13 @@
                                         Edit
                                     </button>
 
-                                    <form action="{{ route('question.destroy', [$session, $q]) }}" method="POST"
-                                        onsubmit="return confirm('Hapus soal ini?')">
-                                        @csrf @method('DELETE')
-                                        <button class="text-red-600 text-sm hover:underline">Hapus</button>
-                                    </form>
+                                    <button type="button" class="text-red-600 text-sm hover:underline"
+                                        @click="
+                    openDelete = true;
+                    del = { action: '{{ route('quiz.delete', $q) }}' };
+                  ">
+                                        Hapus
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -384,6 +390,34 @@
             </div>
         </div>
         {{-- /Modal Edit Soal --}}
+
+        {{-- Modal Hapus Soal --}}
+        <div x-show="openDelete" x-transition @keydown.escape.window="openDelete=false"
+            class="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div class="absolute inset-0 bg-black/50" @click="openDelete=false"></div>
+            <div class="relative w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-xl">
+                <div class="flex items-center justify-between px-5 py-4 border-b dark:border-gray-700">
+                    <h3 class="text-base font-semibold text-gray-900 dark:text-gray-100">Hapus Soal</h3>
+                    <button type="button" @click="openDelete=false"
+                        class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">âœ•</button>
+                </div>
+
+                <div class="p-5 space-y-4">
+                    <p class="text-sm text-gray-700 dark:text-gray-300">
+                        Yakin mau menghapus soal ini? Tindakan ini tidak bisa dibatalkan.
+                    </p>
+
+                    <form x-bind:action="del.action" method="POST" class="flex items-center justify-end gap-2">
+                        @csrf @method('DELETE')
+                        <button type="button" @click="openDelete=false"
+                            class="px-4 py-2 rounded border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700">Batal</button>
+                        <button type="submit"
+                            class="px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-white">Hapus</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {{-- /Modal Hapus Soal --}}
     </div>
 @endsection
 

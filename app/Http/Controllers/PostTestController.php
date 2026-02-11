@@ -72,9 +72,8 @@ class PostTestController extends Controller
     }
 
     // ====== Hapus soal ======
-    public function questionDestroy(PostTestSession $session, PostTest $question)
+    public function questionDestroy(PostTest $question)
     {
-        if ($question->session_id !== $session->id) abort(404);
         $question->delete();
         return back()->with('success', 'Soal berhasil dihapus.');
     }

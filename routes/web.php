@@ -48,9 +48,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 ->name('question.store');
             Route::put('/question/{question}', [PostTestController::class, 'questionUpdate'])
                 ->name('question.update');
-            Route::delete('/question/{question}', [PostTestController::class, 'questionDestroy'])
-                ->name('question.destroy');
         });
+        Route::delete('/question/{question}', [PostTestController::class, 'questionDestroy'])
+            ->name('quiz.delete');
     });
 
     Route::prefix('posttest')->name('post-test.')->middleware('profile.complete')->group(function () {
