@@ -6,8 +6,6 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use App\Models\CertificateAward;
-use App\Models\PostTestResult;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -24,15 +22,13 @@ class User extends Authenticatable implements MustVerifyEmail
         'jenis_kelamin',
         'tempat_lahir',
         'tanggal_lahir',
-        'warga_negara',
         'alamat',
-        'no_id',
         'no_tlp',
-        'pekerjaan',
         'jabatan',
         'password',
         'role',
         'cabang',
+        'email_verified_at',
     ];
 
     /**
@@ -67,7 +63,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * Menghitung berapa batch sertifikat yang telah memenuhi syarat (per 10 eBook dengan avg >= 75).
      *
-     * @param int $minAvg Nilai rata-rata minimum untuk dapat sertifikat
+     * @param  int  $minAvg  Nilai rata-rata minimum untuk dapat sertifikat
      * @return int Jumlah batch sertifikat yang bisa diperoleh
      */
     public function earnedCertificateBatches($minAvg = 60): int
@@ -82,7 +78,9 @@ class User extends Authenticatable implements MustVerifyEmail
         $validBatches = 0;
 
         foreach ($chunks as $chunk) {
-            if ($chunk->count() < 10) break;
+            if ($chunk->count() < 10) {
+                break;
+            }
 
             $avg = $chunk->avg('score');
             if ($avg >= $minAvg) {
@@ -91,28 +89,6 @@ class User extends Authenticatable implements MustVerifyEmail
         }
 
         return $validBatches;
-    }
-
-    /**
-     * Mengecek apakah user sudah menyelesaikan semua post-test dalam sebuah folder (materi).
-     *
-     * @param int $folderId
-     * @return bool
-     */
-    public function hasCompletedFolder($folderId)
-    {
-        // Ambil semua eBook dalam folder tersebut
-        $ebookIds = \App\Models\Ebook::where('folder_id', $folderId)->pluck('id')->toArray();
-
-        // Ambil semua eBook yang sudah dikerjakan oleh user
-        $userEbookIds = PostTestResult::where('user_id', $this->id)
-            ->whereIn('ebook_id', $ebookIds)
-            ->pluck('ebook_id')
-            ->unique()
-            ->toArray();
-
-        // Cek apakah semua eBook sudah dikerjakan
-        return count(array_diff($ebookIds, $userEbookIds)) === 0;
     }
 
     // App\Models\User.php

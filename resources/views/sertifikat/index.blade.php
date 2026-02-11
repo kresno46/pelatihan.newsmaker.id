@@ -3,7 +3,7 @@
 @section('namePage', 'Sertifikat')
 
 @section('content')
-    <div class="p-6 bg-white dark:bg-gray-800 space-y-6 rounded-lg shadow-lg">
+    <div class="p-6 bg-white dark:bg-gray-800 space-y-6 rounded-lg shadow-lg border border-gray-100 dark:border-gray-700">
         <div class="flex items-center justify-between">
             <div>
                 <h2 class="text-xl font-bold text-gray-900 dark:text-white">Sertifikat</h2>
@@ -31,7 +31,7 @@
         <div class="flex flex-col gap-3">
             @forelse ($userResults as $postTest)
                 <div
-                    class="border {{ $postTest->score >= 60 ? 'border-green-500' : 'border-red-500' }} px-5 py-3 rounded-lg {{ $postTest->score >= 60 ? 'bg-green-50' : 'bg-red-50' }} mb-3">
+                    class="border {{ $postTest->score >= 60 ? 'border-green-500' : 'border-red-500' }} px-5 py-3 rounded-lg {{ $postTest->score >= 60 ? 'bg-green-50 dark:bg-green-900/20' : 'bg-red-50 dark:bg-red-900/20' }} mb-3">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="font-semibold text-gray-900 dark:text-white">

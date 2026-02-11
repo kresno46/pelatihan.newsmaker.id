@@ -15,6 +15,10 @@ class Absensi extends Model
         'waktu_absen',
     ];
 
+    protected $casts = [
+        'waktu_absen' => 'datetime',
+    ];
+
     /**
      * Relasi ke User
      */

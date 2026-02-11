@@ -3,7 +3,8 @@
 @section('namePage', 'Kuis')
 
 @section('content')
-    <header class="w-full bg-white dark:bg-gray-800 shadow rounded-lg mb-5 p-4 sm:p-6">
+    <header
+        class="w-full bg-white dark:bg-gray-800 shadow rounded-lg mb-5 p-4 sm:p-6 border border-gray-100 dark:border-gray-700">
         <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
@@ -37,7 +38,7 @@
         </div>
     </header>
 
-    <div class="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md">
+    <div class="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700">
         @if ($sessions->isEmpty())
             <div class="text-center py-12 text-gray-600 dark:text-gray-300">
                 <p class="font-medium">{{ __('Belum ada post test.') }}</p>
@@ -47,7 +48,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                 @foreach ($sessions as $item)
                     <div
-                        class="bg-gray-50 dark:bg-gray-900/40 p-5 rounded-lg flex flex-col gap-4 border border-gray-200 dark:border-gray-700">
+                        class="bg-gray-50 dark:bg-gray-900/40 p-5 rounded-lg flex flex-col justify-between gap-4 border border-gray-100 dark:border-gray-700">
                         <div class="w-full flex items-center justify-between">
                             <div>
                                 <h3 class="font-semibold text-gray-900 dark:text-gray-100">
@@ -57,55 +58,61 @@
                                     <strong>{{ __('Durasi:') }}</strong> {{ $item->duration }} {{ __('menit') }}
                                 </p>
                             </div>
-                            <div>
-                                <p
-                                    class="text-sm font-bold px-5 py-1 rounded-full 
+                        </div>
+
+                        <div class="space-y-2">
+                            <div class="w-full grid grid-cols-3 gap-2">
+                                {{-- Laporan / Show --}}
+                                <a href="{{ route('posttest.report', $item->slug) }}"
+                                    class="bg-green-500 px-3 py-2 text-xs sm:text-sm hover:bg-green-600 text-white rounded transition-all text-center">
+                                    {{ __('Laporan') }}
+                                </a>
+
+                                {{-- Edit --}}
+                                <a href="{{ route('posttest.edit', $item->slug) }}"
+                                    class="bg-yellow-500 px-3 py-2 text-xs sm:text-sm hover:bg-yellow-600 text-white rounded transition-all text-center">
+                                    {{ __('Edit') }}
+                                </a>
+
+                                {{-- Hapus (DELETE) --}}
+                                <form action="{{ route('posttest.destroy', $item->slug) }}" method="POST" x-data
+                                    @submit.prevent="if (confirm('{{ __('Yakin ingin menghapus post test ini? Tindakan tidak dapat dibatalkan.') }}')) $el.submit()">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
+                                        class="w-full bg-red-500 px-3 py-2 text-xs sm:text-sm hover:bg-red-600 text-white rounded transition-all text-center">
+                                        {{ __('Hapus') }}
+                                    </button>
+                                </form>
+                            </div>
+
+                            <div class="flex items-center justify-between">
+                                {{-- Toggle Status Aktif / Tidak Aktif --}}
+                                <form action="{{ route('posttest.toggle', $item->slug) }}" method="POST">
+                                    @csrf
+                                    <label class="relative inline-block w-12 h-6 cursor-pointer">
+                                        <input type="checkbox" name="status" onchange="this.form.submit()"
+                                            class="sr-only peer" {{ $item->status ? 'checked' : '' }}>
+                                        <!-- If status is true (Aktif), check the box -->
+                                        <div
+                                            class="w-full h-full bg-gray-300 dark:bg-gray-600 rounded-full peer-checked:bg-green-500 transition-colors duration-300">
+                                        </div>
+                                        <div
+                                            class="absolute top-0.5 left-0.5 w-5 h-5 bg-white dark:bg-gray-100 rounded-full transition-transform duration-300 transform peer-checked:translate-x-6">
+                                        </div>
+                                    </label>
+                                </form>
+
+                                <div>
+                                    <p
+                                        class="text-sm font-bold px-5 py-1 rounded-full 
                                     {{ $item->tipe == 'PATL' ? 'bg-red-500' : '' }} 
                                     {{ $item->tipe == 'PATD' ? 'bg-green-500' : '' }}">
-                                    <span class="text-white">{{ $item->tipe }}</span>
-                                </p>
+                                        <span class="text-white">{{ $item->tipe }}</span>
+                                    </p>
+                                </div>
                             </div>
                         </div>
-
-                        <div class="w-full grid grid-cols-3 gap-2">
-                            {{-- Laporan / Show --}}
-                            <a href="{{ route('posttest.report', $item->slug) }}"
-                                class="bg-green-500 px-3 py-2 text-xs sm:text-sm hover:bg-green-600 text-white rounded transition-all text-center">
-                                {{ __('Laporan') }}
-                            </a>
-
-                            {{-- Edit --}}
-                            <a href="{{ route('posttest.edit', $item->slug) }}"
-                                class="bg-yellow-500 px-3 py-2 text-xs sm:text-sm hover:bg-yellow-600 text-white rounded transition-all text-center">
-                                {{ __('Edit') }}
-                            </a>
-
-                            {{-- Hapus (DELETE) --}}
-                            <form action="{{ route('posttest.destroy', $item->slug) }}" method="POST" x-data
-                                @submit.prevent="if (confirm('{{ __('Yakin ingin menghapus post test ini? Tindakan tidak dapat dibatalkan.') }}')) $el.submit()">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit"
-                                    class="w-full bg-red-500 px-3 py-2 text-xs sm:text-sm hover:bg-red-600 text-white rounded transition-all text-center">
-                                    {{ __('Hapus') }}
-                                </button>
-                            </form>
-                        </div>
-
-                        {{-- Toggle Status Aktif / Tidak Aktif --}}
-                        <form action="{{ route('posttest.toggle', $item->slug) }}" method="POST">
-                            @csrf
-                            <label class="relative inline-block w-12 h-6 cursor-pointer">
-                                <input type="checkbox" name="status" onchange="this.form.submit()" class="sr-only peer"
-                                    {{ $item->status ? 'checked' : '' }}> <!-- If status is true (Aktif), check the box -->
-                                <div
-                                    class="w-full h-full bg-gray-300 dark:bg-gray-600 rounded-full peer-checked:bg-green-500 transition-colors duration-300">
-                                </div>
-                                <div
-                                    class="absolute top-0.5 left-0.5 w-5 h-5 bg-white dark:bg-gray-100 rounded-full transition-transform duration-300 transform peer-checked:translate-x-6">
-                                </div>
-                            </label>
-                        </form>
                     </div>
                 @endforeach
             </div>

@@ -54,6 +54,7 @@
                 <th>No.</th>
                 <th>Nama</th>
                 <th>Perusahaan</th>
+                <th>Cabang</th>
                 <th>Waktu Absen</th>
             </tr>
         </thead>
@@ -63,11 +64,12 @@
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ optional($absen->user)->name ?? '-' }}</td>
                     <td>{{ optional($absen->user)->nama_perusahaan ?? '-' }}</td>
+                    <td>{{ optional($absen->user)->cabang ?? '-' }}</td>
                     <td>{{ \Carbon\Carbon::parse($absen->waktu_absen)->translatedFormat('d F Y - H:i') }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="4">Belum ada data absensi.</td>
+                    <td colspan="5">Belum ada data absensi.</td>
                 </tr>
             @endforelse
         </tbody>

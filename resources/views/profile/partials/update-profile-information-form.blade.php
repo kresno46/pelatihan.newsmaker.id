@@ -28,9 +28,12 @@
             {{-- Nama Lengkap --}}
             <div>
                 <x-input-label-append for="name" :value="__('Nama Lengkap')" :append="empty($user->name) ? '<span class=\'text-red-500\'>*</span>' : ''" />
-                <x-text-input id="name" type="text" name="name" class="block mt-1 w-full"
+                <x-text-input id="name" type="text" name="name" class="block mt-1 w-full" readonly
                     :value="old('name', $user->name)" />
                 <x-input-error :messages="$errors->get('name')" class="mt-2" />
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400 italic">
+                    ~ Nama lengkap tidak dapat diubah. Jika ada kesalahan, hubungi administrator. ~
+                </p>
             </div>
 
             {{-- Email --}}
@@ -41,26 +44,75 @@
                 <x-input-error :messages="$errors->get('email')" class="mt-2" />
             </div>
 
-            {{-- Jabatan
-            <div class="mt-4">
-                <x-input-label-append for="jabatan" :value="__('Jabatan')" :append="empty($user->jabatan) ? '<span class=\'text-red-500\'>*</span>' : ''" />
-                <x-text-input id="jabatan" type="text" name="jabatan" class="block mt-1 w-full" readonly
-                    :value="old('jabatan', $user->jabatan)" />
-                <x-input-error :messages="$errors->get('jabatan')" class="mt-2" />
-            </div> --}}
-
             {{-- Jabatan --}}
             <div class="mt-4">
                 <x-input-label-append for="jabatan" :value="__('Jabatan')" :append="empty($user->jabatan) ? '<span class=\'text-red-500\'>*</span>' : ''" />
-                
-                <select id="jabatan" name="jabatan" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                    <option value="">-- Pilih Jabatan --</option>
-                    @foreach (['BC', 'SBC', 'SBM', 'BM'] as $jabatan)
-                        <option value="{{ $jabatan }}" {{ old('jabatan', $user->jabatan) === $jabatan ? 'selected' : '' }}>
-                            {{ $jabatan }}
-                        </option>
-                    @endforeach
-                </select>
+
+                @if (auth()->user()->jabatan)
+                    {{-- Jika user sudah punya jabatan → tidak bisa diubah --}}
+                    @php
+                        $jabatanMap = [
+                            'Admin' => 'Administrator',
+                            'Owner' => 'Owner',
+                            'CEO' => 'Chief Executive Officer',
+                            'CBO' => 'Chief Business Officer',
+                            'BrM' => 'Branch Manager',
+                            'VBM' => 'Vice Business Manager',
+                            'SVBM' => 'Senior Vice Business Manager',
+                            'SEM' => 'Senior Executive Manager',
+                            'EM' => 'Executive Manager',
+                            'SBM' => 'Senior Business Manager',
+                            'BsM' => 'Business Manager',
+                            'SBC' => 'Senior Business Consultant',
+                            'BC' => 'Business Consultant',
+                        ];
+
+                        $jabatanValue = $user->jabatan;
+                        $jabatanText = $jabatanMap[$jabatanValue] ?? $jabatanValue;
+                    @endphp
+
+                    {{-- TAMPILKAN NAMA JABATAN PENUH — TETAPI VALUE ASLI TETAP SINGKATAN --}}
+                    <x-text-input id="jabatan" type="text" class="block mt-1 w-full" readonly :value="$jabatanText" />
+
+                    {{-- Hidden input untuk tetap mengirim singkatan ke server --}}
+                    <input type="hidden" name="jabatan" value="{{ $jabatanValue }}">
+
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400 italic">
+                        ~ Jabatan tidak dapat diubah. Jika ada kesalahan, hubungi administrator. ~
+                    </p>
+                @else
+                    @php
+                        $jabatanMap = [
+                            'Admin' => 'Administrator',
+                            'Owner' => 'Owner',
+                            'CEO' => 'Chief Executive Officer',
+                            'CBO' => 'Chief Business Officer',
+                            'BrM' => 'Branch Manager',
+                            'VBM' => 'Vice Business Manager',
+                            'SVBM' => 'Senior Vice Business Manager',
+                            'SEM' => 'Senior Executive Manager',
+                            'EM' => 'Executive Manager',
+                            'SBM' => 'Senior Business Manager',
+                            'BsM' => 'Business Manager',
+                            'SBC' => 'Senior Business Consultant',
+                            'BC' => 'Business Consultant',
+                        ];
+                        $pilihan = ['BC', 'SBC', 'BsM', 'SBM', 'EM', 'SEM', 'VBM', 'BrM'];
+                    @endphp
+
+                    <select id="jabatan" name="jabatan"
+                        class="block mt-1 w-full rounded-md shadow-sm border-gray-300
+        dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600">
+                        <option value="">-- Pilih Jabatan --</option>
+
+                        @foreach ($pilihan as $kode)
+                            <option value="{{ $kode }}"
+                                {{ old('jabatan', $user->jabatan) === $kode ? 'selected' : '' }}>
+                                {{ $jabatanMap[$kode] }}
+                            </option>
+                        @endforeach
+                    </select>
+                @endif
 
                 <x-input-error :messages="$errors->get('jabatan')" class="mt-2" />
             </div>
@@ -104,14 +156,6 @@
                 <x-input-error :messages="$errors->get('tanggal_lahir')" class="mt-2" />
             </div>
 
-            {{-- Warga Negara --}}
-            <div class="mt-4">
-                <x-input-label-append for="warga_negara" :value="__('Warga Negara')" :append="empty($user->warga_negara) ? '<span class=\'text-red-500\'>*</span>' : ''" />
-                <x-text-input id="warga_negara" type="text" name="warga_negara" class="block mt-1 w-full"
-                    :value="old('warga_negara', $user->warga_negara)" />
-                <x-input-error :messages="$errors->get('warga_negara')" class="mt-2" />
-            </div>
-
             {{-- Alamat --}}
             <div class="mt-4">
                 <x-input-label-append for="alamat" :value="__('Alamat')" :append="empty($user->alamat) ? '<span class=\'text-red-500\'>*</span>' : ''" />
@@ -127,48 +171,6 @@
                 <x-text-input id="no_tlp" type="text" name="no_tlp" class="block mt-1 w-full"
                     :value="old('no_tlp', $user->no_tlp)" />
                 <x-input-error :messages="$errors->get('no_tlp')" class="mt-2" />
-            </div>
-
-            {{-- Pekerjaan --}}
-            @php
-                $pekerjaanList = [
-                    'Pelajar/Mahasiswa',
-                    'PNS',
-                    'TNI/Polri',
-                    'Pegawai Negeri',
-                    'Karyawan Swasta',
-                    'Wiraswasta',
-                    'Petani',
-                    'Peternak',
-                    'Nelayan',
-                    'Buruh',
-                    'Pensiunan',
-                    'Ibu Rumah Tangga',
-                    'Dokter',
-                    'Perawat',
-                    'Guru/Dosen',
-                    'Sopir',
-                    'Pengacara',
-                    'Arsitek',
-                    'Seniman/Artis',
-                    'Programmer',
-                    'Lainnya',
-                ];
-                $selectedPekerjaan = old('pekerjaan', $user->pekerjaan ?? '');
-            @endphp
-            <div class="mt-4">
-                <x-input-label-append for="pekerjaan" :value="__('Pekerjaan')" :append="empty($user->pekerjaan) ? '<span class=\'text-red-500\'>*</span>' : ''" />
-                <select id="pekerjaan" name="pekerjaan"
-                    class="block mt-1 w-full rounded-md shadow-sm border-gray-300
-                            dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
-                    <option value="">-- Pilih Pekerjaan --</option>
-                    @foreach ($pekerjaanList as $pekerjaan)
-                        <option value="{{ $pekerjaan }}" {{ $selectedPekerjaan == $pekerjaan ? 'selected' : '' }}>
-                            {{ $pekerjaan }}
-                        </option>
-                    @endforeach
-                </select>
-                <x-input-error :messages="$errors->get('pekerjaan')" class="mt-2" />
             </div>
 
             {{-- Role --}}
@@ -202,17 +204,19 @@
 
 
             {{-- Cabang --}}
-            <div class="mt-4">
-                <x-input-label-append for="cabang" :value="__('Cabang')" />
+            <div class="mt-4" id="cabang-container">
+                <x-input-label-append for="cabang" :value="__('Cabang')" :append="empty($user->cabang) ? '<span class=\'text-red-500\'>*</span>' : ''" />
                 <select id="cabang" name="cabang"
                     class="block mt-1 w-full rounded-md shadow-sm border-gray-300
                             dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
-                    <option value="">-- Pilih Cabang --</option>
-                    @foreach ($branches as $branch)
-                        <option value="{{ $branch }}"
-                            {{ old('cabang', $user->cabang) == $branch ? 'selected' : '' }}>
-                            {{ $branch }}
-                        </option>
+                    <option value="">-- Pilih Kantor Cabang --</option>
+                    @foreach ($allBranches as $role => $roleBranches)
+                        @foreach ($roleBranches as $branch)
+                            <option value="{{ $branch }}"
+                                {{ old('cabang', $user->cabang) === $branch ? 'selected' : '' }}>
+                                {{ $branch }}
+                            </option>
+                        @endforeach
                     @endforeach
                 </select>
                 <x-input-error :messages="$errors->get('cabang')" class="mt-2" />

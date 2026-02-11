@@ -103,7 +103,7 @@
             <td>
                 <div class="content">
                     <p class="header">DIBERIKAN KEPADA:</p>
-                    <p class="name">{{ $name }}</p>
+                    <p class="name">{{ ucwords(strtolower($name)) }}</p>
                     <p class="description">Telah mengikuti:</p>
                     <p class="level-title">{{ $levelTitle }}</p>
                 </div>
@@ -113,10 +113,10 @@
             <td>
                 <div class="date-sign">
                     <p class="date">Jakarta, {{ $date }}</p>
-                    <img class="stamp" src="{{ public_path('sertifikat-stamp/RFB/STAMP-RFB.png') }}" alt="Stamp">
-                    <p class="ttd">MUHAMMAD BARKAH</p>
+                    <img class="stamp" src="{{ public_path('sertifikat-stamp/RFB/STAMP RFB.png') }}" alt="Stamp">
+                    <p class="ttd">RIYAN KURNIAWAN</p>
                     <hr class="signature-line">
-                    <p class="title">Direktur Utama</p>
+                    <p class="title">Direktur Kepatuhan</p>
                     <div class="cert-id">ID Sertifikat: {{ $uuid }}</div>
                 </div>
             </td>

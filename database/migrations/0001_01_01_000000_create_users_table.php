@@ -15,11 +15,11 @@ return new class extends Migration
             $table->enum('jenis_kelamin', ['Pria', 'Wanita' ]);
             $table->string('tempat_lahir', 50);
             $table->date('tanggal_lahir');
-            $table->string('warga_negara', 50)->nullable();
+            // $table->string('warga_negara', 50)->nullable();
             $table->text('alamat');
             $table->string('no_id', 17)->unique()->nullable();
             $table->string('no_tlp', 20)->unique();
-            $table->string('pekerjaan', 50);
+            // $table->string('pekerjaan', 50);
             $table->enum('role', ['Admin', 'Trainer (Eksternal)'])->default('Trainer (Eksternal)');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
