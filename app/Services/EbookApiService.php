@@ -53,6 +53,132 @@ class EbookApiService
     }
 
     /**
+     * Fetch outlook folders from API
+     */
+    public function getOutlookFoldersFromApi()
+    {
+        try {
+            $cacheKey = 'ebook_api_outlook_folders';
+
+            return Cache::remember($cacheKey, $this->cacheTtl, function () {
+                $response = Http::timeout(30)->get("{$this->apiBaseUrl}/folder-outlooks");
+
+                if ($response->successful()) {
+                    $data = $response->json();
+
+                    Log::info('Successfully fetched outlook folders from API', [
+                        'count' => count($data['data'] ?? $data),
+                        'api_url' => "{$this->apiBaseUrl}/folder-outlooks"
+                    ]);
+
+                    return $data;
+                }
+
+                Log::error('Failed to fetch outlook folders from API', [
+                    'status' => $response->status(),
+                    'body' => $response->body()
+                ]);
+
+                return [];
+            });
+        } catch (\Exception $e) {
+            Log::error('Exception when fetching outlook folders from API', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return [];
+        }
+    }
+
+    /**
+     * Fetch outlooks from API by folder slug
+     */
+    public function getOutlooksFromApiBySlug($folderSlug, $page = 1)
+    {
+        try {
+            $cacheKey = "ebook_api_outlooks_slug_{$folderSlug}_page_{$page}";
+
+            return Cache::remember($cacheKey, $this->cacheTtl, function () use ($folderSlug, $page) {
+                $response = Http::timeout(30)->get("{$this->apiBaseUrl}/outlooks/folder/{$folderSlug}", [
+                    'page' => $page,
+                ]);
+
+                if ($response->successful()) {
+                    $data = $response->json();
+                    $outlooks = $data['data'] ?? $data;
+
+                    Log::info('Successfully fetched outlooks from API by slug', [
+                        'folder_slug' => $folderSlug,
+                        'count' => count($outlooks),
+                        'api_url' => "{$this->apiBaseUrl}/outlooks/folder/{$folderSlug}",
+                        'page' => $page,
+                    ]);
+
+                    return $outlooks;
+                }
+
+                Log::error('Failed to fetch outlooks from API by slug', [
+                    'folder_slug' => $folderSlug,
+                    'status' => $response->status(),
+                    'body' => $response->body()
+                ]);
+
+                return [];
+            });
+        } catch (\Exception $e) {
+            Log::error('Exception when fetching outlooks from API by slug', [
+                'folder_slug' => $folderSlug,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return [];
+        }
+    }
+
+    /**
+     * Fetch outlook folder detail by slug
+     */
+    public function getOutlookFolderFromApiBySlug($folderSlug)
+    {
+        try {
+            $cacheKey = "ebook_api_outlook_folder_{$folderSlug}";
+
+            return Cache::remember($cacheKey, $this->cacheTtl, function () use ($folderSlug) {
+                $response = Http::timeout(30)->get("{$this->apiBaseUrl}/folder-outlooks/{$folderSlug}");
+
+                if ($response->successful()) {
+                    $data = $response->json();
+
+                    Log::info('Successfully fetched outlook folder from API by slug', [
+                        'folder_slug' => $folderSlug,
+                        'api_url' => "{$this->apiBaseUrl}/folder-outlooks/{$folderSlug}",
+                    ]);
+
+                    return $data;
+                }
+
+                Log::error('Failed to fetch outlook folder from API by slug', [
+                    'folder_slug' => $folderSlug,
+                    'status' => $response->status(),
+                    'body' => $response->body()
+                ]);
+
+                return [];
+            });
+        } catch (\Exception $e) {
+            Log::error('Exception when fetching outlook folder from API by slug', [
+                'folder_slug' => $folderSlug,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return [];
+        }
+    }
+
+    /**
      * Fetch ebooks from API by folder
      */
     public function getEbooksFromApi($folderId)

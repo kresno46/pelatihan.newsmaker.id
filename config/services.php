@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'ebook' => [
+        'folder_slug' => env('EBOOK_FOLDER_SLUG'),
+    ],
+
 ];

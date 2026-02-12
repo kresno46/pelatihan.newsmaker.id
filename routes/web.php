@@ -3,6 +3,8 @@
 use App\Http\Controllers\AbsensiAdminController;
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\EdukasiEbookController;
+use App\Http\Controllers\EdukasiOutlookController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\JadwalAbsensiController;
 use App\Http\Controllers\LaporanController;
@@ -23,6 +25,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('dashboard');
 
     Route::get('/tools/{tool}', [WebviewController::class, 'show'])->name('webview.show');
+
+    Route::middleware('profile.complete')->group(function () {
+        Route::get('/edukasi/ebook', [EdukasiEbookController::class, 'index'])->name('edukasi.ebook');
+        Route::get('/edukasi/ebook/{folderSlug}', [EdukasiEbookController::class, 'show'])->name('edukasi.ebook.show');
+        Route::get('/edukasi/outlook', [EdukasiOutlookController::class, 'index'])->name('edukasi.outlook');
+        Route::get('/edukasi/outlook/{folderSlug}', [EdukasiOutlookController::class, 'show'])->name('edukasi.outlook.show');
+    });
 
     Route::prefix('post-test')->middleware('auth', 'is_admin:Admin')->group(function () {
         // routes sesi yang sudah kamu punya
