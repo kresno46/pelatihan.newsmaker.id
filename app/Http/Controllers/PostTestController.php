@@ -42,10 +42,8 @@ class PostTestController extends Controller
     }
 
     // ====== Update soal (modal + Summernote) ======
-    public function questionUpdate(Request $request, PostTestSession $session, PostTest $question)
+    public function questionUpdate(Request $request, PostTest $question)
     {
-        if ($question->session_id !== $session->id) abort(404);
-
         $v = Validator::make($request->all(), [
             'question_text'  => ['required', 'string', 'max:10000'],
             'option_a'       => ['required', 'string', 'max:1000'],

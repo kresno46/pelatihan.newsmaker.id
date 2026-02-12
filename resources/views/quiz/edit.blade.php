@@ -215,7 +215,7 @@
                       option_c: @js($q->option_c),
                       option_d: @js($q->option_d),
                       correct_option: @js($q->correct_option),
-                      action: '{{ route('question.update', [$session, $q]) }}'
+                      action: '{{ route('question.update', $q) }}'
                     };
                     setTimeout(() => { window.fillEditEditor(edit.question_text); }, 0);
                   ">

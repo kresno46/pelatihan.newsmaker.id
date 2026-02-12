@@ -46,9 +46,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::prefix('{session}/edit')->group(function () {
             Route::post('/question', [PostTestController::class, 'questionStore'])
                 ->name('question.store');
-            Route::put('/question/{question}', [PostTestController::class, 'questionUpdate'])
-                ->name('question.update');
         });
+        Route::put('/question/{question}', [PostTestController::class, 'questionUpdate'])
+            ->name('question.update');
         Route::delete('/question/{question}', [PostTestController::class, 'questionDestroy'])
             ->name('quiz.delete');
     });
