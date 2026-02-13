@@ -36,6 +36,20 @@
                     'color' => 'violet',
                     'route' => 'trainer.index',
                 ],
+                [
+                    'title' => 'Ebook',
+                    'desc' => 'Akses materi ebook.',
+                    'icon' => 'fa-solid fa-book-open',
+                    'color' => 'teal',
+                    'route' => 'edukasi.ebook',
+                ],
+                [
+                    'title' => 'Outlook',
+                    'desc' => 'Lihat materi outlook.',
+                    'icon' => 'fa-solid fa-chart-line',
+                    'color' => 'cyan',
+                    'route' => 'edukasi.outlook',
+                ],
             ]
             : [
                 [
@@ -65,6 +79,20 @@
                     'icon' => 'fa-solid fa-clock-rotate-left',
                     'color' => 'violet',
                     'route' => 'riwayat.index',
+                ],
+                [
+                    'title' => 'Ebook',
+                    'desc' => 'Akses materi ebook.',
+                    'icon' => 'fa-solid fa-book-open',
+                    'color' => 'teal',
+                    'route' => 'edukasi.ebook',
+                ],
+                [
+                    'title' => 'Outlook',
+                    'desc' => 'Lihat materi outlook.',
+                    'icon' => 'fa-solid fa-chart-line',
+                    'color' => 'cyan',
+                    'route' => 'edukasi.outlook',
                 ],
             ];
 
@@ -209,7 +237,7 @@
             </div>
         </div>
 
-        <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             @foreach ($quickActions as $action)
                 <a href="{{ route($action['route']) }}"
                     class="group flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-4 transition hover:bg-gray-50 hover:shadow-sm dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-900/30">
