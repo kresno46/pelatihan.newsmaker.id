@@ -91,7 +91,7 @@
                         <li>
                             <a href="{{ route('edukasi.outlook') }}"
                                 class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
-                        {{ request()->routeIs('edukasi.outlook')
+                        {{ request()->routeIs('edukasi.outlook*')
                             ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                             : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
                                 <i class="fa-solid fa-newspaper"></i>
@@ -101,7 +101,7 @@
                         <li>
                             <a href="{{ route('edukasi.ebook') }}"
                                 class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
-                        {{ request()->routeIs('edukasi.ebook')
+                        {{ request()->routeIs('edukasi.ebook*')
                             ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                             : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
                                 <i class="fa-solid fa-book"></i>
