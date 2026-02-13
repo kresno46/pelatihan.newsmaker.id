@@ -3,7 +3,7 @@
 @section('namePage', 'Edukasi - Ebook')
 
 @section('content')
-    <div class="container">
+    <div class="w-full">
         <div class="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-2xl shadow-lg">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
                 <div>

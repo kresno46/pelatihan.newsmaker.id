@@ -8,11 +8,17 @@ class EdukasiOutlookController extends Controller
 {
     public function index(EbookApiService $ebookApi)
     {
-        $foldersResponse = $ebookApi->getOutlookFoldersFromApi();
-        $folders = $foldersResponse['data'] ?? $foldersResponse ?? [];
+        $page = (int) request()->query('page', 1);
+
+        $dailyResponse = $ebookApi->getOutlookFoldersFromApi('daily', $page);
+        $weeklyResponse = $ebookApi->getOutlookFoldersFromApi('weekly', $page);
+
+        $foldersDaily = $dailyResponse['data'] ?? $dailyResponse ?? [];
+        $foldersWeekly = $weeklyResponse['data'] ?? $weeklyResponse ?? [];
 
         return view('edukasi.outlook', [
-            'folders' => $folders,
+            'foldersDaily' => $foldersDaily,
+            'foldersWeekly' => $foldersWeekly,
         ]);
     }
 

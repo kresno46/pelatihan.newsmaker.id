@@ -3,7 +3,7 @@
 @section('namePage', 'Edukasi - Ebook')
 
 @section('content')
-    <div class="container">
+    <div class="w-full">
         <div class="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-2xl shadow-lg">
             <div
                 class="mb-6 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-50 via-white to-cyan-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4 sm:p-6">

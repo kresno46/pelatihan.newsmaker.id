@@ -55,20 +55,31 @@ class EbookApiService
     /**
      * Fetch outlook folders from API
      */
-    public function getOutlookFoldersFromApi()
+    public function getOutlookFoldersFromApi($category = null, $page = 1)
     {
         try {
             $cacheKey = 'ebook_api_outlook_folders';
+            if (!empty($category)) {
+                $cacheKey .= "_category_{$category}";
+            }
+            $cacheKey .= "_page_{$page}";
 
-            return Cache::remember($cacheKey, $this->cacheTtl, function () {
-                $response = Http::timeout(30)->get("{$this->apiBaseUrl}/folder-outlooks");
+            return Cache::remember($cacheKey, $this->cacheTtl, function () use ($category, $page) {
+                $query = ['page' => $page];
+                if (!empty($category)) {
+                    $query['category'] = $category;
+                }
+
+                $response = Http::timeout(30)->get("{$this->apiBaseUrl}/folder-outlooks", $query);
 
                 if ($response->successful()) {
                     $data = $response->json();
 
                     Log::info('Successfully fetched outlook folders from API', [
                         'count' => count($data['data'] ?? $data),
-                        'api_url' => "{$this->apiBaseUrl}/folder-outlooks"
+                        'api_url' => "{$this->apiBaseUrl}/folder-outlooks",
+                        'category' => $category,
+                        'page' => $page,
                     ]);
 
                     return $data;
@@ -76,7 +87,9 @@ class EbookApiService
 
                 Log::error('Failed to fetch outlook folders from API', [
                     'status' => $response->status(),
-                    'body' => $response->body()
+                    'body' => $response->body(),
+                    'category' => $category,
+                    'page' => $page,
                 ]);
 
                 return [];
