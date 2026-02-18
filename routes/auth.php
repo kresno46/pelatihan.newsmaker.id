@@ -35,6 +35,10 @@ Route::middleware('guest')->group(function () {
         ->name('password.store');
 
     Route::get('password/show', [NewPasswordController::class, 'show']);
+
+    Route::get('verify-suspended/{id}/{hash}', [VerifyEmailController::class, 'verifySuspended'])
+        ->middleware(['signed', 'throttle:6,1'])
+        ->name('suspended.verification.verify');
 });
 
 Route::middleware('auth')->group(function () {

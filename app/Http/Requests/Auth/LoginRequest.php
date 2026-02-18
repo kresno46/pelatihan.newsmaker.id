@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Notifications\SuspendedVerifyEmail;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -40,6 +41,35 @@ class LoginRequest extends FormRequest
     public function authenticate(): void
     {
         $this->ensureIsNotRateLimited();
+
+        $user = \App\Models\User::where('email', $this->string('email'))->first();
+        if ($user && $user->role !== 'Admin') {
+            if ($user->suspended_at) {
+                if ($user->email_verified_at !== null) {
+                    $user->forceFill(['email_verified_at' => null])->save();
+                }
+
+                $this->sendSuspendedVerification($user);
+
+                throw ValidationException::withMessages([
+                    'email' => 'Akun disuspensi. Silakan cek email untuk verifikasi ulang.',
+                ]);
+            }
+
+            if ($user->last_login_at && $user->last_login_at->lt(now()->subMonth())) {
+                $user->forceFill([
+                    'suspended_at' => now(),
+                    'force_password_reset' => true,
+                    'email_verified_at' => null,
+                ])->save();
+
+                $this->sendSuspendedVerification($user);
+
+                throw ValidationException::withMessages([
+                    'email' => 'Akun disuspensi karena tidak login lebih dari 1 bulan. Silakan cek email untuk verifikasi ulang.',
+                ]);
+            }
+        }
 
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
@@ -81,5 +111,16 @@ class LoginRequest extends FormRequest
     public function throttleKey(): string
     {
         return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
+    }
+
+    protected function sendSuspendedVerification(\App\Models\User $user): void
+    {
+        $key = 'suspended-verify-email:'.$user->id;
+        if (RateLimiter::tooManyAttempts($key, 1)) {
+            return;
+        }
+
+        $user->notify(new SuspendedVerifyEmail);
+        RateLimiter::hit($key, 600);
     }
 }

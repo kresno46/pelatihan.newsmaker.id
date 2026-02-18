@@ -29,6 +29,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'role',
         'cabang',
         'email_verified_at',
+        'last_login_at',
+        'suspended_at',
+        'force_password_reset',
     ];
 
     /**
@@ -50,6 +53,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
         'tanggal_lahir' => 'date',
         'password' => 'hashed',
+        'last_login_at' => 'datetime',
+        'suspended_at' => 'datetime',
+        'force_password_reset' => 'boolean',
     ];
 
     /**
