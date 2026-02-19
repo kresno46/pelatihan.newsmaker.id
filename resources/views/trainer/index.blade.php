@@ -169,11 +169,11 @@
 
         <!-- Desktop Table View -->
         <div class="hidden md:block overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <table class="min-w-full w-full table-fixed divide-y divide-gray-200 dark:divide-gray-700">
                 <thead class="bg-gray-200 dark:bg-gray-700">
                     <tr>
                         <th
-                            class="px-4 lg:px-6 py-3 text-left text-xs lg:text-sm font-medium text-gray-700 dark:text-gray-200">
+                            class="px-2 lg:px-3 py-3 text-left text-xs lg:text-sm font-medium text-gray-700 dark:text-gray-200 w-10">
                             #</th>
                         <th
                             class="px-4 lg:px-6 py-3 text-left text-xs lg:text-sm font-medium text-gray-700 dark:text-gray-200">
@@ -201,19 +201,25 @@
                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     @forelse ($trainer as $item)
                         <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
-                            <td class="px-4 lg:px-6 py-4 text-sm text-gray-900 dark:text-white">{{ $loop->iteration }}</td>
-                            <td class="px-4 lg:px-6 py-4 text-sm text-gray-900 dark:text-white">{{ $item->name }}</td>
-                            <td class="px-4 lg:px-6 py-4 text-sm text-center text-gray-900 dark:text-white">
+                            <td class="px-2 lg:px-3 py-4 text-sm text-gray-900 dark:text-white w-10">
+                                {{ $loop->iteration }}</td>
+                            <td class="px-4 lg:px-6 py-4 text-sm text-gray-900 dark:text-white break-words whitespace-normal">
+                                {{ $item->name }}
+                            </td>
+                            <td
+                                class="px-4 lg:px-6 py-4 text-sm text-center text-gray-900 dark:text-white break-words whitespace-normal max-w-xs">
                                 {{ $item->email }}</td>
-                            <td class="px-4 lg:px-6 py-4 text-sm text-center text-gray-900 dark:text-white">
+                            <td
+                                class="px-4 lg:px-6 py-4 text-sm text-center text-gray-900 dark:text-white break-words whitespace-normal max-w-sm">
                                 {{ $namaPerusahaan[$item->role] ?? ($item->role ?? '-') }}
                             </td>
-                            <td class="px-4 lg:px-6 py-4 text-sm text-center text-gray-900 dark:text-white">
+                            <td
+                                class="px-4 lg:px-6 py-4 text-sm text-center text-gray-900 dark:text-white break-words whitespace-normal max-w-xs">
                                 {{ $item->cabang ?? '-' }}</td>
                             <td class="px-4 lg:px-6 py-4 text-sm text-center">
                                 <span
-                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $item->email_verified_at ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
-                                    {{ $item->email_verified_at ? 'Terverifikasi' : 'Belum' }}
+                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $item->suspended_at ? 'bg-red-100 text-red-800' : ($item->email_verified_at ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800') }}">
+                                    {{ $item->suspended_at ? 'Suspended' : ($item->email_verified_at ? 'Terverifikasi' : 'Belum') }}
                                 </span>
                             </td>
                             <td class="px-4 lg:px-6 py-4 text-sm text-center text-gray-900 dark:text-white">

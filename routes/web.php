@@ -108,6 +108,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::put('/{id}', [UserController::class, 'update'])->name('trainer.update');
             Route::get('/{id}/show', [UserController::class, 'show'])->name('trainer.show');
             Route::post('/{id}/verify', [UserController::class, 'verify'])->name('trainer.verify');
+            Route::post('/{id}/suspend', [UserController::class, 'suspend'])->name('trainer.suspend');
+            Route::post('/{id}/unsuspend', [UserController::class, 'unsuspend'])->name('trainer.unsuspend');
             Route::delete('/{id}', [UserController::class, 'destroy'])->name('trainer.destroy');
         });
     });

@@ -121,7 +121,7 @@
                         <li>
                             <a href="{{ route('post-test.index') }}"
                                 class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
-                        {{ request()->routeIs('posttest.*')
+                        {{ request()->routeIs('post-test.*')
                             ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                             : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
                                 <i class="fa-solid fa-clipboard-question"></i>
@@ -294,7 +294,7 @@
         </aside>
 
         <!-- Content Area -->
-        <div class="flex-1 flex flex-col">
+        <div class="flex-1 flex flex-col min-w-0">
             <!-- Navbar -->
             <header
                 class="sticky top-0 bg-white dark:bg-gray-800 shadow px-4 py-4 flex items-center justify-between z-20">

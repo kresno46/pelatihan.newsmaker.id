@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\Rule;
+use App\Notifications\SuspendedVerifyEmail;
 
 class UserController extends Controller
 {
@@ -242,6 +244,73 @@ class UserController extends Controller
         $trainer->delete();
 
         return redirect()->route('trainer.index')->with('Alert', 'Trainer '.$trainer->name.' berhasil dihapus.');
+    }
+
+    /**
+     * Suspend user secara manual (hanya non-admin).
+     */
+    public function suspend(string $id)
+    {
+        $user = User::findOrFail($id);
+
+        if ($user->role === 'Admin') {
+            return redirect()->route('trainer.index')->with('error', 'Admin tidak bisa disuspensi.');
+        }
+
+        if (auth()->id() === $user->id) {
+            return redirect()->route('trainer.index')->with('error', 'Anda tidak bisa menyuspensi akun sendiri.');
+        }
+
+        if ($user->suspended_at) {
+            return redirect()->route('trainer.index')->with('Alert', 'Akun '.$user->name.' sudah dalam status suspend.');
+        }
+
+        $user->forceFill([
+            'suspended_at' => now(),
+            'force_password_reset' => true,
+            'email_verified_at' => null,
+        ])->save();
+
+        $this->sendSuspendedVerification($user);
+
+        return redirect()->route('trainer.index')->with('Alert', 'Akun '.$user->name.' berhasil disuspensi.');
+    }
+
+    /**
+     * Unsuspend user secara manual (hanya non-admin).
+     */
+    public function unsuspend(string $id)
+    {
+        $user = User::findOrFail($id);
+
+        if ($user->role === 'Admin') {
+            return redirect()->route('trainer.index')->with('error', 'Admin tidak bisa diubah status suspend-nya.');
+        }
+
+        if (auth()->id() === $user->id) {
+            return redirect()->route('trainer.index')->with('error', 'Anda tidak bisa mengaktifkan akun sendiri melalui aksi ini.');
+        }
+
+        if (! $user->suspended_at) {
+            return redirect()->route('trainer.index')->with('Alert', 'Akun '.$user->name.' sudah aktif.');
+        }
+
+        $user->forceFill([
+            'suspended_at' => null,
+        ])->save();
+
+        return redirect()->route('trainer.index')->with('Alert', 'Akun '.$user->name.' berhasil diaktifkan kembali.');
+    }
+
+    private function sendSuspendedVerification(User $user): void
+    {
+        $key = 'suspended-verify-email:'.$user->id;
+        if (RateLimiter::tooManyAttempts($key, 1)) {
+            return;
+        }
+
+        $user->notify(new SuspendedVerifyEmail);
+        RateLimiter::hit($key, 600);
     }
 
     /**
