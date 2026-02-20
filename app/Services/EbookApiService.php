@@ -107,12 +107,12 @@ class EbookApiService
     /**
      * Fetch outlooks from API by folder slug
      */
-    public function getOutlooksFromApiBySlug($folderSlug, $page = 1)
+    public function getOutlooksFromApiBySlug($folderSlug, $page = 1, $returnFull = false)
     {
         try {
-            $cacheKey = "ebook_api_outlooks_slug_{$folderSlug}_page_{$page}";
+            $cacheKey = "ebook_api_outlooks_slug_{$folderSlug}_page_{$page}_full_" . ($returnFull ? '1' : '0');
 
-            return Cache::remember($cacheKey, $this->cacheTtl, function () use ($folderSlug, $page) {
+            return Cache::remember($cacheKey, $this->cacheTtl, function () use ($folderSlug, $page, $returnFull) {
                 $response = Http::timeout(30)->get("{$this->apiBaseUrl}/outlooks/folder/{$folderSlug}", [
                     'page' => $page,
                 ]);
@@ -128,7 +128,7 @@ class EbookApiService
                         'page' => $page,
                     ]);
 
-                    return $outlooks;
+                    return $returnFull ? $data : $outlooks;
                 }
 
                 Log::error('Failed to fetch outlooks from API by slug', [
@@ -236,13 +236,15 @@ class EbookApiService
     /**
      * Fetch ebooks from API by folder slug
      */
-    public function getEbooksFromApiBySlug($folderSlug)
+    public function getEbooksFromApiBySlug($folderSlug, $page = 1, $returnFull = false)
     {
         try {
-            $cacheKey = "ebook_api_ebooks_slug_{$folderSlug}";
+            $cacheKey = "ebook_api_ebooks_slug_{$folderSlug}_page_{$page}_full_" . ($returnFull ? '1' : '0');
 
-            return Cache::remember($cacheKey, $this->cacheTtl, function () use ($folderSlug) {
-                $response = Http::timeout(30)->get("{$this->apiBaseUrl}/ebooks/folder/{$folderSlug}");
+            return Cache::remember($cacheKey, $this->cacheTtl, function () use ($folderSlug, $page, $returnFull) {
+                $response = Http::timeout(30)->get("{$this->apiBaseUrl}/ebooks/folder/{$folderSlug}", [
+                    'page' => $page,
+                ]);
 
                 if ($response->successful()) {
                     $data = $response->json();
@@ -253,10 +255,11 @@ class EbookApiService
                     Log::info('Successfully fetched ebooks from API by slug', [
                         'folder_slug' => $folderSlug,
                         'count' => count($ebooks),
-                        'api_url' => "{$this->apiBaseUrl}/ebooks/folder/{$folderSlug}"
+                        'api_url' => "{$this->apiBaseUrl}/ebooks/folder/{$folderSlug}",
+                        'page' => $page,
                     ]);
-                     $ebooks = $data['data'] ?? $data;
-                    return $ebooks;
+
+                    return $returnFull ? $data : $ebooks;
                 }
 
                 Log::error('Failed to fetch ebooks from API by slug', [

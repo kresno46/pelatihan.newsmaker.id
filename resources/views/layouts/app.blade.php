@@ -333,13 +333,24 @@
 
                             <!-- Theme Dropdown -->
                             <div class="px-4 py-2 text-gray-800 dark:text-white">
-                                <label for="themeSelect" class="block mb-1 font-semibold">Pilih Tema</label>
-                                <select id="themeSelect"
-                                    class="w-full rounded bg-gray-200 dark:bg-gray-600 text-gray-900 dark:text-white p-1">
-                                    <option value="light">Terang</option>
-                                    <option value="dark">Gelap</option>
-                                    <option value="auto">Otomatis</option>
-                                </select>
+                                <div
+                                    class="text-xs font-semibold mb-2 tracking-wide uppercase text-gray-500 dark:text-gray-300">
+                                    Tema
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button type="button" data-theme-btn="light"
+                                        class="w-full h-9 inline-flex items-center justify-center rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                                        <i class="fa-solid fa-sun"></i>
+                                    </button>
+                                    <button type="button" data-theme-btn="dark"
+                                        class="w-full h-9 inline-flex items-center justify-center rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                                        <i class="fa-solid fa-moon"></i>
+                                    </button>
+                                    <button type="button" data-theme-btn="auto"
+                                        class="w-full h-9 inline-flex items-center justify-center rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                                        <i class="fa-solid fa-circle-half-stroke"></i>
+                                    </button>
+                                </div>
                             </div>
 
                             <hr class="border-gray-200 dark:border-gray-600" />
@@ -630,7 +641,7 @@
             const html = document.documentElement;
             const profileButton = document.getElementById('profileButton');
             const profileDropdown = document.getElementById('profileDropdown');
-            const themeSelect = document.getElementById('themeSelect');
+            const themeButtons = document.querySelectorAll('[data-theme-btn]');
 
             // Fungsi untuk apply theme
             function applyTheme(theme) {
@@ -657,12 +668,28 @@
             const savedTheme = localStorage.getItem('theme') || 'auto';
             applyTheme(savedTheme);
 
-            // Set dropdown ke theme yang sedang aktif
-            if (themeSelect) {
-                themeSelect.value = savedTheme;
+            // Set tombol aktif sesuai theme
+            if (themeButtons.length) {
+                const setActive = (theme) => {
+                    themeButtons.forEach((btn) => {
+                        const isActive = btn.dataset.themeBtn === theme;
+                        btn.classList.toggle('bg-blue-600', isActive);
+                        btn.classList.toggle('text-white', isActive);
+                        btn.classList.toggle('border-blue-600', isActive);
+                        btn.classList.toggle('bg-white', !isActive);
+                        btn.classList.toggle('text-gray-700', !isActive);
+                        btn.classList.toggle('dark:text-gray-200', !isActive);
+                    });
+                };
 
-                themeSelect.addEventListener('change', (e) => {
-                    applyTheme(e.target.value);
+                setActive(savedTheme);
+
+                themeButtons.forEach((btn) => {
+                    btn.addEventListener('click', () => {
+                        const theme = btn.dataset.themeBtn;
+                        applyTheme(theme);
+                        setActive(theme);
+                    });
                 });
             }
 

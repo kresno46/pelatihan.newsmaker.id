@@ -203,7 +203,8 @@
                         <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
                             <td class="px-2 lg:px-3 py-4 text-sm text-gray-900 dark:text-white w-10">
                                 {{ $loop->iteration }}</td>
-                            <td class="px-4 lg:px-6 py-4 text-sm text-gray-900 dark:text-white break-words whitespace-normal">
+                            <td
+                                class="px-4 lg:px-6 py-4 text-sm text-gray-900 dark:text-white break-words whitespace-normal">
                                 {{ $item->name }}
                             </td>
                             <td

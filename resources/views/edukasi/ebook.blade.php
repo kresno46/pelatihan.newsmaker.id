@@ -35,21 +35,26 @@
                                 <i class="fa-solid fa-book-bookmark text-blue-600"></i>
                             </div>
                             <div class="flex-1">
-                                <div class="flex items-start justify-between gap-2">
-                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                                        {{ $folder['folder_name'] ?? 'Tanpa Nama' }}
-                                    </h3>
-                                    <span
-                                        class="text-[10px] uppercase tracking-wide text-blue-600 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded-full">
-                                        PDF
-                                    </span>
-                                </div>
-                                <p class="mt-1 text-sm text-gray-600 dark:text-gray-300 line-clamp-2">
-                                    {{ $folder['Deskripsi'] ?? ($folder['deskripsi'] ?? 'Tidak ada deskripsi.') }}
-                                </p>
-                                <div class="mt-3 flex items-center justify-between text-xs text-gray-500">
-                                    <span>{{ $folder['ebooks_count'] ?? 0 }} ebook</span>
-                                    <span class="group-hover:text-blue-600 transition">Lihat folder →</span>
+                                <div class="flex flex-col justify-between h-full">
+                                    <div>
+                                        <div class="flex items-start justify-between gap-2">
+                                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                                                {{ $folder['folder_name'] ?? 'Tanpa Nama' }}
+                                            </h3>
+                                            <span
+                                                class="text-[10px] uppercase tracking-wide text-blue-600 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded-full">
+                                                PDF
+                                            </span>
+                                        </div>
+                                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-300 line-clamp-2">
+                                            {{ $folder['Deskripsi'] ?? ($folder['deskripsi'] ?? 'Tidak ada deskripsi.') }}
+                                        </p>
+                                    </div>
+
+                                    <div class="mt-3 flex items-center justify-between text-xs text-gray-500">
+                                        <span>{{ $folder['ebooks_count'] ?? 0 }} ebook</span>
+                                        <span class="group-hover:text-blue-600 transition">Lihat folder →</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
