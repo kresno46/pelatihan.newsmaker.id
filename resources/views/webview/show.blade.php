@@ -5,10 +5,10 @@
 @section('content')
     <div class="flex flex-1 flex-col min-h-0">
         <div
-            class="flex items-center justify-between gap-2 border-b border-gray-200 bg-white p-2 dark:border-gray-700 dark:bg-gray-800 sm:p-4">
+            class="flex items-center justify-between gap-5 border-b border-gray-200 bg-white px-4 py-2 dark:border-gray-700 dark:bg-gray-800 sm:py-4 sm:px-6">
             <div>
                 <h1 class="text-lg font-semibold text-gray-900 dark:text-white sm:text-2xl">{{ $title }}</h1>
-                <p class="hidden text-sm text-gray-600 dark:text-gray-300 sm:block">
+                <p class="text-sm text-gray-600 dark:text-gray-300">
                     Jika tampilan kosong, kemungkinan situs tujuan memblokir iframe. Gunakan tombol "Buka Tab Baru".
                 </p>
             </div>
@@ -22,7 +22,7 @@
             </div>
         </div>
 
-        <iframe src="{{ $url }}" title="{{ $title }}" class="w-full flex-1 bg-white dark:bg-gray-900" loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade"></iframe>
+        <iframe src="{{ $url }}" title="{{ $title }}" class="w-full flex-1 bg-white dark:bg-gray-900"
+            loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
     </div>
 @endsection
