@@ -64,9 +64,9 @@
                         </a>
                     </div>
 
-                    <hr class="border-gray-300 dark:border-gray-700">
+                    <hr class="border-gray-300 dark:border-gray-700 my-6">
 
-                    <div class="space-y-6 pt-6">
+                    <div class="space-y-6">
                         <!-- Navigation - Main Menu -->
                         <nav>
                             <ul class="flex flex-col space-y-2">
