@@ -3,29 +3,13 @@
 @section('namePage', 'Dashboard')
 
 @section('content')
-    <h1 class="text-3xl font-semibold mb-2">Dashboard</h1>
-    <p class="mb-6">Selamat datang kembali, {{ Auth::user()->name }}!</p>
-
-    @if ($isIncomplete)
-        <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 rounded mb-6 flex items-center animate-pulse"
-            role="alert">
-            <div class="p-3 bg-yellow-400">
-                <strong class="font-bold">
-                    <i class="fa-solid fa-triangle-exclamation"></i>
-                </strong>
-            </div>
-            <div class="ps-3">
-                <span class="block sm:inline">
-                    Lengkapi data diri Anda untuk pengalaman yang lebih baik.
-                    <a href="{{ route('profile.edit') }}" class="underline text-yellow-700 ml-2 hover:text-yellow-900">
-                        Klik di sini
-                    </a>
-                </span>
-            </div>
+    <div class="space-y-8">
+        <div>
+            <h1 class="text-3xl font-semibold text-gray-900 dark:text-white">Dashboard</h1>
+            <p class="mt-1 text-gray-600 dark:text-gray-300">
+                Selamat datang kembali, {{ Auth::user()->name }}!
+            </p>
         </div>
-    @endif
-
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
         <!-- Example Card Template -->
         @php
             $cards = [
@@ -98,15 +82,8 @@
             }
         @endphp
 
-        <div class="mb-6">
-            <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Beranda</h1>
-            <p class="mt-1 text-gray-600 dark:text-gray-300">
-                Halo, {{ Auth::user()->name }}. Pilih menu di bawah untuk mulai.
-            </p>
-        </div>
-
         @if ($isIncomplete)
-            <div class="mb-6 rounded-xl border border-yellow-300 bg-yellow-50 p-4 text-yellow-800 dark:border-yellow-700/50 dark:bg-yellow-900/20 dark:text-yellow-200"
+            <div class="rounded-xl border border-yellow-300 bg-yellow-50 p-4 text-yellow-800 dark:border-yellow-700/50 dark:bg-yellow-900/20 dark:text-yellow-200"
                 role="alert">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div class="flex items-start gap-3">
@@ -129,7 +106,7 @@
             </div>
         @endif
 
-        <div class="mb-8 rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+        <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
             <div class="flex items-center justify-between gap-3">
                 <div>
                     <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Mulai dari sini</h2>
@@ -157,12 +134,12 @@
             </div>
         </div>
 
-        <div class="mb-6">
+        <div>
             <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Tools</h2>
             <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">Akses cepat ke tools yang kamu butuhkan.</p>
         </div>
 
-        <div class="mb-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
             @foreach ($tools as $tool)
                 <a href="{{ $tool['href'] }}"
                     class="group flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-4 transition hover:bg-gray-50 hover:shadow-sm dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-900/30">
@@ -181,7 +158,7 @@
             @endforeach
         </div>
 
-        <div class="mb-6">
+        <div>
             <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Ringkasan</h2>
             <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">Informasi singkat untuk kamu.</p>
         </div>
@@ -326,8 +303,8 @@
                                 </tbody>
                             </table>
                         </div>
-                    @endif
-                </div>
+        @endif
+    </div>
             </div>
         @endif
     @endsection

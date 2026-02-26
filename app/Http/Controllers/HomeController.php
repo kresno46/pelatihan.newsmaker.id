@@ -16,6 +16,7 @@ class HomeController extends Controller
     public function index()
     {
         $user = auth()->user();
+        $isAdmin = $user->role === 'Admin';
 
         // Cek kelengkapan profil
         $requiredFields = [
@@ -29,7 +30,7 @@ class HomeController extends Controller
         ];
 
         $isIncomplete = false;
-        if ($user->role !== 'Admin') {
+        if (! $isAdmin) {
             foreach ($requiredFields as $field) {
                 if (empty($user->$field)) {
                     $isIncomplete = true;
@@ -86,9 +87,189 @@ class HomeController extends Controller
             ->get();
 
         // ========================
+        // Quick actions & tools
+        // ========================
+        $quickActions = [
+            [
+                'title' => 'Absensi',
+                'desc' => 'Isi absensi sesi terbaru.',
+                'icon' => 'fa-solid fa-pen-to-square',
+                'color' => 'emerald',
+                'route' => 'AbsensiUser.index',
+            ],
+            [
+                'title' => 'Post Test',
+                'desc' => 'Kerjakan post test yang tersedia.',
+                'icon' => 'fa-solid fa-clipboard-question',
+                'color' => 'blue',
+                'route' => 'post-test.index',
+            ],
+            [
+                'title' => 'Ebook',
+                'desc' => 'Baca materi pelatihan.',
+                'icon' => 'fa-solid fa-book',
+                'color' => 'amber',
+                'route' => 'edukasi.ebook',
+            ],
+            [
+                'title' => 'Outlook',
+                'desc' => 'Lihat insight terbaru.',
+                'icon' => 'fa-solid fa-newspaper',
+                'color' => 'purple',
+                'route' => 'edukasi.outlook',
+            ],
+            [
+                'title' => 'Sertifikat',
+                'desc' => 'Unduh sertifikat yang tersedia.',
+                'icon' => 'fa-solid fa-certificate',
+                'color' => 'orange',
+                'route' => 'sertifikat.index',
+            ],
+        ];
+
+        if ($isAdmin) {
+            $quickActions = [
+                [
+                    'title' => 'Absensi',
+                    'desc' => 'Kelola jadwal absensi.',
+                    'icon' => 'fa-solid fa-face-smile',
+                    'color' => 'emerald',
+                    'route' => 'absensi.index',
+                ],
+                [
+                    'title' => 'Post Test',
+                    'desc' => 'Kelola sesi post test.',
+                    'icon' => 'fa-solid fa-clipboard-question',
+                    'color' => 'blue',
+                    'route' => 'posttest.index',
+                ],
+                [
+                    'title' => 'Sertifikat',
+                    'desc' => 'Laporan sertifikat terbaru.',
+                    'icon' => 'fa-solid fa-certificate',
+                    'color' => 'orange',
+                    'route' => 'LaporanSertifikat.index',
+                ],
+                [
+                    'title' => 'User',
+                    'desc' => 'Kelola user pelatihan.',
+                    'icon' => 'fa-solid fa-user',
+                    'color' => 'indigo',
+                    'route' => 'trainer.index',
+                ],
+                [
+                    'title' => 'Admin',
+                    'desc' => 'Kelola akun admin.',
+                    'icon' => 'fa-solid fa-user-shield',
+                    'color' => 'slate',
+                    'route' => 'admin.index',
+                ],
+            ];
+        }
+
+        $tools = [
+            [
+                'title' => 'AiSG',
+                'desc' => 'Akses tool AiSG.',
+                'icon' => 'fa-solid fa-window-maximize',
+                'color' => 'blue',
+                'href' => route('webview.show', ['tool' => 'aisg']),
+            ],
+            [
+                'title' => 'NMAi 23',
+                'desc' => 'Akses tool NMAi 23.',
+                'icon' => 'fa-solid fa-window-maximize',
+                'color' => 'indigo',
+                'href' => route('webview.show', ['tool' => 'nmai23']),
+            ],
+            [
+                'title' => 'BIAS23',
+                'desc' => 'Akses tool BIAS23.',
+                'icon' => 'fa-solid fa-window-maximize',
+                'color' => 'amber',
+                'href' => route('webview.show', ['tool' => 'bias23']),
+            ],
+            [
+                'title' => 'Risk Guard',
+                'desc' => 'Akses tool Risk Guard.',
+                'icon' => 'fa-solid fa-window-maximize',
+                'color' => 'emerald',
+                'href' => route('webview.show', ['tool' => 'risk-guard']),
+            ],
+        ];
+
+        // ========================
+        // Summary cards
+        // ========================
+        $summaryCards = [
+            [
+                'title' => 'Total Ebook',
+                'value' => $jumlahEbook,
+                'suffix' => ' Ebook',
+                'icon' => 'fa-solid fa-book',
+                'color' => 'blue',
+                'route' => 'edukasi.ebook',
+            ],
+            [
+                'title' => 'Sesi Post Test',
+                'value' => $jumlahSession,
+                'suffix' => ' Sesi',
+                'icon' => 'fa-solid fa-clipboard-question',
+                'color' => 'purple',
+                'route' => 'post-test.index',
+            ],
+            [
+                'title' => 'Absensi Terisi',
+                'value' => $jumlahAbsensiTerisi,
+                'suffix' => ' Absensi',
+                'icon' => 'fa-solid fa-pen-to-square',
+                'color' => 'emerald',
+                'route' => 'AbsensiUser.index',
+            ],
+            [
+                'title' => 'Sertifikat Selesai',
+                'value' => $jumlahSertifikatSelesai,
+                'suffix' => ' Sertifikat',
+                'icon' => 'fa-solid fa-certificate',
+                'color' => 'orange',
+                'route' => 'sertifikat.index',
+            ],
+        ];
+
+        if ($isAdmin) {
+            $summaryCards = array_merge($summaryCards, [
+                [
+                    'title' => 'Jumlah User',
+                    'value' => $jumlahUser,
+                    'suffix' => ' User',
+                    'icon' => 'fa-solid fa-users',
+                    'color' => 'indigo',
+                    'route' => 'trainer.index',
+                ],
+                [
+                    'title' => 'Jumlah Admin',
+                    'value' => $jumlahAdmin,
+                    'suffix' => ' Admin',
+                    'icon' => 'fa-solid fa-user-shield',
+                    'color' => 'slate',
+                    'route' => 'admin.index',
+                ],
+                [
+                    'title' => 'Jadwal Absensi',
+                    'value' => $jumlahJadwalAbsensi,
+                    'suffix' => ' Jadwal',
+                    'icon' => 'fa-solid fa-list-check',
+                    'color' => 'teal',
+                    'route' => 'absensi.index',
+                ],
+            ]);
+        }
+
+        // ========================
         // Kirim data ke view
         // ========================
         return view('dashboard', compact(
+            'isAdmin',
             'isIncomplete',
             'jumlahEbook',
             'jumlahSession',
@@ -103,7 +284,10 @@ class HomeController extends Controller
             'absensiData',
             'postTestLabels',
             'postTestData',
-            'latestCertificates'
+            'latestCertificates',
+            'quickActions',
+            'tools',
+            'summaryCards'
         ));
     }
 }
