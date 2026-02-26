@@ -262,7 +262,7 @@
         <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">Akses cepat ke tools yang kamu butuhkan.</p>
     </div>
 
-    <div class="mb-8 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="mb-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
         @foreach ($tools as $tool)
             <a href="{{ $tool['href'] }}"
                 class="group flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-4 transition hover:bg-gray-50 hover:shadow-sm dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-900/30">
