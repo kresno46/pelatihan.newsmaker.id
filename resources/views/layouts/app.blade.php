@@ -49,249 +49,253 @@
 <body class="font-sans antialiased">
     <div class="min-h-screen bg-gray-100 dark:bg-gray-900 flex">
         <!-- Sidebar : Dekstop -->
-        <aside
-            class="bg-white dark:bg-gray-800 w-64 hidden md:block sticky top-0 flex-shrink-0 shadow-lg border-r border-gray-200 dark:border-gray-700 h-screen overflow-auto z-50">
-            <div class="h-full p-4 space-y-6">
-                <!-- Logo -->
-                <div class="w-full flex justify-center">
-                    <a href="{{ route('dashboard') }}">
-                        {{-- <a href="https://www.newsmaker.id"> --}}
-                        <img src="{{ asset('assets/NewsMaker-23-logo.png') }}" alt="NewsMaker 23"
-                            class="block dark:hidden h-20" />
-                        <img src="{{ asset('assets/NewsMaker-23-logo-white.png') }}" alt="NewsMaker 23"
-                            class="hidden dark:block h-20" />
-                    </a>
-                </div>
+        <div class="hidden md:block w-64 flex-shrink-0 sticky top-0 h-screen z-50">
+            <aside
+                class="bg-white dark:bg-gray-800 h-full overflow-y-auto pr-2 sidebar-scroll shadow-lg border-r border-gray-200 dark:border-gray-700">
+                <div class="p-4">
+                    <!-- Logo -->
+                    <div class="w-full flex justify-center">
+                        <a href="{{ route('dashboard') }}">
+                            {{-- <a href="https://www.newsmaker.id"> --}}
+                            <img src="{{ asset('assets/NewsMaker-23-logo.png') }}" alt="NewsMaker 23"
+                                class="block dark:hidden h-20" />
+                            <img src="{{ asset('assets/NewsMaker-23-logo-white.png') }}" alt="NewsMaker 23"
+                                class="hidden dark:block h-20" />
+                        </a>
+                    </div>
 
-                <hr class="border-gray-300 dark:border-gray-700">
+                    <hr class="border-gray-300 dark:border-gray-700">
 
-                <!-- Navigation - Main Menu -->
-                <nav>
-                    <ul class="flex flex-col space-y-2">
-                        <li class="text-sm text-gray-500 uppercase tracking-wide">Dashboard</li>
-                        <li>
-                            <a href="{{ route('dashboard') }}"
-                                class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                    <div class="space-y-6 pt-6">
+                        <!-- Navigation - Main Menu -->
+                        <nav>
+                            <ul class="flex flex-col space-y-2">
+                                <li class="text-sm text-gray-500 uppercase tracking-wide">Dashboard</li>
+                                <li>
+                                    <a href="{{ route('dashboard') }}"
+                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                             {{ request()->routeIs('dashboard')
                                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                <i class="fas fa-home"></i>
-                                <span>{{ __('Beranda') }}</span>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
+                                        <i class="fas fa-home"></i>
+                                        <span>{{ __('Beranda') }}</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
 
-                <hr class="border-gray-300 dark:border-gray-700">
+                        <hr class="border-gray-300 dark:border-gray-700">
 
-                <!-- Navigation - Edukasi -->
-                <nav>
-                    <ul class="flex flex-col space-y-2">
-                        <li class="text-sm text-gray-500 uppercase tracking-wide">Edukasi</li>
-                        <li>
-                            <a href="{{ route('edukasi.outlook') }}"
-                                class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                        <!-- Navigation - Edukasi -->
+                        <nav>
+                            <ul class="flex flex-col space-y-2">
+                                <li class="text-sm text-gray-500 uppercase tracking-wide">Edukasi</li>
+                                <li>
+                                    <a href="{{ route('edukasi.outlook') }}"
+                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                         {{ request()->routeIs('edukasi.outlook*')
                             ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                             : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                <i class="fa-solid fa-newspaper"></i>
-                                <span>{{ __('Outlook') }}</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('edukasi.ebook') }}"
-                                class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                                        <i class="fa-solid fa-newspaper"></i>
+                                        <span>{{ __('Outlook') }}</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('edukasi.ebook') }}"
+                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                         {{ request()->routeIs('edukasi.ebook*')
                             ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                             : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                <i class="fa-solid fa-book"></i>
-                                <span>{{ __('Ebook') }}</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('AbsensiUser.index') }}"
-                                class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                                        <i class="fa-solid fa-book"></i>
+                                        <span>{{ __('Ebook') }}</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('AbsensiUser.index') }}"
+                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                         {{ request()->routeIs('AbsensiUser.*')
                             ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                             : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                <i class="fa-solid fa-users-viewfinder"></i>
-                                <span>{{ __('Absensi') }}</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('post-test.index') }}"
-                                class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                                        <i class="fa-solid fa-users-viewfinder"></i>
+                                        <span>{{ __('Absensi') }}</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('post-test.index') }}"
+                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                         {{ request()->routeIs('post-test.*')
                             ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                             : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                <i class="fa-solid fa-clipboard-question"></i>
-                                <span>{{ __('Post Test') }}</span>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
+                                        <i class="fa-solid fa-clipboard-question"></i>
+                                        <span>{{ __('Post Test') }}</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
 
-                <hr class="border-gray-300 dark:border-gray-700">
+                        <hr class="border-gray-300 dark:border-gray-700">
 
-                <!-- Navigation - Laporan -->
-                @if (Auth::user()->role === 'Admin')
-                    <nav>
-                        <ul class="flex flex-col space-y-2">
-                            <li class="text-sm text-gray-500 uppercase tracking-wide">Menu</li>
-                            <li>
-                                <a href="{{ route('posttest.index') }}"
-                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                        <!-- Navigation - Laporan -->
+                        @if (Auth::user()->role === 'Admin')
+                            <nav>
+                                <ul class="flex flex-col space-y-2">
+                                    <li class="text-sm text-gray-500 uppercase tracking-wide">Menu</li>
+                                    <li>
+                                        <a href="{{ route('posttest.index') }}"
+                                            class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                             {{ request()->routeIs('posttest.*')
                                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                    <i class="fa-solid fa-clipboard-question"></i>
-                                    <span>{{ __('Post Test') }}</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{{ route('absensi.index') }}"
-                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                                            <i class="fa-solid fa-clipboard-question"></i>
+                                            <span>{{ __('Post Test') }}</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('absensi.index') }}"
+                                            class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                             {{ request()->routeIs('absensi.*') || request()->routeIs('absensiAdmin.*')
                                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                    <i class="fa-solid fa-face-smile"></i>
-                                    <span>{{ __('Absensi') }}</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{{ route('LaporanSertifikat.index') }}"
-                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                                            <i class="fa-solid fa-face-smile"></i>
+                                            <span>{{ __('Absensi') }}</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('LaporanSertifikat.index') }}"
+                                            class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                             {{ request()->routeIs('LaporanSertifikat.*')
                                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                    <i class="fa-solid fa-certificate"></i>
-                                    <span>{{ __('Sertifikat') }}</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
+                                            <i class="fa-solid fa-certificate"></i>
+                                            <span>{{ __('Sertifikat') }}</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
 
-                    <hr class="border-gray-300 dark:border-gray-700">
-                @endif
+                            <hr class="border-gray-300 dark:border-gray-700">
+                        @endif
 
-                <!-- Navigation - Manajemen -->
-                @if (Auth::user()->role === 'Admin')
-                    <nav>
-                        <ul class="flex flex-col space-y-2">
-                            <li class="text-sm text-gray-500 uppercase tracking-wide">Manajemen</li>
-                            <li>
-                                <a href="{{ route('admin.index') }}"
-                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                        <!-- Navigation - Manajemen -->
+                        @if (Auth::user()->role === 'Admin')
+                            <nav>
+                                <ul class="flex flex-col space-y-2">
+                                    <li class="text-sm text-gray-500 uppercase tracking-wide">Manajemen</li>
+                                    <li>
+                                        <a href="{{ route('admin.index') }}"
+                                            class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                             {{ request()->routeIs('admin.*')
                                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                    <i class="fa-solid fa-user"></i>
-                                    <span>Admin</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{{ route('trainer.index') }}"
-                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                                            <i class="fa-solid fa-user"></i>
+                                            <span>Admin</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('trainer.index') }}"
+                                            class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                             {{ request()->routeIs('trainer.*')
                                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                    <i class="fa-solid fa-user"></i>
-                                    <span>User</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
+                                            <i class="fa-solid fa-user"></i>
+                                            <span>User</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
 
-                    <hr class="border-gray-300 dark:border-gray-700">
-                @endif
+                            <hr class="border-gray-300 dark:border-gray-700">
+                        @endif
 
-                <nav>
-                    <ul class="flex flex-col space-y-2">
-                        <li class="text-sm text-gray-500 uppercase tracking-wide">Tools</li>
-                        <li>
-                            <a href="{{ route('webview.show', ['tool' => 'aisg']) }}"
-                                class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                        <nav>
+                            <ul class="flex flex-col space-y-2">
+                                <li class="text-sm text-gray-500 uppercase tracking-wide">Tools</li>
+                                <li>
+                                    <a href="{{ route('webview.show', ['tool' => 'aisg']) }}"
+                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                             {{ request()->routeIs('webview.show') && request()->route('tool') === 'aisg'
                                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                <i class="fa-solid fa-window-maximize"></i>
-                                <span>AiSG</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('webview.show', ['tool' => 'nmai23']) }}"
-                                class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                                        <i class="fa-solid fa-window-maximize"></i>
+                                        <span>AiSG</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('webview.show', ['tool' => 'nmai23']) }}"
+                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                             {{ request()->routeIs('webview.show') && request()->route('tool') === 'nmai23'
                                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                <i class="fa-solid fa-window-maximize"></i>
-                                <span>NMAi 23</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('webview.show', ['tool' => 'bias23']) }}"
-                                class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                                        <i class="fa-solid fa-window-maximize"></i>
+                                        <span>NMAi 23</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('webview.show', ['tool' => 'bias23']) }}"
+                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                             {{ request()->routeIs('webview.show') && request()->route('tool') === 'bias23'
                                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                <i class="fa-solid fa-window-maximize"></i>
-                                <span>BIAS23</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('webview.show', ['tool' => 'risk-guard']) }}"
-                                class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                                        <i class="fa-solid fa-window-maximize"></i>
+                                        <span>BIAS23</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('webview.show', ['tool' => 'risk-guard']) }}"
+                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                             {{ request()->routeIs('webview.show') && request()->route('tool') === 'risk-guard'
                                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                <i class="fa-solid fa-window-maximize"></i>
-                                <span>Risk Guard</span>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
+                                        <i class="fa-solid fa-window-maximize"></i>
+                                        <span>Risk Guard</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
 
-                <hr class="border-gray-300 dark:border-gray-700">
+                        <hr class="border-gray-300 dark:border-gray-700">
 
-                <nav>
-                    <ul class="flex flex-col space-y-2">
-                        <li class="text-sm text-gray-500 uppercase tracking-wide">Akun</li>
-                        <li>
-                            <a href="{{ route('profile.edit') }}"
-                                class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                        <nav>
+                            <ul class="flex flex-col space-y-2">
+                                <li class="text-sm text-gray-500 uppercase tracking-wide">Akun</li>
+                                <li>
+                                    <a href="{{ route('profile.edit') }}"
+                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                             {{ request()->routeIs('profile.*')
                                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                <i class="fa-solid fa-user"></i>
-                                <span>Profile</span>
-                            </a>
-                        </li>
-                        @if (Auth::user()->role !== 'Admin')
-                            <li>
-                                <a href="{{ route('sertifikat.index') }}"
-                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                                        <i class="fa-solid fa-user"></i>
+                                        <span>Profile</span>
+                                    </a>
+                                </li>
+                                @if (Auth::user()->role !== 'Admin')
+                                    <li>
+                                        <a href="{{ route('sertifikat.index') }}"
+                                            class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                             {{ request()->routeIs('sertifikat.*')
                                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                    <i class="fa-solid fa-certificate"></i>
-                                    <span>Sertifikat</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{{ route('riwayat.index') }}"
-                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                                            <i class="fa-solid fa-certificate"></i>
+                                            <span>Sertifikat</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('riwayat.index') }}"
+                                            class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                             {{ request()->routeIs('riwayat.*')
                                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                    <i class="fa-solid fa-clock-rotate-left"></i>
-                                    <span>Riwayat Saya</span>
-                                </a>
-                            </li>
-                        @endif
-                    </ul>
-                </nav>
-            </div>
-        </aside>
+                                            <i class="fa-solid fa-clock-rotate-left"></i>
+                                            <span>Riwayat Saya</span>
+                                        </a>
+                                    </li>
+                                @endif
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </aside>
+        </div>
 
         <!-- Content Area -->
         <div class="flex-1 flex flex-col min-w-0">
@@ -368,9 +372,12 @@
             </header>
 
             <!-- Sidebar : Mobile -->
+            <div id="mobileSidebarOverlay"
+                class="fixed inset-0 z-30 bg-black/40 opacity-0 pointer-events-none transition-opacity duration-300 md:hidden">
+            </div>
             <div id="mobileSidebar"
                 class="fixed inset-y-0 left-0 z-40 w-64 transform -translate-x-full bg-white dark:bg-gray-800 transition-transform duration-300 shadow-xl md:hidden">
-                <div class="p-4">
+                <div class="flex h-full flex-col p-4">
                     <!-- Close Button -->
                     <div class="flex items-center mb-4 gap-3">
                         <button id="closeMobileSidebar"
@@ -388,231 +395,233 @@
 
                     <hr class="border-gray-300 dark:border-gray-700">
 
-                    <!-- Navigation - Main Menu -->
-                    <nav class="my-4">
-                        <ul class="flex flex-col space-y-2">
-                            <li class="text-sm text-gray-500 uppercase tracking-wide">Dashboard</li>
-                            <li>
-                                <a href="{{ route('dashboard') }}"
-                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                    <div class="flex-1 overflow-y-scroll">
+                        <!-- Navigation - Main Menu -->
+                        <nav class="my-4">
+                            <ul class="flex flex-col space-y-2">
+                                <li class="text-sm text-gray-500 uppercase tracking-wide">Dashboard</li>
+                                <li>
+                                    <a href="{{ route('dashboard') }}"
+                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                             {{ request()->routeIs('dashboard')
                                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                    <i class="fas fa-home"></i>
-                                    <span>{{ __('Beranda') }}</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
+                                        <i class="fas fa-home"></i>
+                                        <span>{{ __('Beranda') }}</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
 
-                    <hr class="border-gray-300 dark:border-gray-700">
+                        <hr class="border-gray-300 dark:border-gray-700">
 
-                    <!-- Navigation - Edukasi -->
-                    <nav class="my-4">
-                        <ul class="flex flex-col space-y-2">
-                            <li class="text-sm text-gray-500 uppercase tracking-wide">Edukasi</li>
-                            <li>
-                                <a href="{{ route('edukasi.ebook') }}"
-                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                        <!-- Navigation - Edukasi -->
+                        <nav class="my-4">
+                            <ul class="flex flex-col space-y-2">
+                                <li class="text-sm text-gray-500 uppercase tracking-wide">Edukasi</li>
+                                <li>
+                                    <a href="{{ route('edukasi.ebook') }}"
+                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                         {{ request()->routeIs('edukasi.ebook')
                             ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                             : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                    <i class="fa-solid fa-book"></i>
-                                    <span>{{ __('Ebook') }}</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{{ route('edukasi.outlook') }}"
-                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
-                        {{ request()->routeIs('edukasi.outlook')
-                            ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
-                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                    <i class="fa-solid fa-newspaper"></i>
-                                    <span>{{ __('Outlook') }}</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{{ route('AbsensiUser.index') }}"
-                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
-                        {{ request()->routeIs('AbsensiUser.*')
-                            ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
-                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                    <i class="fa-solid fa-users-viewfinder"></i>
-                                    <span>{{ __('Absensi') }}</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{{ route('post-test.index') }}"
-                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
-                        {{ request()->routeIs('posttest.*')
-                            ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
-                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                    <i class="fa-solid fa-clipboard-question"></i>
-                                    <span>{{ __('Post Test') }}</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
-
-                    <hr class="border-gray-300 dark:border-gray-700">
-
-                    <!-- Navigation - Laporan -->
-                    @if (Auth::user()->role === 'Admin')
-                        <nav class="my-4">
-                            <ul class="flex flex-col space-y-2">
-                                <li class="text-sm text-gray-500 uppercase tracking-wide">Menu</li>
-                                <li>
-                                    <a href="{{ route('posttest.index') }}"
-                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
-                            {{ request()->routeIs('posttest.*')
-                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
-                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                        <i class="fa-solid fa-clipboard-question"></i>
-                                        <span>{{ __('Post Test') }}</span>
+                                        <i class="fa-solid fa-book"></i>
+                                        <span>{{ __('Ebook') }}</span>
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('absensi.index') }}"
+                                    <a href="{{ route('edukasi.outlook') }}"
                                         class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
-                            {{ request()->routeIs('absensi.*') || request()->routeIs('absensiAdmin.*')
-                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
-                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                        <i class="fa-solid fa-face-smile"></i>
+                        {{ request()->routeIs('edukasi.outlook')
+                            ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                        <i class="fa-solid fa-newspaper"></i>
+                                        <span>{{ __('Outlook') }}</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('AbsensiUser.index') }}"
+                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                        {{ request()->routeIs('AbsensiUser.*')
+                            ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                        <i class="fa-solid fa-users-viewfinder"></i>
                                         <span>{{ __('Absensi') }}</span>
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('LaporanSertifikat.index') }}"
+                                    <a href="{{ route('post-test.index') }}"
                                         class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                        {{ request()->routeIs('posttest.*')
+                            ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                        <i class="fa-solid fa-clipboard-question"></i>
+                                        <span>{{ __('Post Test') }}</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+
+                        <hr class="border-gray-300 dark:border-gray-700">
+
+                        <!-- Navigation - Laporan -->
+                        @if (Auth::user()->role === 'Admin')
+                            <nav class="my-4">
+                                <ul class="flex flex-col space-y-2">
+                                    <li class="text-sm text-gray-500 uppercase tracking-wide">Menu</li>
+                                    <li>
+                                        <a href="{{ route('posttest.index') }}"
+                                            class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('posttest.*')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                            <i class="fa-solid fa-clipboard-question"></i>
+                                            <span>{{ __('Post Test') }}</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('absensi.index') }}"
+                                            class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('absensi.*') || request()->routeIs('absensiAdmin.*')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                            <i class="fa-solid fa-face-smile"></i>
+                                            <span>{{ __('Absensi') }}</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('LaporanSertifikat.index') }}"
+                                            class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                             {{ request()->routeIs('LaporanSertifikat.*')
                                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                        <i class="fa-solid fa-certificate"></i>
-                                        <span>{{ __('Sertifikat') }}</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </nav>
+                                            <i class="fa-solid fa-certificate"></i>
+                                            <span>{{ __('Sertifikat') }}</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
 
-                        <hr class="border-gray-300 dark:border-gray-700">
-                    @endif
+                            <hr class="border-gray-300 dark:border-gray-700">
+                        @endif
 
-                    <!-- Navigation - Manajemen -->
-                    @if (Auth::user()->role === 'Admin')
-                        <nav class="my-4">
-                            <ul class="flex flex-col space-y-2">
-                                <li class="text-sm text-gray-500 uppercase tracking-wide">Manajemen</li>
-                                <li>
-                                    <a href="{{ route('admin.index') }}"
-                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                        <!-- Navigation - Manajemen -->
+                        @if (Auth::user()->role === 'Admin')
+                            <nav class="my-4">
+                                <ul class="flex flex-col space-y-2">
+                                    <li class="text-sm text-gray-500 uppercase tracking-wide">Manajemen</li>
+                                    <li>
+                                        <a href="{{ route('admin.index') }}"
+                                            class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                             {{ request()->routeIs('admin.*')
                                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                        <i class="fa-solid fa-user"></i>
-                                        <span>Admin</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('trainer.index') }}"
-                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                                            <i class="fa-solid fa-user"></i>
+                                            <span>Admin</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('trainer.index') }}"
+                                            class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                             {{ request()->routeIs('trainer.*')
                                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                        <i class="fa-solid fa-user"></i>
-                                        <span>User</span>
+                                            <i class="fa-solid fa-user"></i>
+                                            <span>User</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+
+                            <hr class="border-gray-300 dark:border-gray-700">
+                        @endif
+
+                        <nav class="my-4">
+                            <ul class="flex flex-col space-y-2">
+                                <li class="text-sm text-gray-500 uppercase tracking-wide">Tools</li>
+                                <li>
+                                    <a href="{{ route('webview.show', ['tool' => 'aisg']) }}"
+                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('webview.show') && request()->route('tool') === 'aisg'
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                        <i class="fa-solid fa-window-maximize"></i>
+                                        <span>AiSG</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('webview.show', ['tool' => 'nmai23']) }}"
+                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('webview.show') && request()->route('tool') === 'nmai23'
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                        <i class="fa-solid fa-window-maximize"></i>
+                                        <span>NMAi 23</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('webview.show', ['tool' => 'bias23']) }}"
+                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('webview.show') && request()->route('tool') === 'bias23'
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                        <i class="fa-solid fa-window-maximize"></i>
+                                        <span>BIAS23</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('webview.show', ['tool' => 'risk-guard']) }}"
+                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('webview.show') && request()->route('tool') === 'risk-guard'
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                        <i class="fa-solid fa-window-maximize"></i>
+                                        <span>Risk Guard</span>
                                     </a>
                                 </li>
                             </ul>
                         </nav>
 
                         <hr class="border-gray-300 dark:border-gray-700">
-                    @endif
 
-                    <nav class="my-4">
-                        <ul class="flex flex-col space-y-2">
-                            <li class="text-sm text-gray-500 uppercase tracking-wide">Tools</li>
-                            <li>
-                                <a href="{{ route('webview.show', ['tool' => 'aisg']) }}"
-                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
-                            {{ request()->routeIs('webview.show') && request()->route('tool') === 'aisg'
-                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
-                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                    <i class="fa-solid fa-window-maximize"></i>
-                                    <span>AiSG</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{{ route('webview.show', ['tool' => 'nmai23']) }}"
-                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
-                            {{ request()->routeIs('webview.show') && request()->route('tool') === 'nmai23'
-                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
-                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                    <i class="fa-solid fa-window-maximize"></i>
-                                    <span>NMAi 23</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{{ route('webview.show', ['tool' => 'bias23']) }}"
-                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
-                            {{ request()->routeIs('webview.show') && request()->route('tool') === 'bias23'
-                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
-                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                    <i class="fa-solid fa-window-maximize"></i>
-                                    <span>BIAS23</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{{ route('webview.show', ['tool' => 'risk-guard']) }}"
-                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
-                            {{ request()->routeIs('webview.show') && request()->route('tool') === 'risk-guard'
-                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
-                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                    <i class="fa-solid fa-window-maximize"></i>
-                                    <span>Risk Guard</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
-
-                    <hr class="border-gray-300 dark:border-gray-700">
-
-                    <nav class="my-4">
-                        <ul class="flex flex-col space-y-2">
-                            <li class="text-sm text-gray-500 uppercase tracking-wide">Akun</li>
-                            <li>
-                                <a href="{{ route('profile.edit') }}"
-                                    class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                        <nav class="my-4">
+                            <ul class="flex flex-col space-y-2">
+                                <li class="text-sm text-gray-500 uppercase tracking-wide">Akun</li>
+                                <li>
+                                    <a href="{{ route('profile.edit') }}"
+                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                             {{ request()->routeIs('profile.*')
                                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                    <i class="fa-solid fa-user"></i>
-                                    <span>Profile</span>
-                                </a>
-                            </li>
-                            @if (Auth::user()->role !== 'Admin')
-                                <li>
-                                    <a href="{{ route('sertifikat.index') }}"
-                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                                        <i class="fa-solid fa-user"></i>
+                                        <span>Profile</span>
+                                    </a>
+                                </li>
+                                @if (Auth::user()->role !== 'Admin')
+                                    <li>
+                                        <a href="{{ route('sertifikat.index') }}"
+                                            class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                             {{ request()->routeIs('sertifikat.*')
                                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                        <i class="fa-solid fa-certificate"></i>
-                                        <span>Sertifikat</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('riwayat.index') }}"
-                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                                            <i class="fa-solid fa-certificate"></i>
+                                            <span>Sertifikat</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('riwayat.index') }}"
+                                            class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                             {{ request()->routeIs('riwayat.*')
                                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                        <i class="fa-solid fa-clock-rotate-left"></i>
-                                        <span>Riwayat Saya</span>
-                                    </a>
-                                </li>
-                            @endif
-                        </ul>
-                    </nav>
+                                            <i class="fa-solid fa-clock-rotate-left"></i>
+                                            <span>Riwayat Saya</span>
+                                        </a>
+                                    </li>
+                                @endif
+                            </ul>
+                        </nav>
+                    </div>
                 </div>
             </div>
 
@@ -711,19 +720,31 @@
             const mobileMenuButton = document.getElementById('mobileMenuButton');
             const mobileSidebar = document.getElementById('mobileSidebar');
             const closeMobileSidebar = document.getElementById('closeMobileSidebar');
+            const mobileSidebarOverlay = document.getElementById('mobileSidebarOverlay');
 
             mobileMenuButton?.addEventListener('click', () => {
-                mobileSidebar.classList.remove('-translate-x-full');
+                mobileSidebar?.classList.remove('-translate-x-full');
+                mobileSidebarOverlay?.classList.remove('opacity-0', 'pointer-events-none');
+                document.body.classList.add('overflow-hidden');
             });
 
             closeMobileSidebar?.addEventListener('click', () => {
-                mobileSidebar.classList.add('-translate-x-full');
+                mobileSidebar?.classList.add('-translate-x-full');
+                mobileSidebarOverlay?.classList.add('opacity-0', 'pointer-events-none');
+                document.body.classList.remove('overflow-hidden');
             });
 
-            // Optional: klik di luar sidebar untuk menutup
-            document.addEventListener('click', function(event) {
-                if (!mobileSidebar.contains(event.target) && !mobileMenuButton.contains(event.target)) {
-                    mobileSidebar.classList.add('-translate-x-full');
+            mobileSidebarOverlay?.addEventListener('click', () => {
+                mobileSidebar?.classList.add('-translate-x-full');
+                mobileSidebarOverlay?.classList.add('opacity-0', 'pointer-events-none');
+                document.body.classList.remove('overflow-hidden');
+            });
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape') {
+                    mobileSidebar?.classList.add('-translate-x-full');
+                    mobileSidebarOverlay?.classList.add('opacity-0', 'pointer-events-none');
+                    document.body.classList.remove('overflow-hidden');
                 }
             });
         });

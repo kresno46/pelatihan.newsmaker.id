@@ -9,11 +9,11 @@ class WebviewController extends Controller
     private const TOOLS = [
         'aisg' => [
             'title' => 'AiSG',
-            'url' => 'https://aisg23.replit.app/',
+            'url' => 'https://aisg23.newsmaker.id/login',
         ],
         'nmai23' => [
             'title' => 'NMAi 23',
-            'url' => 'https://nm23ai.replit.app/',
+            'url' => 'https://gwenstacy.newsmaker.id/',
         ],
         'bias23' => [
             'title' => 'BIAS23',
@@ -21,7 +21,7 @@ class WebviewController extends Controller
         ],
         'risk-guard' => [
             'title' => 'Risk Guard',
-            'url' => 'https://martingalerg.replit.app/',
+            'url' => 'https://martingalerg.newsmaker.id/',
         ],
     ];
 
