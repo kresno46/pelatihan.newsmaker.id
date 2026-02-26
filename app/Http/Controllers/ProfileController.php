@@ -11,6 +11,16 @@ use Illuminate\Validation\Rule;
 class ProfileController extends Controller
 {
     /**
+     * Tampilkan halaman ringkasan profil (read-only).
+     */
+    public function index(Request $request)
+    {
+        $user = $request->user();
+
+        return view('profile.index', compact('user'));
+    }
+
+    /**
      * Tampilkan form edit profil user.
      */
     public function edit(Request $request)
@@ -141,7 +151,7 @@ class ProfileController extends Controller
 
         $user->save();
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        return Redirect::route('profile.index')->with('status', 'profile-updated');
     }
 
     /**

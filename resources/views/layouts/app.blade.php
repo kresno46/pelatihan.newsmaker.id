@@ -262,7 +262,7 @@
                             <ul class="flex flex-col space-y-2">
                                 <li class="text-sm text-gray-500 uppercase tracking-wide">Akun</li>
                                 <li>
-                                    <a href="{{ route('profile.edit') }}"
+                                    <a href="{{ route('profile.index') }}"
                                         class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                             {{ request()->routeIs('profile.*')
                                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
@@ -591,7 +591,7 @@
                             <ul class="flex flex-col space-y-2">
                                 <li class="text-sm text-gray-500 uppercase tracking-wide">Akun</li>
                                 <li>
-                                    <a href="{{ route('profile.edit') }}"
+                            <a href="{{ route('profile.index') }}"
                                         class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                             {{ request()->routeIs('profile.*')
                                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'

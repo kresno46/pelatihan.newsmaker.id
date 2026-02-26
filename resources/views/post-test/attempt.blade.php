@@ -79,15 +79,27 @@
 
         <!-- Question Navigation -->
         <div class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
-            <div class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Navigasi Pertanyaan:</div>
-            <div class="flex flex-wrap gap-2">
-                @for ($i = 1; $i <= $totalQuestions; $i++)
-                    <button type="button" onclick="navigateTo({{ $i }})"
-                        class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors
-                            {{ $i == $number ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600' }}">
-                        {{ $i }}
-                    </button>
-                @endfor
+            <div class="flex items-center justify-between gap-3">
+                <div class="text-sm font-medium text-gray-700 dark:text-gray-300">Navigasi Pertanyaan</div>
+                <div class="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
+                    <span class="inline-flex items-center gap-1">
+                        <span class="inline-block h-2 w-2 rounded-full bg-blue-600"></span>
+                        Aktif
+                    </span>
+                    <span class="inline-flex items-center gap-1">
+                        <span class="inline-block h-2 w-2 rounded-full bg-green-500"></span>
+                        Terjawab
+                    </span>
+                </div>
+            </div>
+
+            <div class="mt-3 flex flex-wrap gap-2" id="questionNav">
+                @foreach ($questions as $index => $question)
+                    <span data-question-index="{{ $index }}" data-question-id="{{ $question->id }}"
+                        class="nav-btn w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200 select-none">
+                        {{ $index + 1 }}
+                    </span>
+                @endforeach
             </div>
         </div>
     </div>
@@ -112,18 +124,34 @@
 
 @section('scripts')
     <script>
+        @php
+            $attemptStart = session("quiz_{$session->id}_start_time_user_" . auth()->id());
+            if ($attemptStart instanceof \Carbon\Carbon) {
+                $attemptKey = $attemptStart->timestamp;
+            } elseif (is_string($attemptStart)) {
+                $attemptKey = strtotime($attemptStart) ?: time();
+            } else {
+                $attemptKey = time();
+            }
+        @endphp
+
         const countdownEl = document.getElementById('countdown');
         const userId = {{ auth()->id() }};
-        const sessionKey = `quiz_timer_{{ $session->id }}_user_${userId}`;
-        const answerKey = `quiz_answers_{{ $session->id }}_user_${userId}`;
-        const currentQuestionKey = `quiz_current_question_{{ $session->id }}_user_${userId}`;
+        const attemptKey = {{ $attemptKey }};
+        const sessionKey = `quiz_timer_{{ $session->id }}_user_${userId}_start_${attemptKey}`;
+        const answerKey = `quiz_answers_{{ $session->id }}_user_${userId}_start_${attemptKey}`;
+        const currentQuestionKey = `quiz_current_question_{{ $session->id }}_user_${userId}_start_${attemptKey}`;
         const duration = {{ $session->duration }} * 60;
         const savedStartTime = localStorage.getItem(sessionKey);
         const startTime = savedStartTime ? parseInt(savedStartTime) : Date.now();
         const defaultQuestion = Math.max(0, {{ $number - 1 }});
         let currentQuestion = parseInt(localStorage.getItem(currentQuestionKey) || defaultQuestion.toString(), 10);
 
-        if (!savedStartTime) localStorage.setItem(sessionKey, startTime);
+        if (!savedStartTime) {
+            localStorage.setItem(sessionKey, startTime);
+            localStorage.removeItem(answerKey);
+            localStorage.removeItem(currentQuestionKey);
+        }
 
         function updateTimer() {
             const elapsed = Math.floor((Date.now() - startTime) / 1000);
@@ -133,7 +161,8 @@
                 countdownEl.textContent = '0m 0s';
                 alert('Waktu habis! Jawaban Anda akan dikirim otomatis.');
                 clearData();
-                document.getElementById('submitForm').submit();
+                clearData();
+                document.getElementById('quizForm')?.requestSubmit();
                 return;
             }
 
@@ -154,11 +183,13 @@
                 const answers = JSON.parse(localStorage.getItem(answerKey) || '{}');
                 answers[qid] = value;
                 localStorage.setItem(answerKey, JSON.stringify(answers));
+                savedAnswers[qid] = value;
+                updateNav(currentQuestion);
             });
         });
 
         // Restore saved answers
-        const savedAnswers = JSON.parse(localStorage.getItem(answerKey) || '{}');
+        let savedAnswers = JSON.parse(localStorage.getItem(answerKey) || '{}');
         radios.forEach(radio => {
             const qid = radio.dataset.question;
             if (savedAnswers[qid] && savedAnswers[qid] === radio.value) {
@@ -173,6 +204,7 @@
             questions.forEach((q, i) => {
                 q.style.display = i === index ? 'block' : 'none';
             });
+            updateNav(index);
         }
 
         function nextQuestion(nextIndex) {
@@ -217,7 +249,8 @@
         }
 
         function submitQuiz() {
-            document.getElementById('quizForm').submit();
+            clearData();
+            document.getElementById('quizForm')?.requestSubmit();
         }
 
         function hideModal() {
@@ -256,8 +289,38 @@
             }
         });
 
-        // Clear localStorage after submit
+        // Clear localStorage after submit (safety)
         document.getElementById('quizForm')?.addEventListener('submit', clearData);
+
+        function updateNav(activeIndex) {
+            const buttons = document.querySelectorAll('#questionNav .nav-btn');
+            buttons.forEach((btn) => {
+                const idx = parseInt(btn.dataset.questionIndex || '-1', 10);
+                const isActive = idx === activeIndex;
+                const qid = btn.dataset.questionId;
+                const isAnswered = qid && !!savedAnswers[qid];
+
+                // reset base
+                btn.classList.remove(
+                    'bg-blue-600', 'text-white',
+                    'bg-green-100', 'text-green-700', 'dark:bg-green-900/30', 'dark:text-green-300',
+                    'bg-gray-200', 'text-gray-700', 'dark:bg-gray-700', 'dark:text-gray-200'
+                );
+
+                if (isActive) {
+                    btn.classList.add('bg-blue-600', 'text-white');
+                    return;
+                }
+
+                if (isAnswered) {
+                    btn.classList.add('bg-green-100', 'text-green-700', 'dark:bg-green-900/30',
+                        'dark:text-green-300');
+                    return;
+                }
+
+                btn.classList.add('bg-gray-200', 'text-gray-700', 'dark:bg-gray-700', 'dark:text-gray-200');
+            });
+        }
 
         // Show the current question on load
         showQuestion(currentQuestion);
