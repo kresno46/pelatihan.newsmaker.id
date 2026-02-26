@@ -11,7 +11,8 @@
                     Sisa waktu: <span id="countdown"></span>
                 </div>
                 <div class="text-sm text-gray-600 dark:text-gray-400">
-                    Tipe: <span class="font-semibold {{ $session->tipe === 'PATL' ? 'text-red-600' : 'text-green-600' }}">{{ $session->tipe }}</span>
+                    Tipe: <span
+                        class="font-semibold {{ $session->tipe === 'PATL' ? 'text-red-600' : 'text-green-600' }}">{{ $session->tipe }}</span>
                 </div>
             </div>
         </div>
@@ -76,30 +77,6 @@
             @endforeach
         </form>
 
-        <!-- Navigation Buttons -->
-        <div class="flex justify-between">
-            @if ($number > 1)
-                <button type="button" onclick="navigateTo({{ $number - 1 }})"
-                    class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg flex items-center">
-                    <i class="fas fa-arrow-left mr-2"></i> Sebelumnya
-                </button>
-            @else
-                <div></div>
-            @endif
-
-            @if ($number < $totalQuestions)
-                <button type="button" onclick="navigateTo({{ $number + 1 }})"
-                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg flex items-center ml-auto">
-                    Selanjutnya <i class="fas fa-arrow-right ml-2"></i>
-                </button>
-            @else
-                <button type="button" onclick="showModal()"
-                    class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg flex items-center ml-auto">
-                    <i class="fas fa-check mr-2"></i> Selesai
-                </button>
-            @endif
-        </div>
-
         <!-- Question Navigation -->
         <div class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
             <div class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Navigasi Pertanyaan:</div>
@@ -124,13 +101,10 @@
                 <button type="button" onclick="hideModal()"
                     class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Batal</button>
 
-                <form id="submitForm" action="{{ route('post-test.submit', ['slug' => $session->slug]) }}" method="POST" class="inline" onsubmit="clearData()">
-                    @csrf
-                    <button type="submit"
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-                        Ya, Selesai
-                    </button>
-                </form>
+                <button type="button" onclick="submitQuiz()"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+                    Ya, Selesai
+                </button>
             </div>
         </div>
     </div>
@@ -139,13 +113,15 @@
 @section('scripts')
     <script>
         const countdownEl = document.getElementById('countdown');
-        const sessionKey = 'quiz_timer_{{ $session->id }}';
-        const answerKey = 'quiz_answers_{{ $session->id }}';
-        const currentQuestionKey = 'quiz_current_question_{{ $session->id }}';
+        const userId = {{ auth()->id() }};
+        const sessionKey = `quiz_timer_{{ $session->id }}_user_${userId}`;
+        const answerKey = `quiz_answers_{{ $session->id }}_user_${userId}`;
+        const currentQuestionKey = `quiz_current_question_{{ $session->id }}_user_${userId}`;
         const duration = {{ $session->duration }} * 60;
         const savedStartTime = localStorage.getItem(sessionKey);
         const startTime = savedStartTime ? parseInt(savedStartTime) : Date.now();
-        let currentQuestion = parseInt(localStorage.getItem(currentQuestionKey) || '0');
+        const defaultQuestion = Math.max(0, {{ $number - 1 }});
+        let currentQuestion = parseInt(localStorage.getItem(currentQuestionKey) || defaultQuestion.toString(), 10);
 
         if (!savedStartTime) localStorage.setItem(sessionKey, startTime);
 
@@ -175,14 +151,25 @@
             radio.addEventListener('change', () => {
                 const qid = radio.dataset.question;
                 const value = radio.value;
-                let answers = JSON.parse(localStorage.getItem(answerKey) || '{}');
+                const answers = JSON.parse(localStorage.getItem(answerKey) || '{}');
                 answers[qid] = value;
                 localStorage.setItem(answerKey, JSON.stringify(answers));
             });
         });
 
+        // Restore saved answers
+        const savedAnswers = JSON.parse(localStorage.getItem(answerKey) || '{}');
+        radios.forEach(radio => {
+            const qid = radio.dataset.question;
+            if (savedAnswers[qid] && savedAnswers[qid] === radio.value) {
+                radio.checked = true;
+            }
+        });
+
         function showQuestion(index) {
             const questions = document.querySelectorAll('.question');
+            if (index < 0) index = 0;
+            if (index >= questions.length) index = questions.length - 1;
             questions.forEach((q, i) => {
                 q.style.display = i === index ? 'block' : 'none';
             });
@@ -190,6 +177,13 @@
 
         function nextQuestion(nextIndex) {
             currentQuestion = nextIndex;
+            localStorage.setItem(currentQuestionKey, currentQuestion);
+            showQuestion(currentQuestion);
+        }
+
+        function navigateTo(number) {
+            const index = Math.max(0, number - 1);
+            currentQuestion = index;
             localStorage.setItem(currentQuestionKey, currentQuestion);
             showQuestion(currentQuestion);
         }
@@ -207,7 +201,6 @@
             hiddenInputs.forEach(input => input.remove());
 
             // Ambil semua jawaban dari localStorage
-            const answerKey = 'quiz_answers_{{ $session->id }}_user_{{ auth()->id() }}';
             const answers = JSON.parse(localStorage.getItem(answerKey) || '{}');
 
             // Tambahkan jawaban sebagai input tersembunyi
@@ -221,6 +214,10 @@
 
             // Tampilkan modal konfirmasi
             document.getElementById('confirmModal').classList.remove('hidden');
+        }
+
+        function submitQuiz() {
+            document.getElementById('quizForm').submit();
         }
 
         function hideModal() {
@@ -258,6 +255,9 @@
                 e.preventDefault();
             }
         });
+
+        // Clear localStorage after submit
+        document.getElementById('quizForm')?.addEventListener('submit', clearData);
 
         // Show the current question on load
         showQuestion(currentQuestion);

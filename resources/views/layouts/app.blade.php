@@ -46,7 +46,7 @@
 
 </head>
 
-<body class="font-sans antialiased">
+<body class="font-sans antialiased h-screen overflow-hidden">
     <div class="h-screen overflow-hidden bg-gray-100 dark:bg-gray-900 flex">
         <!-- Sidebar : Dekstop -->
         <div class="hidden md:block w-64 flex-shrink-0 sticky top-0 h-screen z-50">
@@ -84,54 +84,57 @@
                             </ul>
                         </nav>
 
-                        <hr class="border-gray-300 dark:border-gray-700">
 
                         <!-- Navigation - Edukasi -->
-                        <nav>
-                            <ul class="flex flex-col space-y-2">
-                                <li class="text-sm text-gray-500 uppercase tracking-wide">Edukasi</li>
-                                <li>
-                                    <a href="{{ route('edukasi.outlook') }}"
-                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                        @if (Auth::user()->role !== 'Admin')
+                            <hr class="border-gray-300 dark:border-gray-700">
+
+                            <nav>
+                                <ul class="flex flex-col space-y-2">
+                                    <li class="text-sm text-gray-500 uppercase tracking-wide">Edukasi</li>
+                                    <li>
+                                        <a href="{{ route('edukasi.outlook') }}"
+                                            class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                         {{ request()->routeIs('edukasi.outlook*')
                             ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                             : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                        <i class="fa-solid fa-newspaper"></i>
-                                        <span>{{ __('Outlook') }}</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('edukasi.ebook') }}"
-                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                                            <i class="fa-solid fa-newspaper"></i>
+                                            <span>{{ __('Outlook') }}</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('edukasi.ebook') }}"
+                                            class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                         {{ request()->routeIs('edukasi.ebook*')
                             ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                             : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                        <i class="fa-solid fa-book"></i>
-                                        <span>{{ __('Ebook') }}</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('AbsensiUser.index') }}"
-                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                                            <i class="fa-solid fa-book"></i>
+                                            <span>{{ __('Ebook') }}</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('AbsensiUser.index') }}"
+                                            class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                         {{ request()->routeIs('AbsensiUser.*')
                             ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                             : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                        <i class="fa-solid fa-users-viewfinder"></i>
-                                        <span>{{ __('Absensi') }}</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('post-test.index') }}"
-                                        class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                                            <i class="fa-solid fa-users-viewfinder"></i>
+                                            <span>{{ __('Absensi') }}</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('post-test.index') }}"
+                                            class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                         {{ request()->routeIs('post-test.*')
                             ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
                             : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                                        <i class="fa-solid fa-clipboard-question"></i>
-                                        <span>{{ __('Post Test') }}</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </nav>
+                                            <i class="fa-solid fa-clipboard-question"></i>
+                                            <span>{{ __('Post Test') }}</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        @endif
 
                         <hr class="border-gray-300 dark:border-gray-700">
 
