@@ -47,7 +47,7 @@
 </head>
 
 <body class="font-sans antialiased">
-    <div class="min-h-screen bg-gray-100 dark:bg-gray-900 flex">
+    <div class="h-screen overflow-hidden bg-gray-100 dark:bg-gray-900 flex">
         <!-- Sidebar : Dekstop -->
         <div class="hidden md:block w-64 flex-shrink-0 sticky top-0 h-screen z-50">
             <aside
@@ -298,7 +298,7 @@
         </div>
 
         <!-- Content Area -->
-        <div class="flex-1 flex flex-col min-w-0">
+        <div class="flex-1 flex flex-col min-w-0 min-h-0">
             <!-- Navbar -->
             <header
                 class="sticky top-0 bg-white dark:bg-gray-800 shadow px-4 py-4 flex items-center justify-between z-20">
@@ -627,7 +627,7 @@
 
             <!-- Page Content -->
             <main
-                class="{{ request()->routeIs('webview.show') ? 'flex-1 flex flex-col min-h-0 p-0 overflow-hidden' : 'flex-1 p-6' }}">
+                class="main-scroll flex-1 min-h-0 overflow-y-auto {{ request()->routeIs('webview.show') ? 'flex flex-col p-0 overflow-hidden' : 'p-6' }}">
                 @if (session('success'))
                     <div class="mb-6 rounded-lg border-l-2 border-green-600 bg-green-100 dark:bg-green-900/50 p-4 text-green-800 dark:text-green-200"
                         x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 5000)">
