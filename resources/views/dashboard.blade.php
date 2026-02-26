@@ -25,7 +25,7 @@
                         </div>
                     </div>
 
-                    <a href="{{ route('profile.index') }}"
+                    <a href="{{ route('profile.edit') }}"
                         class="inline-flex items-center justify-center gap-2 rounded-lg bg-yellow-600 px-4 py-2 text-sm font-semibold text-white hover:bg-yellow-700">
                         <i class="fa-solid fa-user-pen"></i>
                         <span>Lengkapi Profil</span>

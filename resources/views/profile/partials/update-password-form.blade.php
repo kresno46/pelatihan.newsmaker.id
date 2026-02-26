@@ -1,26 +1,5 @@
 {{-- resources/views/profile/partials/update-password-form.blade.php --}}
 <section class="space-y-3">
-    <header class="w-full bg-white dark:bg-gray-800 shadow rounded-lg p-4 sm:p-8">
-        <div class="flex flex-col md:flex-row items-center justify-between">
-            <div>
-                <h2 class="text-xl font-medium text-gray-900 dark:text-gray-100">
-                    {{ __('Reset Password') }}
-                </h2>
-
-                <p class="mt-1 text-base text-gray-600 dark:text-gray-400">
-                    {{ __('Atur ulang kata sandi akun Anda untuk menjaga keamanan.') }}
-                </p>
-            </div>
-
-            @if (session('status') === 'password-updated')
-                <div x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 10000)"
-                    class="text-sm bg-green-300 dark:text-green-400 py-2 px-3 rounded-xl">
-                    <span class="text-green-800">{{ __('Kata sandi berhasil diperbarui.') }}</span>
-                </div>
-            @endif
-        </div>
-    </header>
-
     <div class="w-full p-4 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-lg">
         <form method="POST" action="{{ route('password.update') }}" class="space-y-6">
             @csrf

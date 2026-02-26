@@ -34,6 +34,16 @@ class ProfileController extends Controller
         return view('profile.edit', compact('user', 'branches', 'allBranches'));
     }
 
+    /**
+     * Tampilkan halaman ubah password.
+     */
+    public function password(Request $request)
+    {
+        $user = $request->user();
+
+        return view('profile.password', compact('user'));
+    }
+
     private function getAllBranches()
     {
         return [

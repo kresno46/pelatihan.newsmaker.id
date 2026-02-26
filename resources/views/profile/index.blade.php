@@ -129,7 +129,7 @@
                             </span>
                             <i class="fa-solid fa-chevron-right text-xs text-gray-400"></i>
                         </a>
-                        <a href="{{ route('password.request') }}"
+                        <a href="{{ route('profile.password') }}"
                             class="flex items-center justify-between rounded-xl border border-gray-200 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-900/40">
                             <span class="flex items-center gap-2">
                                 <i class="fa-solid fa-key text-amber-600 dark:text-amber-400"></i>

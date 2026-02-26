@@ -4,8 +4,7 @@
 
 @section('content')
     <div class="space-y-8">
-        <div
-            class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:p-7">
+        <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:p-7">
             <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Profil Saya</h1>
@@ -19,14 +18,8 @@
             </div>
         </div>
 
-        <div class="grid gap-8 lg:grid-cols-3">
-            <div class="space-y-8 lg:col-span-2">
-                @include('profile.partials.update-profile-information-form')
-            </div>
-            <div class="space-y-8">
-                @include('profile.partials.update-password-form')
-                {{-- @include('profile.partials.delete-user-form') --}}
-            </div>
+        <div class="space-y-8">
+            @include('profile.partials.update-profile-information-form')
         </div>
     </div>
 
