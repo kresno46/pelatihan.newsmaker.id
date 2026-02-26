@@ -75,6 +75,44 @@
                 </div>
             @endforeach
         </form>
+
+        <!-- Navigation Buttons -->
+        <div class="flex justify-between">
+            @if ($number > 1)
+                <button type="button" onclick="navigateTo({{ $number - 1 }})"
+                    class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg flex items-center">
+                    <i class="fas fa-arrow-left mr-2"></i> Sebelumnya
+                </button>
+            @else
+                <div></div>
+            @endif
+
+            @if ($number < $totalQuestions)
+                <button type="button" onclick="navigateTo({{ $number + 1 }})"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg flex items-center ml-auto">
+                    Selanjutnya <i class="fas fa-arrow-right ml-2"></i>
+                </button>
+            @else
+                <button type="button" onclick="showModal()"
+                    class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg flex items-center ml-auto">
+                    <i class="fas fa-check mr-2"></i> Selesai
+                </button>
+            @endif
+        </div>
+
+        <!-- Question Navigation -->
+        <div class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
+            <div class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Navigasi Pertanyaan:</div>
+            <div class="flex flex-wrap gap-2">
+                @for ($i = 1; $i <= $totalQuestions; $i++)
+                    <button type="button" onclick="navigateTo({{ $i }})"
+                        class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors
+                            {{ $i == $number ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600' }}">
+                        {{ $i }}
+                    </button>
+                @endfor
+            </div>
+        </div>
     </div>
 
     <!-- Modal Konfirmasi -->
@@ -86,11 +124,13 @@
                 <button type="button" onclick="hideModal()"
                     class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Batal</button>
 
-                <!-- Tombol submit langsung -->
-                <button type="submit" form="quizForm" onclick="clearData()"
-                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-                    Ya, Selesai
-                </button>
+                <form id="submitForm" action="{{ route('post-test.submit', ['slug' => $session->slug]) }}" method="POST" class="inline" onsubmit="clearData()">
+                    @csrf
+                    <button type="submit"
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+                        Ya, Selesai
+                    </button>
+                </form>
             </div>
         </div>
     </div>
@@ -99,7 +139,6 @@
 @section('scripts')
     <script>
         const countdownEl = document.getElementById('countdown');
-        const quizForm = document.getElementById('quizForm');
         const sessionKey = 'quiz_timer_{{ $session->id }}';
         const answerKey = 'quiz_answers_{{ $session->id }}';
         const currentQuestionKey = 'quiz_current_question_{{ $session->id }}';
@@ -118,7 +157,7 @@
                 countdownEl.textContent = '0m 0s';
                 alert('Waktu habis! Jawaban Anda akan dikirim otomatis.');
                 clearData();
-                quizForm.submit();
+                document.getElementById('submitForm').submit();
                 return;
             }
 
@@ -130,16 +169,14 @@
         setInterval(updateTimer, 1000);
         updateTimer();
 
-        const radios = quizForm.querySelectorAll('input[type=radio]');
-        let answers = JSON.parse(localStorage.getItem(answerKey) || '{}');
-
+        // Handle radio button changes - save to localStorage temporarily
+        const radios = document.querySelectorAll('input[type=radio]');
         radios.forEach(radio => {
-            const qid = radio.dataset.question;
-            if (answers[qid] === radio.value) {
-                radio.checked = true;
-            }
             radio.addEventListener('change', () => {
-                answers[qid] = radio.value;
+                const qid = radio.dataset.question;
+                const value = radio.value;
+                let answers = JSON.parse(localStorage.getItem(answerKey) || '{}');
+                answers[qid] = value;
                 localStorage.setItem(answerKey, JSON.stringify(answers));
             });
         });
@@ -164,6 +201,25 @@
         }
 
         function showModal() {
+            const form = document.getElementById('quizForm');
+            // Hapus input jawaban tersembunyi lama jika ada
+            const hiddenInputs = form.querySelectorAll('input[type=hidden][name^="answer"]');
+            hiddenInputs.forEach(input => input.remove());
+
+            // Ambil semua jawaban dari localStorage
+            const answerKey = 'quiz_answers_{{ $session->id }}_user_{{ auth()->id() }}';
+            const answers = JSON.parse(localStorage.getItem(answerKey) || '{}');
+
+            // Tambahkan jawaban sebagai input tersembunyi
+            for (const [questionId, answer] of Object.entries(answers)) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = `answer[${questionId}]`;
+                input.value = answer;
+                form.appendChild(input);
+            }
+
+            // Tampilkan modal konfirmasi
             document.getElementById('confirmModal').classList.remove('hidden');
         }
 
@@ -171,7 +227,8 @@
             document.getElementById('confirmModal').classList.add('hidden');
         }
 
-        quizForm.addEventListener('keydown', function(e) {
+        // Prevent form submission on Enter key
+        document.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
             }

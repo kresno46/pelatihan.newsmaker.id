@@ -5,5 +5,5 @@ use Illuminate\Support\Facades\Route;
 
 // API
 Route::middleware('bearer.token')->group(function () {
-    Route::get('/user', [UserController::class, 'index']);
+    Route::get('/users', [UserController::class, 'index']);
 });

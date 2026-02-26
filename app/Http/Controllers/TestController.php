@@ -36,8 +36,36 @@ class TestController extends Controller
         return view('post-test.index', compact('tests'));
     }
 
-    // Mengerjakan Kuis berdasarkan slug
+    // Mengerjakan Kuis berdasarkan slug - redirect ke pertanyaan pertama
     public function showQuiz($slug)
+    {
+        $session = PostTestSession::where('slug', $slug)->firstOrFail();
+
+        // Proteksi: cek status
+        if (!$session->status) { // Status now boolean
+            return redirect()->route('post-test.index')
+                ->with('error', 'Post test ini saat ini tidak tersedia.');
+        }
+
+        $userId = auth()->id();
+
+        // Cek hasil sebelumnya
+        $existingResult = PostTestResult::where('user_id', $userId)
+            ->where('session_id', $session->id)
+            ->latest()
+            ->first();
+
+        if ($existingResult && $existingResult->score >= 60) {
+            return redirect()->route('dashboard')
+                ->with('info', 'Anda sudah mengerjakan post test ini dan mendapatkan nilai yang cukup.');
+        }
+
+        // Redirect ke pertanyaan pertama
+        return redirect()->route('post-test.question', ['slug' => $slug, 'number' => 1]);
+    }
+
+    // Tampilkan pertanyaan tertentu
+    public function showQuestion($slug, $number)
     {
         $session = PostTestSession::where('slug', $slug)->with('questions')->firstOrFail();
 
@@ -81,7 +109,28 @@ class TestController extends Controller
             session([$startKey => now()]);
         }
 
-        return view('post-test.attempt', compact('session', 'questions'));
+        // Validasi nomor pertanyaan
+        $totalQuestions = $questions->count();
+        if ($number < 1 || $number > $totalQuestions) {
+            return redirect()->route('post-test.question', ['slug' => $slug, 'number' => 1]);
+        }
+
+        // Ambil pertanyaan saat ini
+        $currentQuestion = $questions->get($number - 1); // array index dimulai dari 0
+
+        // Sinkronisasi jawaban dari localStorage ke session
+        $answerKey = "quiz_answers_{$session->id}_user_{$userId}";
+        $answers = session($answerKey, []);
+
+        // Jika ada data di request (dari form submission), update session
+        if (request()->has('answer') && request()->has('question_id')) {
+            $answers[request('question_id')] = request('answer');
+            session([$answerKey => $answers]);
+        }
+
+        $currentAnswer = $answers[$currentQuestion->id] ?? null;
+
+        return view('post-test.attempt', compact('session', 'questions', 'currentQuestion', 'number', 'totalQuestions', 'currentAnswer'));
     }
 
     // Submit Kuis
@@ -117,14 +166,23 @@ class TestController extends Controller
             $latestResult->delete();
         }
 
+        // Ambil jawaban dari session
+        $answerKey = "quiz_answers_{$session->id}_user_{$userId}";
+        $answers = session($answerKey, []);
+
+        // Ambil jawaban dari request input jika ada, kalau tidak gunakan session
+        $answers = $request->input('answer', session($answerKey, []));
+
         // Hitung skor
-        $answers = $request->input('answer', []);
         $correct = 0;
-        $total = count($session->questions);
+        $total = $session->questions->count();
 
         foreach ($session->questions as $question) {
-            $userAnswer = $answers[$question->id] ?? null;
-            if ($userAnswer && strtoupper($userAnswer) === $question->correct_option) {
+            // Pastikan tipe id soal dan kunci jawaban konsisten dan hilangkan spasi
+            $questionId = (string) $question->id;
+            $userAnswer = isset($answers[$questionId]) ? trim(strtoupper($answers[$questionId])) : null;
+            $correctOption = trim(strtoupper($question->correct_option));
+            if ($userAnswer && $userAnswer === $correctOption) {
                 $correct++;
             }
         }
@@ -136,6 +194,13 @@ class TestController extends Controller
             'user_id' => $userId,
             'session_id' => $session->id,
             'score' => $score,
+        ]);
+
+        // Hapus data session setelah submit
+        session()->forget([
+            "quiz_{$session->id}_questions_user_{$userId}",
+            "quiz_{$session->id}_start_time_user_{$userId}",
+            $answerKey
         ]);
 
         return redirect()->route('post-test.result', $result->id)
