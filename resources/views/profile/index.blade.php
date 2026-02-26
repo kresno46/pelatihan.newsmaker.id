@@ -48,7 +48,7 @@
                 <div class="flex items-center gap-4">
                     <div
                         class="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-900 text-white dark:bg-white dark:text-slate-900">
-                        <span class="text-xl font-bold">{{ strtoupper(substr($user->name ?? 'U', 0, 1)) }}</span>
+                        <i class="fa-regular fa-circle-user text-xl"></i>
                     </div>
                     <div>
                         <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Profil Saya</h1>
@@ -58,20 +58,6 @@
                             Data aman &amp; terenkripsi
                         </div>
                     </div>
-                </div>
-
-                <div class="flex flex-col items-start gap-3 sm:items-end">
-                    @if (session('status') === 'profile-updated')
-                        <div
-                            class="text-xs rounded-full bg-emerald-100 px-3 py-1 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
-                            Profil berhasil diperbarui.
-                        </div>
-                    @endif
-                    <a href="{{ route('profile.edit') }}"
-                        class="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-blue-700">
-                        <i class="fa-solid fa-pen-to-square"></i>
-                        Edit Profil
-                    </a>
                 </div>
             </div>
         </div>
