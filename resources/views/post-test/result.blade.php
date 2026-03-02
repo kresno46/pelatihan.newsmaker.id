@@ -104,7 +104,7 @@
                         <div class="space-y-3">
                             @php
                                 $correct = round(($result->score / 100) * $session->questions->count());
-                                $pass = $result->score >= 70;
+                                $pass = $result->score >= 60;
                             @endphp
                             <div class="flex justify-between items-center">
                                 <span class="text-gray-600 dark:text-gray-400">Jawaban Benar</span>
