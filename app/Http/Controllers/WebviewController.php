@@ -21,7 +21,7 @@ class WebviewController extends Controller
         ],
         'risk-guard' => [
             'title' => 'Risk Guard',
-            'url' => 'https://martingalerg.newsmaker.id/',
+            'url' => 'https://riskguard.newsmaker.id/',
         ],
     ];
 
