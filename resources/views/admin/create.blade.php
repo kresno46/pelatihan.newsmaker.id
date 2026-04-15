@@ -22,6 +22,15 @@
             </div>
 
             <div class="mb-4">
+                <label for="role" class="block text-sm font-medium text-gray-700 dark:text-white">Role Admin</label>
+                <select name="role" id="role" required
+                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    <option value="Admin" {{ old('role') === 'Admin' ? 'selected' : '' }}>Admin</option>
+                    <option value="Admin APUPPT" {{ old('role') === 'Admin APUPPT' ? 'selected' : '' }}>Admin APUPPT</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
                 <label for="password" class="block text-sm font-medium text-gray-700 dark:text-white">Password</label>
                 <input type="password" name="password" id="password" required
                     class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">

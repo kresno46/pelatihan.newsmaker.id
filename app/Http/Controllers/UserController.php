@@ -253,7 +253,7 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
 
-        if ($user->role === 'Admin') {
+        if (in_array($user->role, ['Admin', 'Admin APUPPT'], true)) {
             return redirect()->route('trainer.index')->with('error', 'Admin tidak bisa disuspensi.');
         }
 
@@ -283,7 +283,7 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
 
-        if ($user->role === 'Admin') {
+        if (in_array($user->role, ['Admin', 'Admin APUPPT'], true)) {
             return redirect()->route('trainer.index')->with('error', 'Admin tidak bisa diubah status suspend-nya.');
         }
 

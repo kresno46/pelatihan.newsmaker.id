@@ -32,6 +32,7 @@
                         <th class="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-200">#</th>
                         <th class="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-200">Nama</th>
                         <th class="px-6 py-3 text-center text-sm font-medium text-gray-700 dark:text-gray-200">Email</th>
+                        <th class="px-6 py-3 text-center text-sm font-medium text-gray-700 dark:text-gray-200">Role</th>
                         <th class="px-6 py-3 text-center text-sm font-medium text-gray-700 dark:text-gray-200">Akun
                             Terverifikasi</th>
                         <th class="px-6 py-3 text-center text-sm font-medium text-gray-700 dark:text-gray-200">Tanggal
@@ -50,6 +51,9 @@
                             </td>
                             <td class="px-6 py-4 text-sm text-center text-gray-800 dark:text-gray-100">
                                 {{ $item->email }}
+                            </td>
+                            <td class="px-6 py-4 text-sm text-center text-gray-800 dark:text-gray-100">
+                                {{ $item->role }}
                             </td>
                             <td class="px-6 py-4 text-sm text-center">
                                 @if ($item->email_verified_at == null)
@@ -82,7 +86,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td class="px-6 py-4 text-sm text-gray-800 dark:text-gray-100 text-center" colspan="6">
+                            <td class="px-6 py-4 text-sm text-gray-800 dark:text-gray-100 text-center" colspan="7">
                                 Belum ada admin
                             </td>
                         </tr>

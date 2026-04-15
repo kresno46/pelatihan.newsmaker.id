@@ -14,7 +14,7 @@ class AdminController extends Controller
      */
     public function index()
     {
-        $admin = User::where('role', 'Admin')->paginate(10);
+        $admin = User::whereIn('role', ['Admin', 'Admin APUPPT'])->paginate(10);
 
         return view('admin.index', compact('admin'));
     }
@@ -37,6 +37,7 @@ class AdminController extends Controller
             'name' => 'required|string|max:50',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6|confirmed',
+            'role' => 'required|string|in:Admin,Admin APUPPT',
         ]);
 
         // Simpan admin baru
@@ -44,7 +45,7 @@ class AdminController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
-            'role' => 'Admin',
+            'role' => $validated['role'],
         ]);
 
         // Redirect ke halaman index dengan pesan sukses
@@ -77,6 +78,7 @@ class AdminController extends Controller
                 Rule::unique('users')->ignore($admin->id),
             ],
             'password' => 'nullable|string|min:6|confirmed',
+            'role' => 'required|string|in:Admin,Admin APUPPT',
         ]);
 
         // Update admin
@@ -84,6 +86,7 @@ class AdminController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => $validated['password'] ? Hash::make($validated['password']) : $admin->password,
+            'role' => $validated['role'],
         ]);
 
         // Redirect ke halaman index dengan pesan sukses

@@ -43,7 +43,7 @@ class LoginRequest extends FormRequest
         $this->ensureIsNotRateLimited();
 
         $user = \App\Models\User::where('email', $this->string('email'))->first();
-        if ($user && $user->role !== 'Admin') {
+        if ($user && ! in_array($user->role, ['Admin', 'Admin APUPPT'], true)) {
             if ($user->suspended_at) {
                 if ($user->email_verified_at !== null) {
                     $user->forceFill(['email_verified_at' => null])->save();

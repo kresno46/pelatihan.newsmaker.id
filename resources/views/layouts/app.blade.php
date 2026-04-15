@@ -53,6 +53,9 @@
             <aside
                 class="bg-white dark:bg-gray-800 h-full overflow-y-auto pr-2 sidebar-scroll shadow-lg border-r border-gray-200 dark:border-gray-700">
                 <div class="p-4">
+                    @php
+                        $isApupptEnabled = \App\Models\ApupptFeatureSetting::isEnabled();
+                    @endphp
                     <!-- Logo -->
                     <div class="w-full flex justify-center">
                         <a href="{{ route('dashboard') }}">
@@ -86,7 +89,7 @@
 
 
                         <!-- Navigation - Edukasi -->
-                        @if (Auth::user()->role !== 'Admin')
+                        @if (!in_array(Auth::user()->role, ['Admin', 'Admin APUPPT'], true))
                             <hr class="border-gray-300 dark:border-gray-700">
 
                             <nav>
@@ -134,12 +137,61 @@
                                     </li>
                                 </ul>
                             </nav>
+
+                            @if ($isApupptEnabled)
+                                <nav class="mt-4">
+                                    <ul class="flex flex-col space-y-2">
+                                        <li class="text-sm text-gray-500 uppercase tracking-wide">Edukasi APUPPT</li>
+                                        <li>
+                                            <a href="{{ route('apuppt.edukasi.ebook.index') }}"
+                                                class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                        {{ request()->routeIs('apuppt.edukasi.ebook.*')
+                            ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                                <i class="fa-solid fa-book"></i>
+                                                <span>{{ __('APUPPT Ebook') }}</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{{ route('apuppt.absensiUser.index') }}"
+                                                class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                        {{ request()->routeIs('apuppt.absensiUser.*')
+                            ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                                <i class="fa-solid fa-face-smile"></i>
+                                                <span>{{ __('APUPPT Absensi') }}</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{{ route('apuppt.test.index') }}"
+                                                class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                        {{ request()->routeIs('apuppt.test.*')
+                            ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                                <i class="fa-solid fa-clipboard-question"></i>
+                                                <span>{{ __('APUPPT Post Test') }}</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{{ route('apuppt.sertifikatUser.index') }}"
+                                                class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                        {{ request()->routeIs('apuppt.sertifikatUser.*')
+                            ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                                <i class="fa-solid fa-certificate"></i>
+                                                <span>{{ __('APUPPT Sertifikat') }}</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            @endif
                         @endif
 
                         <hr class="border-gray-300 dark:border-gray-700">
 
                         <!-- Navigation - Laporan -->
-                        @if (Auth::user()->role === 'Admin')
+                        @if (in_array(Auth::user()->role, ['Admin', 'Admin APUPPT'], true))
+                            @if (Auth::user()->role === 'Admin')
                             <nav>
                                 <ul class="flex flex-col space-y-2">
                                     <li class="text-sm text-gray-500 uppercase tracking-wide">Menu</li>
@@ -175,6 +227,60 @@
                                     </li>
                                 </ul>
                             </nav>
+                            @endif
+
+                            <nav class="mt-4">
+                                <ul class="flex flex-col space-y-2">
+                                    <li class="text-sm text-gray-500 uppercase tracking-wide">APUPPT</li>
+                                    <li>
+                                        <a href="{{ route('apuppt.ebookfolder.index') }}"
+                                            class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('apuppt.ebookfolder.*') || request()->routeIs('apuppt.ebook.*')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                            <i class="fa-solid fa-book"></i>
+                                            <span>{{ __('Ebook') }}</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('apuppt.posttest.index') }}"
+                                            class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('apuppt.posttest.*')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                            <i class="fa-solid fa-clipboard-question"></i>
+                                            <span>{{ __('Post Test') }}</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('apuppt.absensi.index') }}"
+                                            class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('apuppt.absensi.*') || request()->routeIs('apuppt.absensiAdmin.*')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                            <i class="fa-solid fa-face-smile"></i>
+                                            <span>{{ __('Absensi') }}</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('apuppt.sertifikat.index') }}"
+                                            class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('apuppt.sertifikat.*')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                            <i class="fa-solid fa-certificate"></i>
+                                            <span>{{ __('Sertifikat') }}</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                            <form action="{{ route('apuppt.feature.toggle') }}" method="POST" class="mt-3">
+                                @csrf
+                                <button type="submit"
+                                    class="w-full px-3 py-2 rounded text-sm font-semibold {{ $isApupptEnabled ? 'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-300' : 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-300' }}">
+                                    {{ $isApupptEnabled ? 'Nonaktifkan APUPPT' : 'Aktifkan APUPPT' }}
+                                </button>
+                            </form>
 
                             <hr class="border-gray-300 dark:border-gray-700">
                         @endif
@@ -271,7 +377,7 @@
                                         <span>Profile</span>
                                     </a>
                                 </li>
-                                @if (Auth::user()->role !== 'Admin')
+                                @if (!in_array(Auth::user()->role, ['Admin', 'Admin APUPPT'], true))
                                     <li>
                                         <a href="{{ route('sertifikat.index') }}"
                                             class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
@@ -465,10 +571,59 @@
                             </ul>
                         </nav>
 
+                        @if ($isApupptEnabled)
+                            <nav class="my-4">
+                                <ul class="flex flex-col space-y-2">
+                                    <li class="text-sm text-gray-500 uppercase tracking-wide">Edukasi APUPPT</li>
+                                    <li>
+                                        <a href="{{ route('apuppt.edukasi.ebook.index') }}"
+                                            class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                        {{ request()->routeIs('apuppt.edukasi.ebook.*')
+                            ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                            <i class="fa-solid fa-book"></i>
+                                            <span>{{ __('APUPPT Ebook') }}</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('apuppt.absensiUser.index') }}"
+                                            class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                        {{ request()->routeIs('apuppt.absensiUser.*')
+                            ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                            <i class="fa-solid fa-face-smile"></i>
+                                            <span>{{ __('APUPPT Absensi') }}</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('apuppt.test.index') }}"
+                                            class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                        {{ request()->routeIs('apuppt.test.*')
+                            ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                            <i class="fa-solid fa-clipboard-question"></i>
+                                            <span>{{ __('APUPPT Post Test') }}</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('apuppt.sertifikatUser.index') }}"
+                                            class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                        {{ request()->routeIs('apuppt.sertifikatUser.*')
+                            ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                            <i class="fa-solid fa-certificate"></i>
+                                            <span>{{ __('APUPPT Sertifikat') }}</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        @endif
+
                         <hr class="border-gray-300 dark:border-gray-700">
 
                         <!-- Navigation - Laporan -->
-                        @if (Auth::user()->role === 'Admin')
+                        @if (in_array(Auth::user()->role, ['Admin', 'Admin APUPPT'], true))
+                            @if (Auth::user()->role === 'Admin')
                             <nav class="my-4">
                                 <ul class="flex flex-col space-y-2">
                                     <li class="text-sm text-gray-500 uppercase tracking-wide">Menu</li>
@@ -504,6 +659,60 @@
                                     </li>
                                 </ul>
                             </nav>
+                            @endif
+
+                            <nav class="my-4">
+                                <ul class="flex flex-col space-y-2">
+                                    <li class="text-sm text-gray-500 uppercase tracking-wide">APUPPT</li>
+                                    <li>
+                                        <a href="{{ route('apuppt.ebookfolder.index') }}"
+                                            class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('apuppt.ebookfolder.*') || request()->routeIs('apuppt.ebook.*')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                            <i class="fa-solid fa-book"></i>
+                                            <span>{{ __('Ebook') }}</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('apuppt.posttest.index') }}"
+                                            class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('apuppt.posttest.*')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                            <i class="fa-solid fa-clipboard-question"></i>
+                                            <span>{{ __('Post Test') }}</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('apuppt.absensi.index') }}"
+                                            class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('apuppt.absensi.*') || request()->routeIs('apuppt.absensiAdmin.*')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                            <i class="fa-solid fa-face-smile"></i>
+                                            <span>{{ __('Absensi') }}</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('apuppt.sertifikat.index') }}"
+                                            class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('apuppt.sertifikat.*')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                            <i class="fa-solid fa-certificate"></i>
+                                            <span>{{ __('Sertifikat') }}</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                            <form action="{{ route('apuppt.feature.toggle') }}" method="POST" class="mt-3">
+                                @csrf
+                                <button type="submit"
+                                    class="w-full px-3 py-2 rounded text-sm font-semibold {{ $isApupptEnabled ? 'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-300' : 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-300' }}">
+                                    {{ $isApupptEnabled ? 'Nonaktifkan APUPPT' : 'Aktifkan APUPPT' }}
+                                </button>
+                            </form>
 
                             <hr class="border-gray-300 dark:border-gray-700">
                         @endif
@@ -600,7 +809,7 @@
                                         <span>Profile</span>
                                     </a>
                                 </li>
-                                @if (Auth::user()->role !== 'Admin')
+                                @if (!in_array(Auth::user()->role, ['Admin', 'Admin APUPPT'], true))
                                     <li>
                                         <a href="{{ route('sertifikat.index') }}"
                                             class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200

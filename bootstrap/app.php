@@ -2,6 +2,8 @@
 
 use App\Http\Middleware\BearerTokenMiddleware;
 use App\Http\Middleware\CheckPATLAccess;
+use App\Http\Middleware\EnsureApupptFeatureEnabled;
+use App\Http\Middleware\EnsureUserHasApupptAbsensi;
 use App\Http\Middleware\EnsureProfileIsComplete;
 use App\Http\Middleware\EnsureUserHasAbsensi;
 use App\Http\Middleware\RoleMiddleware;
@@ -21,6 +23,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'is_admin' => RoleMiddleware::class,
             'profile.complete' => EnsureProfileIsComplete::class,
             'absensi' => EnsureUserHasAbsensi::class,
+            'apuppt_absensi' => EnsureUserHasApupptAbsensi::class,
+            'apuppt.enabled' => EnsureApupptFeatureEnabled::class,
             'CheckPATLAccess' => CheckPATLAccess::class,
             'bearer.token' => BearerTokenMiddleware::class,
         ]);

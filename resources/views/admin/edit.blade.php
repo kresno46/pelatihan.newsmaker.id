@@ -34,6 +34,22 @@
                 @enderror
             </div>
 
+            <div class="mb-4">
+                <label for="role" class="block text-sm font-medium text-gray-700 dark:text-white">Role Admin</label>
+                <select name="role" id="role" required
+                    class="mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500
+                    dark:bg-gray-700 dark:border-gray-600 dark:text-white
+                    {{ $errors->has('role') ? 'border-red-500' : 'border-gray-300' }}">
+                    <option value="Admin" {{ old('role', $admin->role) === 'Admin' ? 'selected' : '' }}>Admin</option>
+                    <option value="Admin APUPPT" {{ old('role', $admin->role) === 'Admin APUPPT' ? 'selected' : '' }}>
+                        Admin APUPPT
+                    </option>
+                </select>
+                @error('role')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
             <!-- Password (Opsional) -->
             <div class="mb-4">
                 <label for="password" class="block text-sm font-medium text-gray-700 dark:text-white">Password

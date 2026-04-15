@@ -3,6 +3,18 @@
 use App\Http\Controllers\AbsensiAdminController;
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ApupptAbsensiAdminController;
+use App\Http\Controllers\ApupptAbsensiUserController;
+use App\Http\Controllers\ApupptEbookController;
+use App\Http\Controllers\ApupptEbookFolderController;
+use App\Http\Controllers\ApupptEdukasiEbookController;
+use App\Http\Controllers\ApupptFeatureController;
+use App\Http\Controllers\ApupptJadwalAbsensiController;
+use App\Http\Controllers\ApupptLaporanSertifikatController;
+use App\Http\Controllers\ApupptPostTestController;
+use App\Http\Controllers\ApupptQuizController;
+use App\Http\Controllers\ApupptSertifikatController;
+use App\Http\Controllers\ApupptTestController;
 use App\Http\Controllers\EdukasiEbookController;
 use App\Http\Controllers\EdukasiOutlookController;
 use App\Http\Controllers\HomeController;
@@ -25,6 +37,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('dashboard');
 
     Route::get('/tools/{tool}', [WebviewController::class, 'show'])->name('webview.show');
+
+    Route::post('/apuppt/feature/toggle', [ApupptFeatureController::class, 'toggle'])
+        ->middleware('is_admin:Admin,Admin APUPPT')
+        ->name('apuppt.feature.toggle');
 
     Route::middleware('profile.complete')->group(function () {
         Route::get('/edukasi/ebook', [EdukasiEbookController::class, 'index'])->name('edukasi.ebook');
@@ -72,6 +88,33 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/result/{result}', [TestController::class, 'showResult'])->name('result');
     });
 
+    Route::prefix('apuppt-training')->middleware(['profile.complete', 'apuppt.enabled'])->group(function () {
+        Route::prefix('ebook')->name('apuppt.edukasi.ebook.')->group(function () {
+            Route::get('/', [ApupptEdukasiEbookController::class, 'index'])->name('index');
+            Route::get('/{folderSlug}', [ApupptEdukasiEbookController::class, 'show'])->name('show');
+        });
+
+        Route::prefix('absensi')->group(function () {
+            Route::get('/', [ApupptAbsensiUserController::class, 'index'])->name('apuppt.absensiUser.index');
+            Route::post('/store', [ApupptAbsensiUserController::class, 'store'])->name('apuppt.absensiUser.store');
+        });
+
+        Route::prefix('posttest')->name('apuppt.test.')->group(function () {
+            Route::get('/', [ApupptTestController::class, 'index'])->name('index');
+            Route::middleware('apuppt_absensi')->group(function () {
+                Route::get('/{slug}', [ApupptTestController::class, 'showQuiz'])->name('show');
+                Route::match(['GET', 'POST'], '/{slug}/question/{number}', [ApupptTestController::class, 'showQuestion'])->name('question');
+                Route::post('/{slug}/submit', [ApupptTestController::class, 'submitQuiz'])->name('submit');
+            });
+            Route::get('/result/{result}', [ApupptTestController::class, 'showResult'])->name('result');
+        });
+
+        Route::prefix('sertifikat')->name('apuppt.sertifikatUser.')->group(function () {
+            Route::get('/', [ApupptSertifikatController::class, 'index'])->name('index');
+            Route::get('/{id}/download', [ApupptSertifikatController::class, 'generateCertificate'])->name('download');
+        });
+    });
+
     // Summmernote Controller
     Route::middleware('is_admin:Admin', 'profile.complete')->group(function () {
         Route::post('/summernote/upload', [SummernoteController::class, 'upload'])->name('summernote.upload');
@@ -115,39 +158,106 @@ Route::middleware(['auth', 'verified'])->group(function () {
         });
     });
 
-    Route::middleware('is_admin:Admin')->group(function () {
-        Route::prefix('laporan')->group(function () {
+    Route::middleware(['is_admin:Admin,Admin APUPPT', 'apuppt.enabled'])->group(function () {
+        Route::prefix('apuppt')->name('apuppt.')->group(function () {
+            Route::prefix('ebook-folder')->group(function () {
+                Route::get('/', [ApupptEbookFolderController::class, 'index'])->name('ebookfolder.index');
+                Route::get('/create', [ApupptEbookFolderController::class, 'create'])->name('ebookfolder.create');
+                Route::post('/store', [ApupptEbookFolderController::class, 'store'])->name('ebookfolder.store');
+                Route::get('/{slug}/edit', [ApupptEbookFolderController::class, 'edit'])->name('ebookfolder.edit');
+                Route::put('/{id}', [ApupptEbookFolderController::class, 'update'])->name('ebookfolder.update');
+                Route::delete('/{id}', [ApupptEbookFolderController::class, 'destroy'])->name('ebookfolder.destroy');
+            });
+
+            Route::prefix('ebook')->group(function () {
+                Route::get('/{folderSlug}', [ApupptEbookController::class, 'index'])->name('ebook.index');
+                Route::get('/{folderSlug}/create', [ApupptEbookController::class, 'create'])->name('ebook.create');
+                Route::post('/{folderSlug}/store', [ApupptEbookController::class, 'store'])->name('ebook.store');
+                Route::get('/{folderSlug}/{ebookSlug}', [ApupptEbookController::class, 'show'])->name('ebook.show');
+                Route::get('/{folderSlug}/{ebookSlug}/edit', [ApupptEbookController::class, 'edit'])->name('ebook.edit');
+                Route::put('/{folderSlug}/{ebookSlug}', [ApupptEbookController::class, 'update'])->name('ebook.update');
+                Route::delete('/{folderSlug}/{ebookSlug}', [ApupptEbookController::class, 'destroy'])->name('ebook.destroy');
+            });
+
             Route::prefix('post-test')->group(function () {
-                Route::get('/', [LaporanController::class, 'index'])->name('laporan.index');
-                Route::get('/{id}/show', [LaporanController::class, 'show'])->name('laporan.show');
-                Route::delete('/{id}', [LaporanController::class, 'destroy'])->name('laporan.destroy');
+                Route::get('/', [ApupptQuizController::class, 'index'])->name('posttest.index');
+                Route::get('/tambah', [ApupptQuizController::class, 'create'])->name('posttest.create');
+                Route::post('/', [ApupptQuizController::class, 'store'])->name('posttest.store');
+                Route::get('/{session}/edit', [ApupptQuizController::class, 'edit'])->name('posttest.edit');
+                Route::put('/{session}', [ApupptQuizController::class, 'update'])->name('posttest.update');
+                Route::delete('/{session}', [ApupptQuizController::class, 'destroy'])->name('posttest.destroy');
+                Route::post('/toggle-status/{slug}', [ApupptPostTestController::class, 'toggleStatus'])->name('posttest.toggle');
+                Route::get('/{session:slug}/report', [ApupptQuizController::class, 'report'])->name('posttest.report');
+                Route::get('/{session:slug}/report/export', [ApupptQuizController::class, 'reportExport'])->name('posttest.report.export');
+                Route::delete('/{session:slug}/report/delete-all-failed', [ApupptQuizController::class, 'deleteAllFailed'])->name('posttest.report.deleteAllFailed');
+                Route::delete('/{session:slug}/report/{result}', [ApupptQuizController::class, 'deleteResult'])->name('posttest.report.delete');
+                Route::prefix('{session}/edit')->group(function () {
+                    Route::post('/question', [ApupptPostTestController::class, 'questionStore'])->name('question.store');
+                });
+                Route::put('/question/{question}', [ApupptPostTestController::class, 'questionUpdate'])->name('question.update');
+                Route::delete('/question/{question}', [ApupptPostTestController::class, 'questionDestroy'])->name('quiz.delete');
             });
 
             Route::prefix('absensi')->group(function () {
-                Route::get('/', [JadwalAbsensiController::class, 'index'])->name('absensi.index');
-                Route::get('/create', [JadwalAbsensiController::class, 'create'])->name('absensi.create');
-                Route::post('/tambah', [JadwalAbsensiController::class, 'store'])->name('absensi.store');
-                Route::get('/{id}/edit', [JadwalAbsensiController::class, 'edit'])->name('absensi.edit');
-                Route::post('/{id}/toggle', [JadwalAbsensiController::class, 'toggle'])->name('absensi.toggle');
-                Route::put('/{id}/update', [JadwalAbsensiController::class, 'update'])->name('absensi.update');
-
-                Route::delete('/{id}/hapus', [JadwalAbsensiController::class, 'destroy'])->name('absensi.destroy');
-
+                Route::get('/', [ApupptJadwalAbsensiController::class, 'index'])->name('absensi.index');
+                Route::get('/create', [ApupptJadwalAbsensiController::class, 'create'])->name('absensi.create');
+                Route::post('/tambah', [ApupptJadwalAbsensiController::class, 'store'])->name('absensi.store');
+                Route::get('/{id}/edit', [ApupptJadwalAbsensiController::class, 'edit'])->name('absensi.edit');
+                Route::post('/{id}/toggle', [ApupptJadwalAbsensiController::class, 'toggle'])->name('absensi.toggle');
+                Route::put('/{id}/update', [ApupptJadwalAbsensiController::class, 'update'])->name('absensi.update');
+                Route::delete('/{id}/hapus', [ApupptJadwalAbsensiController::class, 'destroy'])->name('absensi.destroy');
                 Route::prefix('{idJadwal}')->group(function () {
-                    Route::get('/', [AbsensiAdminController::class, 'indexAdmin'])->name('absensiAdmin.index');
-                    Route::get('/pdf', [AbsensiAdminController::class, 'downloadPdf'])->name('absensi.downloadPdf');
-                    Route::get('/excel', [AbsensiAdminController::class, 'downloadExcel'])->name('absensi.downloadExcel');
-                    Route::get('/pdf-per-cabang', [AbsensiAdminController::class, 'downloadPdfPerCabang'])->name('absensi.downloadPdfPerCabang');
-                    Route::get('/excel-per-cabang', [AbsensiAdminController::class, 'downloadExcelPerCabang'])->name('absensi.downloadExcelPerCabang');
-                    Route::delete('/{idAbsensi}/delete', [AbsensiAdminController::class, 'delete'])->name('absensiAdmin.delete');
+                    Route::get('/', [ApupptAbsensiAdminController::class, 'indexAdmin'])->name('absensiAdmin.index');
+                    Route::get('/pdf', [ApupptAbsensiAdminController::class, 'downloadPdf'])->name('absensi.downloadPdf');
+                    Route::get('/excel', [ApupptAbsensiAdminController::class, 'downloadExcel'])->name('absensi.downloadExcel');
+                    Route::get('/pdf-per-cabang', [ApupptAbsensiAdminController::class, 'downloadPdfPerCabang'])->name('absensi.downloadPdfPerCabang');
+                    Route::get('/excel-per-cabang', [ApupptAbsensiAdminController::class, 'downloadExcelPerCabang'])->name('absensi.downloadExcelPerCabang');
+                    Route::delete('/{idAbsensi}/delete', [ApupptAbsensiAdminController::class, 'delete'])->name('absensiAdmin.delete');
                 });
             });
 
             Route::prefix('sertifikat')->group(function () {
-                Route::get('/', [LaporanSertifikatController::class, 'index'])->name('LaporanSertifikat.index');
-                Route::get('/export', [LaporanSertifikatController::class, 'export'])->name('LaporanSertifikat.export');
-                Route::get('/export-per-cabang', [LaporanSertifikatController::class, 'exportPerCabang'])->name('LaporanSertifikat.exportPerCabang');
-                Route::delete('/{id}/delete', [LaporanSertifikatController::class, 'destroy'])->name('LaporanSertifikat.destroy');
+                Route::get('/', [ApupptLaporanSertifikatController::class, 'index'])->name('sertifikat.index');
+                Route::get('/export', [ApupptLaporanSertifikatController::class, 'export'])->name('sertifikat.export');
+                Route::get('/export-per-cabang', [ApupptLaporanSertifikatController::class, 'exportPerCabang'])->name('sertifikat.exportPerCabang');
+                Route::delete('/{id}/delete', [ApupptLaporanSertifikatController::class, 'destroy'])->name('sertifikat.destroy');
+            });
+        });
+
+        Route::middleware('is_admin:Admin')->group(function () {
+            Route::prefix('laporan')->group(function () {
+                Route::prefix('post-test')->group(function () {
+                    Route::get('/', [LaporanController::class, 'index'])->name('laporan.index');
+                    Route::get('/{id}/show', [LaporanController::class, 'show'])->name('laporan.show');
+                    Route::delete('/{id}', [LaporanController::class, 'destroy'])->name('laporan.destroy');
+                });
+
+                Route::prefix('absensi')->group(function () {
+                    Route::get('/', [JadwalAbsensiController::class, 'index'])->name('absensi.index');
+                    Route::get('/create', [JadwalAbsensiController::class, 'create'])->name('absensi.create');
+                    Route::post('/tambah', [JadwalAbsensiController::class, 'store'])->name('absensi.store');
+                    Route::get('/{id}/edit', [JadwalAbsensiController::class, 'edit'])->name('absensi.edit');
+                    Route::post('/{id}/toggle', [JadwalAbsensiController::class, 'toggle'])->name('absensi.toggle');
+                    Route::put('/{id}/update', [JadwalAbsensiController::class, 'update'])->name('absensi.update');
+
+                    Route::delete('/{id}/hapus', [JadwalAbsensiController::class, 'destroy'])->name('absensi.destroy');
+
+                    Route::prefix('{idJadwal}')->group(function () {
+                        Route::get('/', [AbsensiAdminController::class, 'indexAdmin'])->name('absensiAdmin.index');
+                        Route::get('/pdf', [AbsensiAdminController::class, 'downloadPdf'])->name('absensi.downloadPdf');
+                        Route::get('/excel', [AbsensiAdminController::class, 'downloadExcel'])->name('absensi.downloadExcel');
+                        Route::get('/pdf-per-cabang', [AbsensiAdminController::class, 'downloadPdfPerCabang'])->name('absensi.downloadPdfPerCabang');
+                        Route::get('/excel-per-cabang', [AbsensiAdminController::class, 'downloadExcelPerCabang'])->name('absensi.downloadExcelPerCabang');
+                        Route::delete('/{idAbsensi}/delete', [AbsensiAdminController::class, 'delete'])->name('absensiAdmin.delete');
+                    });
+                });
+
+                Route::prefix('sertifikat')->group(function () {
+                    Route::get('/', [LaporanSertifikatController::class, 'index'])->name('LaporanSertifikat.index');
+                    Route::get('/export', [LaporanSertifikatController::class, 'export'])->name('LaporanSertifikat.export');
+                    Route::get('/export-per-cabang', [LaporanSertifikatController::class, 'exportPerCabang'])->name('LaporanSertifikat.exportPerCabang');
+                    Route::delete('/{id}/delete', [LaporanSertifikatController::class, 'destroy'])->name('LaporanSertifikat.destroy');
+                });
             });
         });
     });

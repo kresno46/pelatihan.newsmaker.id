@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Absensi;
+use App\Models\ApupptCertificateAward;
+use App\Models\ApupptJadwalAbsensi;
+use App\Models\ApupptPostTestSession;
 use App\Models\CertificateAward;
 use App\Models\Ebook;
 use App\Models\FolderEbook;
@@ -17,6 +20,7 @@ class HomeController extends Controller
     {
         $user = auth()->user();
         $isAdmin = $user->role === 'Admin';
+        $isApupptAdmin = $user->role === 'Admin APUPPT';
 
         // Cek kelengkapan profil
         $requiredFields = [
@@ -47,7 +51,7 @@ class HomeController extends Controller
         $jumlahPelatihan = FolderEbook::count();
         $jumlahJadwalAbsensi = JadwalAbsensi::count();
         $jumlahUser = User::where('role', 'Trainer (Eksternal)')->count();
-        $jumlahAdmin = User::where('role', 'Admin')->count();
+        $jumlahAdmin = User::whereIn('role', ['Admin', 'Admin APUPPT'])->count();
 
         // Statistik berdasarkan user login
         $riwayatUserLogin = PostTestResult::where('user_id', $user->id)->count();
@@ -167,6 +171,39 @@ class HomeController extends Controller
             ];
         }
 
+        if ($isApupptAdmin) {
+            $quickActions = [
+                [
+                    'title' => 'APUPPT Ebook',
+                    'desc' => 'Kelola ebook APUPPT.',
+                    'icon' => 'fa-solid fa-book',
+                    'color' => 'amber',
+                    'route' => 'apuppt.ebookfolder.index',
+                ],
+                [
+                    'title' => 'APUPPT Post Test',
+                    'desc' => 'Kelola sesi post test APUPPT.',
+                    'icon' => 'fa-solid fa-clipboard-question',
+                    'color' => 'blue',
+                    'route' => 'apuppt.posttest.index',
+                ],
+                [
+                    'title' => 'APUPPT Absensi',
+                    'desc' => 'Kelola absensi APUPPT.',
+                    'icon' => 'fa-solid fa-face-smile',
+                    'color' => 'emerald',
+                    'route' => 'apuppt.absensi.index',
+                ],
+                [
+                    'title' => 'APUPPT Sertifikat',
+                    'desc' => 'Laporan sertifikat APUPPT.',
+                    'icon' => 'fa-solid fa-certificate',
+                    'color' => 'orange',
+                    'route' => 'apuppt.sertifikat.index',
+                ],
+            ];
+        }
+
         $tools = [
             [
                 'title' => 'AiSG',
@@ -263,6 +300,35 @@ class HomeController extends Controller
                     'route' => 'absensi.index',
                 ],
             ]);
+        }
+
+        if ($isApupptAdmin) {
+            $summaryCards = [
+                [
+                    'title' => 'Sesi APUPPT',
+                    'value' => ApupptPostTestSession::where('tipe', 'APUPPT')->count(),
+                    'suffix' => ' Sesi',
+                    'icon' => 'fa-solid fa-clipboard-question',
+                    'color' => 'blue',
+                    'route' => 'apuppt.posttest.index',
+                ],
+                [
+                    'title' => 'Jadwal APUPPT',
+                    'value' => ApupptJadwalAbsensi::count(),
+                    'suffix' => ' Jadwal',
+                    'icon' => 'fa-solid fa-list-check',
+                    'color' => 'teal',
+                    'route' => 'apuppt.absensi.index',
+                ],
+                [
+                    'title' => 'Sertifikat APUPPT',
+                    'value' => ApupptCertificateAward::count(),
+                    'suffix' => ' Sertifikat',
+                    'icon' => 'fa-solid fa-certificate',
+                    'color' => 'orange',
+                    'route' => 'apuppt.sertifikat.index',
+                ],
+            ];
         }
 
         // ========================

@@ -17,8 +17,8 @@ class EnsureProfileIsComplete
             return redirect()->route('login');
         }
 
-        // Abaikan middleware ini untuk Admin
-        if ($user->role === 'Admin') {
+        // Abaikan middleware ini untuk role admin
+        if (in_array($user->role, ['Admin', 'Admin APUPPT'], true)) {
             return $next($request);
         }
 

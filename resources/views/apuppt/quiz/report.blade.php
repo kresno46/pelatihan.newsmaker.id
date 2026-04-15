@@ -1,0 +1,390 @@
+@extends('layouts.app')
+
+@section('namePage', 'Laporan ' . $session->title)
+
+@section('content')
+    <header class="w-full bg-white dark:bg-gray-800 shadow rounded-lg mb-5 p-4 sm:p-6">
+        <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                    {{ __('Laporan Post Test') }}
+                </h2>
+                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                    {{ $session->title ?? '-' }}
+                    @if (!empty($session->duration))
+                        - {{ __('Durasi') }} {{ $session->duration }} {{ __('menit') }}
+                    @endif
+                </p>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <a href="{{ route('apuppt.posttest.index') }}"
+                    class="px-3 py-2 text-sm rounded border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                    {{ __('Kembali') }}
+                </a>
+
+                {{-- Export bawa filter q & sort & company agar konsisten --}}
+                <div class="flex gap-2">
+                    <a href="{{ route('apuppt.posttest.report.export', $session->slug) }}?q={{ request('q') }}&sort={{ request('sort') }}&company={{ request('company') }}&cabang={{ request('cabang') }}"
+                        class="px-3 py-2 text-sm rounded bg-green-500 hover:bg-green-600 text-white transition">
+                        {{ __('Export CSV') }}
+                    </a>
+
+                    {{-- Download per cabang --}}
+                    @if ($branches->isNotEmpty())
+                        <div class="relative">
+                            <button type="button" id="downloadDropdown"
+                                class="px-3 py-2 text-sm rounded bg-blue-500 hover:bg-blue-600 text-white transition flex items-center gap-1">
+                                {{ __('Download per Cabang') }}
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            <div id="downloadMenu"
+                                class="absolute right-0 mt-1 w-64 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10 hidden">
+                                <div class="py-1">
+                                    @foreach ($branches as $branch)
+                                        <a href="{{ route('apuppt.posttest.report.export', $session->slug) }}?q={{ request('q') }}&sort={{ request('sort') }}&company={{ request('company') }}&cabang={{ $branch }}"
+                                            class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                            {{ $branch }}
+                                        </a>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </header>
+
+    {{-- Filter & Sort --}}
+    <div class="mb-4 p-4 sm:p-5 bg-white dark:bg-gray-800 rounded-xl shadow">
+        <form method="GET" class="grid grid-cols-1 md:grid-cols-5 gap-3" id="filterForm">
+            <input type="hidden" name="page" value="1">
+            <div>
+                <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">{{ __('Cari Peserta') }}</label>
+                <input type="text" name="q" value="{{ $filters['q'] ?? request('q') }}"
+                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"
+                    placeholder="Nama atau email...">
+            </div>
+
+            <div>
+                <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">{{ __('Perusahaan') }}</label>
+                <select name="company" id="companySelect"
+                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
+                    @php $company = $filters['company'] ?? request('company'); @endphp
+                    <option value="">{{ __('Semua Perusahaan') }}</option>
+                    <option value="PT Solid Gold Berjangka" {{ $company === 'PT Solid Gold Berjangka' ? 'selected' : '' }}>
+                        PT Solid Gold Berjangka</option>
+                    <option value="PT Rifan Financindo Berjangka"
+                        {{ $company === 'PT Rifan Financindo Berjangka' ? 'selected' : '' }}>PT Rifan Financindo Berjangka
+                    </option>
+                    <option value="PT Equity World Futures" {{ $company === 'PT Equity World Futures' ? 'selected' : '' }}>
+                        PT Equity World Futures</option>
+                    <option value="PT Best Profit Futures" {{ $company === 'PT Best Profit Futures' ? 'selected' : '' }}>PT
+                        Best Profit Futures</option>
+                    <option value="PT Kontak Perkasa Futures"
+                        {{ $company === 'PT Kontak Perkasa Futures' ? 'selected' : '' }}>PT Kontak Perkasa Futures</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">{{ __('Cabang') }}</label>
+                <select name="cabang" id="cabangSelect"
+                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
+                    @php $cabang = $filters['cabang'] ?? request('cabang'); @endphp
+                    <option value="">{{ __('Semua Cabang') }}</option>
+                    @if ($cabang)
+                        <option value="{{ $cabang }}" selected>{{ $cabang }}</option>
+                    @endif
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">{{ __('Urutkan') }}</label>
+                <select name="sort"
+                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
+                    @php $sort = $filters['sort'] ?? request('sort', 'latest'); @endphp
+                    <option value="latest" {{ $sort === 'latest' ? 'selected' : '' }}>{{ __('Terbaru') }}</option>
+                    <option value="oldest" {{ $sort === 'oldest' ? 'selected' : '' }}>{{ __('Terlama') }}</option>
+                    <option value="highest" {{ $sort === 'highest' ? 'selected' : '' }}>{{ __('Skor Tertinggi') }}
+                    </option>
+                    <option value="lowest" {{ $sort === 'lowest' ? 'selected' : '' }}>{{ __('Skor Terendah') }}</option>
+                    <option value="lulus_first" {{ $sort === 'lulus_first' ? 'selected' : '' }}>Lulus Dahulu</option>
+                    <option value="tidak_lulus_first" {{ $sort === 'tidak_lulus_first' ? 'selected' : '' }}>Tidak Lulus
+                        Dahulu</option>
+                    <option value="cabang_asc" {{ $sort === 'cabang_asc' ? 'selected' : '' }}>Cabang A-Z</option>
+                    <option value="cabang_desc" {{ $sort === 'cabang_desc' ? 'selected' : '' }}>Cabang Z-A</option>
+                    <option value="nama_asc" {{ $sort === 'nama_asc' ? 'selected' : '' }}>Nama A-Z</option>
+                    <option value="nama_desc" {{ $sort === 'nama_desc' ? 'selected' : '' }}>Nama Z-A</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">{{ __('Per Halaman') }}</label>
+                @php $per = (int)($filters['per_page'] ?? request('per_page', 20)); @endphp
+                <select name="per_page"
+                    class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100">
+                    @foreach ([20, 30, 50, 100, 200] as $n)
+                        <option value="{{ $n }}" {{ $per === $n ? 'selected' : '' }}>{{ $n }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="flex items-end gap-2 md:col-span-5">
+                <button type="submit"
+                    class="w-full md:w-auto px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm transition">
+                    {{ __('Terapkan') }}
+                </button>
+                <a href="{{ route('apuppt.posttest.report', $session->slug) }}"
+                    class="w-full md:w-auto px-4 py-2 rounded border bg-red-500 hover:bg-red-600 text-white border-gray-300 dark:border-gray-600 text-sm dark:text-gray-200 dark:hover:bg-gray-700 transition">
+                    {{ __('Reset') }}
+                </a>
+            </div>
+        </form>
+    </div>
+
+    {{-- Ringkasan --}}
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+        @php
+            $agg = $aggregates ?? null;
+            $total = (int) ($agg->total ?? 0);
+            $avg = is_null($agg?->avg_score) ? null : number_format($agg->avg_score, 2);
+            $max = is_null($agg?->max_score) ? null : $agg->max_score;
+            $min = is_null($agg?->min_score) ? null : $agg->min_score;
+        @endphp
+
+        <div class="p-4 bg-white dark:bg-gray-800 rounded-xl shadow">
+            <div class="text-xs text-gray-500 dark:text-gray-400">{{ __('Total Respons') }}</div>
+            <div class="text-2xl font-semibold text-gray-900 dark:text-gray-100">{{ $total }}</div>
+        </div>
+        <div class="p-4 bg-white dark:bg-gray-800 rounded-xl shadow">
+            <div class="text-xs text-gray-500 dark:text-gray-400">{{ __('Rata-rata Skor') }}</div>
+            <div class="text-2xl font-semibold text-gray-900 dark:text-gray-100">{{ $avg ?? '-' }}</div>
+        </div>
+        <div class="p-4 bg-white dark:bg-gray-800 rounded-xl shadow">
+            <div class="text-xs text-gray-500 dark:text-gray-400">{{ __('Skor Tertinggi') }}</div>
+            <div class="text-2xl font-semibold text-gray-900 dark:text-gray-100">{{ $max ?? '-' }}</div>
+        </div>
+        <div class="p-4 bg-white dark:bg-gray-800 rounded-xl shadow">
+            <div class="text-xs text-gray-500 dark:text-gray-400">{{ __('Skor Terendah') }}</div>
+            <div class="text-2xl font-semibold text-gray-900 dark:text-gray-100">{{ $min ?? '-' }}</div>
+        </div>
+    </div>
+
+    {{-- Tombol Hapus Semua Tidak Lulus --}}
+    <div class="mb-4">
+        <form action="{{ route('apuppt.posttest.report.deleteAllFailed', ['session' => $session->slug]) }}" method="POST"
+            onsubmit="return confirm('Yakin ingin menghapus semua hasil post test yang tidak lulus-');">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded">
+                Hapus Semua Tidak Lulus
+            </button>
+        </form>
+    </div>
+
+    {{-- Tabel Hasil --}}
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden">
+        @if ($results->isEmpty())
+            <div class="text-center py-12 text-gray-600 dark:text-gray-300">
+                {{ __('Belum ada hasil untuk sesi ini.') }}
+            </div>
+        @else
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead class="bg-gray-50 dark:bg-gray-900/40">
+                        <tr>
+                            <th
+                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                #</th>
+                            <th
+                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                {{ __('Nama') }}</th>
+                            <th
+                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Perusahaan</th>
+                            <th
+                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Cabang</th>
+                            <th
+                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Jabatan</th>
+                            <th
+                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                {{ __('Skor') }}</th>
+                            <th
+                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Status</th>
+                            <th
+                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Aksi</th>
+                            <th
+                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                {{ __('Tanggal') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        @foreach ($results as $i => $r)
+                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-900/30">
+                                <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                                    {{ ($results->firstItem() ?? 1) + $i }}
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
+                                    {{ optional($r->user)->name ?? '-' }}
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                                    {{ $r->user->nama_perusahaan }}
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                                    {{ $r->user->cabang }}
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                                    {{ $r->user->jabatan }}
+                                </td>
+                                <td class="px-4 py-3 text-sm font-semibold text-gray-900 dark:text-gray-100">
+                                    {{ $r->score }}
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                                    @if ($r->score >= 60)
+                                        <span class="text-green-600 font-semibold">{{ 'Lulus' }}</span>
+                                    @else
+                                        <span class="text-red-600 font-semibold">{{ 'Tidak Lulus' }}</span>
+                                    @endif
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                                    @if ($r->score < 60)
+                                        <form
+                                            action="{{ route('apuppt.posttest.report.delete', ['session' => $session->slug, 'result' => $r->id]) }}"
+                                            method="POST"
+                                            onsubmit="return confirm('Yakin ingin menghapus hasil post test user ini-');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                class="text-red-600 hover:text-red-800 font-semibold">Hapus</button>
+                                        </form>
+                                    @endif
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+                                    {{ optional($r->created_at)->format('Y-m-d H:i') }}
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            {{-- Pagination --}}
+            <div class="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
+                {{ $results->links() }}
+            </div>
+        @endif
+    </div>
+@endsection
+
+@section('scripts')
+    <script>
+        @php
+            $kantorCabang = [
+                'PT Solid Gold Berjangka' => [
+                    'Jakarta - TCC Tower', // tambahan
+                    'Semarang',
+                    'Makassar',
+                ],
+
+                'PT Rifan Financindo Berjangka' => [
+                    'Jakarta - AXA Tower 1', // tambahan
+                    'Jakarta - AXA Tower 2', // tambahan
+                    'Jakarta - AXA Tower 3', // tambahan
+                    'Jakarta - DBS Bank Tower', // tambahan
+                    'Bandung',
+                    'Solo',
+                    'Semarang',
+                    'Surabaya - Ciputra World Office Tower', // diperbaiki
+                    'Surabaya - Pakuwon Tower', // diperbaiki
+                    'Yogyakarta',
+                    'Pekanbaru',
+                    'Palembang',
+                    'Medan',
+                    'Balikpapan',
+                ],
+
+                'PT Equity World Futures' => [
+                    'SSC Jakarta', // diperbaiki
+                    'Jakarta Cyber 2', // diperbaiki
+                    'Surabaya Trillum', // diperbaiki
+                    'Manado',
+                    'Semarang',
+                    'Surabaya Praxis',
+                    'Cirebon',
+                ],
+
+                'PT Best Profit Futures' => [
+                    'Jakarta - Equity Tower', // tambahan
+                    'Jambi',
+                    'Jakarta - Pacific Place Mall',
+                    'Pontianak',
+                    'Malang',
+                    'Surabaya',
+                    'Medan',
+                    'Bandung',
+                    'Pekanbaru',
+                    'Banjarmasin',
+                    'Bandar Lampung',
+                    'Semarang',
+                ],
+
+                'PT Kontak Perkasa Futures' => [
+                    'Jakarta - Plaza Marein', // tambahan
+                    'Yogyakarta',
+                    'Bali',
+                    'Makassar',
+                    'Bandung',
+                    'Semarang',
+                ],
+            ];
+        @endphp
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const dataCabang = @json($kantorCabang);
+            const companySelect = document.getElementById('companySelect');
+            const cabangSelect = document.getElementById('cabangSelect');
+
+            function updateCabangOptions() {
+                const selectedCompany = companySelect.value;
+                cabangSelect.innerHTML = '<option value="">-- Pilih Cabang --</option>';
+
+                if (selectedCompany && dataCabang[selectedCompany]) {
+                    dataCabang[selectedCompany].forEach(cabang => {
+                        const option = document.createElement('option');
+                        option.value = cabang;
+                        option.textContent = cabang;
+                        cabangSelect.appendChild(option);
+                    });
+                }
+            }
+
+            companySelect.addEventListener('change', updateCabangOptions);
+            updateCabangOptions(); // Initialize on page load
+
+            // Dropdown toggle for download per cabang
+            const downloadDropdown = document.getElementById('downloadDropdown');
+            const downloadMenu = document.getElementById('downloadMenu');
+
+            if (downloadDropdown && downloadMenu) {
+                downloadDropdown.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    downloadMenu.classList.toggle('hidden');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function() {
+                    downloadMenu.classList.add('hidden');
+                });
+            }
+        });
+    </script>
+@endsection
