@@ -35,7 +35,7 @@
         @endif
 
         @if ($isAdmin)
-            <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-5">
                 <div class="rounded-xl border border-red-200 bg-red-50 p-5 dark:border-red-900/40 dark:bg-red-900/20">
                     <div class="text-sm font-medium text-red-700 dark:text-red-300">Akun Suspend</div>
                     <div class="mt-2 text-3xl font-semibold text-red-900 dark:text-red-200">
@@ -60,6 +60,13 @@
                     <div class="text-sm font-medium text-emerald-700 dark:text-emerald-300">User Aktif 7 Hari</div>
                     <div class="mt-2 text-3xl font-semibold text-emerald-900 dark:text-emerald-200">
                         {{ number_format($adminHealthStats['active_7d'] ?? 0) }}
+                    </div>
+                </div>
+                <div
+                    class="rounded-xl border border-violet-200 bg-violet-50 p-5 dark:border-violet-900/40 dark:bg-violet-900/20">
+                    <div class="text-sm font-medium text-violet-700 dark:text-violet-300">Sudah Download Sertifikat</div>
+                    <div class="mt-2 text-3xl font-semibold text-violet-900 dark:text-violet-200">
+                        {{ number_format($adminHealthStats['downloaded_certificates'] ?? 0) }}
                     </div>
                 </div>
             </div>

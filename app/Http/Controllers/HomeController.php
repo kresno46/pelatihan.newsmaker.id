@@ -97,6 +97,7 @@ class HomeController extends Controller
             'force_reset' => 0,
             'unverified' => 0,
             'active_7d' => 0,
+            'downloaded_certificates' => 0,
         ];
         $loginTrendLabels = [];
         $loginTrendData = [];
@@ -111,6 +112,7 @@ class HomeController extends Controller
                 'force_reset' => User::where('force_password_reset', true)->count(),
                 'unverified' => User::whereNull('email_verified_at')->count(),
                 'active_7d' => LoginActivity::where('created_at', '>=', now()->subDays(7))->distinct('user_id')->count('user_id'),
+                'downloaded_certificates' => CertificateAward::count() + ApupptCertificateAward::count(),
             ];
 
             $dateMap = collect(range(0, 6))->mapWithKeys(function ($i) {
