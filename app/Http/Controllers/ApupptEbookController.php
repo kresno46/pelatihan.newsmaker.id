@@ -6,6 +6,7 @@ use App\Models\ApupptEbook;
 use App\Models\ApupptEbookFolder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Validation\Rule;
 
 class ApupptEbookController extends Controller
 {
@@ -46,10 +47,16 @@ class ApupptEbookController extends Controller
         $folder = ApupptEbookFolder::where('slug', $folderSlug)->firstOrFail();
 
         $request->validate([
-            'title' => 'required|max:100|unique:apuppt_ebooks,title',
+            'title' => [
+                'required',
+                'max:100',
+                Rule::unique('apuppt_ebooks', 'title')->where(function ($query) use ($folder) {
+                    return $query->where('folder_id', $folder->id);
+                }),
+            ],
             'deskripsi' => 'required',
             'cover' => 'required|mimes:jpg,jpeg,png|max:2048',
-            'file' => 'required|mimes:pdf|max:10240',
+            'file' => 'required|file|extensions:pdf|max:10240',
         ]);
 
         File::ensureDirectoryExists(public_path('uploads/apuppt/cover'));
@@ -94,10 +101,18 @@ class ApupptEbookController extends Controller
         $ebook = ApupptEbook::where('folder_id', $folder->id)->where('slug', $ebookSlug)->firstOrFail();
 
         $request->validate([
-            'title' => 'required|max:100|unique:apuppt_ebooks,title,' . $ebook->id,
+            'title' => [
+                'required',
+                'max:100',
+                Rule::unique('apuppt_ebooks', 'title')
+                    ->ignore($ebook->id)
+                    ->where(function ($query) use ($folder) {
+                        return $query->where('folder_id', $folder->id);
+                    }),
+            ],
             'deskripsi' => 'required',
             'cover' => 'nullable|mimes:jpg,jpeg,png|max:2048',
-            'file' => 'nullable|mimes:pdf|max:10240',
+            'file' => 'nullable|file|extensions:pdf|max:10240',
         ]);
 
         if ($request->hasFile('cover')) {

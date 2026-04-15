@@ -7,5 +7,12 @@ window.Chart = Chart;
 Alpine.start();
 
 document.addEventListener("DOMContentLoaded", () => {
-    window.HSOverlay?.init();
+    if (typeof window.HSStaticMethods?.autoInit === "function") {
+        window.HSStaticMethods.autoInit();
+        return;
+    }
+
+    if (typeof window.HSOverlay?.init === "function") {
+        window.HSOverlay.init();
+    }
 });
