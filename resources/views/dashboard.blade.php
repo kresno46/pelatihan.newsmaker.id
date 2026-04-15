@@ -34,6 +34,85 @@
             </div>
         @endif
 
+        @if ($isAdmin)
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <div class="rounded-xl border border-red-200 bg-red-50 p-5 dark:border-red-900/40 dark:bg-red-900/20">
+                    <div class="text-sm font-medium text-red-700 dark:text-red-300">Akun Suspend</div>
+                    <div class="mt-2 text-3xl font-semibold text-red-900 dark:text-red-200">
+                        {{ number_format($adminHealthStats['suspended'] ?? 0) }}
+                    </div>
+                </div>
+                <div
+                    class="rounded-xl border border-amber-200 bg-amber-50 p-5 dark:border-amber-900/40 dark:bg-amber-900/20">
+                    <div class="text-sm font-medium text-amber-700 dark:text-amber-300">Force Reset Password</div>
+                    <div class="mt-2 text-3xl font-semibold text-amber-900 dark:text-amber-200">
+                        {{ number_format($adminHealthStats['force_reset'] ?? 0) }}
+                    </div>
+                </div>
+                <div class="rounded-xl border border-blue-200 bg-blue-50 p-5 dark:border-blue-900/40 dark:bg-blue-900/20">
+                    <div class="text-sm font-medium text-blue-700 dark:text-blue-300">Belum Verifikasi Email</div>
+                    <div class="mt-2 text-3xl font-semibold text-blue-900 dark:text-blue-200">
+                        {{ number_format($adminHealthStats['unverified'] ?? 0) }}
+                    </div>
+                </div>
+                <div
+                    class="rounded-xl border border-emerald-200 bg-emerald-50 p-5 dark:border-emerald-900/40 dark:bg-emerald-900/20">
+                    <div class="text-sm font-medium text-emerald-700 dark:text-emerald-300">User Aktif 7 Hari</div>
+                    <div class="mt-2 text-3xl font-semibold text-emerald-900 dark:text-emerald-200">
+                        {{ number_format($adminHealthStats['active_7d'] ?? 0) }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+                <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800 lg:col-span-2">
+                    <div class="mb-3">
+                        <h3 class="text-base font-semibold text-gray-900 dark:text-white">Trend Login 7 Hari</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">Jumlah login sukses per hari.</p>
+                    </div>
+                    <canvas id="loginTrendChart" height="100"></canvas>
+                </div>
+
+                <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                    <div class="mb-3">
+                        <h3 class="text-base font-semibold text-gray-900 dark:text-white">Distribusi Device 30 Hari</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">Desktop, Mobile, Tablet.</p>
+                    </div>
+                    <canvas id="deviceDistChart" height="220"></canvas>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                    <h3 class="text-base font-semibold text-gray-900 dark:text-white">Top Browser (30 Hari)</h3>
+                    <div class="mt-4 space-y-3">
+                        @forelse ($topBrowsers as $item)
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-700 dark:text-gray-200">{{ $item->browser ?: 'Unknown' }}</span>
+                                <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ $item->total }}</span>
+                            </div>
+                        @empty
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Belum ada data login.</p>
+                        @endforelse
+                    </div>
+                </div>
+
+                <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                    <h3 class="text-base font-semibold text-gray-900 dark:text-white">Top Platform/OS (30 Hari)</h3>
+                    <div class="mt-4 space-y-3">
+                        @forelse ($topPlatforms as $item)
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-700 dark:text-gray-200">{{ $item->platform ?: 'Unknown' }}</span>
+                                <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ $item->total }}</span>
+                            </div>
+                        @empty
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Belum ada data login.</p>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
+        @endif
+
         <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
             <div class="flex items-center justify-between gap-3">
                 <div>
@@ -236,3 +315,70 @@
             </div>
         @endif
     @endsection
+
+    @if ($isAdmin)
+        @section('scripts')
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+                (function() {
+                    const trendEl = document.getElementById('loginTrendChart');
+                    if (trendEl) {
+                        new Chart(trendEl, {
+                            type: 'line',
+                            data: {
+                                labels: @json($loginTrendLabels),
+                                datasets: [{
+                                    label: 'Login',
+                                    data: @json($loginTrendData),
+                                    borderColor: '#2563eb',
+                                    backgroundColor: 'rgba(37, 99, 235, 0.15)',
+                                    fill: true,
+                                    tension: 0.35,
+                                    pointRadius: 4,
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    legend: {
+                                        display: false
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            precision: 0
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    const deviceEl = document.getElementById('deviceDistChart');
+                    if (deviceEl) {
+                        new Chart(deviceEl, {
+                            type: 'doughnut',
+                            data: {
+                                labels: @json($deviceLabels),
+                                datasets: [{
+                                    data: @json($deviceData),
+                                    backgroundColor: ['#2563eb', '#16a34a', '#f59e0b', '#7c3aed', '#ef4444'],
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom'
+                                    }
+                                }
+                            }
+                        });
+                    }
+                })();
+            </script>
+        @endsection
+    @endif

@@ -10,9 +10,11 @@ use App\Models\CertificateAward;
 use App\Models\Ebook;
 use App\Models\FolderEbook;
 use App\Models\JadwalAbsensi;
+use App\Models\LoginActivity;
 use App\Models\PostTestResult;
 use App\Models\PostTestSession;
 use App\Models\User;
+use Carbon\Carbon;
 
 class HomeController extends Controller
 {
@@ -89,6 +91,67 @@ class HomeController extends Controller
             ->orderBy('awarded_at', 'desc')
             ->limit(15)
             ->get();
+
+        $adminHealthStats = [
+            'suspended' => 0,
+            'force_reset' => 0,
+            'unverified' => 0,
+            'active_7d' => 0,
+        ];
+        $loginTrendLabels = [];
+        $loginTrendData = [];
+        $deviceLabels = [];
+        $deviceData = [];
+        $topBrowsers = collect();
+        $topPlatforms = collect();
+
+        if ($isAdmin) {
+            $adminHealthStats = [
+                'suspended' => User::whereNotNull('suspended_at')->count(),
+                'force_reset' => User::where('force_password_reset', true)->count(),
+                'unverified' => User::whereNull('email_verified_at')->count(),
+                'active_7d' => LoginActivity::where('created_at', '>=', now()->subDays(7))->distinct('user_id')->count('user_id'),
+            ];
+
+            $dateMap = collect(range(0, 6))->mapWithKeys(function ($i) {
+                $date = now()->subDays(6 - $i)->toDateString();
+
+                return [$date => 0];
+            });
+
+            $loginTrendRaw = LoginActivity::selectRaw('DATE(created_at) as tanggal, COUNT(*) as total')
+                ->where('created_at', '>=', now()->subDays(6)->startOfDay())
+                ->groupBy('tanggal')
+                ->orderBy('tanggal')
+                ->pluck('total', 'tanggal');
+
+            $mergedTrend = $dateMap->merge($loginTrendRaw);
+            $loginTrendLabels = $mergedTrend->keys()->map(fn ($date) => Carbon::parse($date)->format('d M'))->values()->all();
+            $loginTrendData = $mergedTrend->values()->map(fn ($v) => (int) $v)->all();
+
+            $deviceDist = LoginActivity::selectRaw('device_type, COUNT(*) as total')
+                ->where('created_at', '>=', now()->subDays(30)->startOfDay())
+                ->groupBy('device_type')
+                ->orderByDesc('total')
+                ->get();
+
+            $deviceLabels = $deviceDist->pluck('device_type')->map(fn ($x) => $x ?: 'Unknown')->values()->all();
+            $deviceData = $deviceDist->pluck('total')->map(fn ($x) => (int) $x)->values()->all();
+
+            $topBrowsers = LoginActivity::selectRaw('browser, COUNT(*) as total')
+                ->where('created_at', '>=', now()->subDays(30)->startOfDay())
+                ->groupBy('browser')
+                ->orderByDesc('total')
+                ->limit(5)
+                ->get();
+
+            $topPlatforms = LoginActivity::selectRaw('platform, COUNT(*) as total')
+                ->where('created_at', '>=', now()->subDays(30)->startOfDay())
+                ->groupBy('platform')
+                ->orderByDesc('total')
+                ->limit(5)
+                ->get();
+        }
 
         // ========================
         // Quick actions & tools
@@ -351,6 +414,13 @@ class HomeController extends Controller
             'postTestLabels',
             'postTestData',
             'latestCertificates',
+            'adminHealthStats',
+            'loginTrendLabels',
+            'loginTrendData',
+            'deviceLabels',
+            'deviceData',
+            'topBrowsers',
+            'topPlatforms',
             'quickActions',
             'tools',
             'summaryCards'
