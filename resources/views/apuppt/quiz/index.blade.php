@@ -38,6 +38,23 @@
         </div>
     </header>
 
+    <div class="mb-4 bg-white dark:bg-gray-800 p-2 rounded-lg border border-gray-100 dark:border-gray-700">
+        <div class="grid grid-cols-3 gap-2">
+            <a href="{{ route('apuppt.posttest.index', ['jenis' => 'all']) }}"
+                class="text-center py-2 px-3 text-sm font-semibold rounded {{ $jenis === 'all' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-200' }}">
+                Semua
+            </a>
+            <a href="{{ route('apuppt.posttest.index', ['jenis' => 'posttest']) }}"
+                class="text-center py-2 px-3 text-sm font-semibold rounded {{ $jenis === 'posttest' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-200' }}">
+                Soal Post Test
+            </a>
+            <a href="{{ route('apuppt.posttest.index', ['jenis' => 'ebook']) }}"
+                class="text-center py-2 px-3 text-sm font-semibold rounded {{ $jenis === 'ebook' ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-200' }}">
+                Soal Ebook
+            </a>
+        </div>
+    </div>
+
     <div class="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700">
         @if ($sessions->isEmpty())
             <div class="text-center py-12 text-gray-600 dark:text-gray-300">
@@ -106,9 +123,8 @@
                                 <div>
                                     <p
                                         class="text-sm font-bold px-5 py-1 rounded-full 
-                                    {{ $item->tipe == 'PATL' ? 'bg-red-500' : '' }} 
-                                    {{ $item->tipe == 'PATD' ? 'bg-green-500' : '' }}">
-                                        <span class="text-white">{{ $item->tipe }}</span>
+                                    {{ $item->ebook_id ? 'bg-indigo-600' : ($item->tipe == 'PATL' ? 'bg-red-500' : ($item->tipe == 'PATD' ? 'bg-green-500' : 'bg-blue-500')) }}">
+                                        <span class="text-white">{{ $item->ebook_id ? 'SOAL EBOOK' : $item->tipe }}</span>
                                     </p>
                                 </div>
                             </div>

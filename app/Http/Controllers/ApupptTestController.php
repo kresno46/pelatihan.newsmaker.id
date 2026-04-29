@@ -34,7 +34,14 @@ class ApupptTestController extends Controller
             return $test;
         });
 
-        return view('apuppt.post-test-user.index', compact('tests'));
+        $ebookTests = $tests->whereNotNull('ebook_id')->where('status', true)->values();
+        $postTests = $tests->whereNull('ebook_id')->where('status', true)->values();
+        $type = request()->get('type', 'posttest');
+        if (! in_array($type, ['posttest', 'ebook'], true)) {
+            $type = 'posttest';
+        }
+
+        return view('apuppt.post-test-user.index', compact('ebookTests', 'postTests', 'type'));
     }
 
     public function showQuiz($slug)

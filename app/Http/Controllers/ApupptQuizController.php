@@ -8,11 +8,21 @@ use Illuminate\Http\Request;
 
 class ApupptQuizController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $sessions = ApupptPostTestSession::withCount('questions')->latest()->paginate(10);
+        $jenis = $request->get('jenis', 'all');
+        if (! in_array($jenis, ['all', 'posttest', 'ebook'], true)) {
+            $jenis = 'all';
+        }
 
-        return view('apuppt.quiz.index', compact('sessions'));
+        $sessions = ApupptPostTestSession::withCount('questions')
+            ->when($jenis === 'posttest', fn ($q) => $q->whereNull('ebook_id'))
+            ->when($jenis === 'ebook', fn ($q) => $q->whereNotNull('ebook_id'))
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('apuppt.quiz.index', compact('sessions', 'jenis'));
     }
 
     public function create()
