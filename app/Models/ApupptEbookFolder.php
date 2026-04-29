@@ -16,6 +16,11 @@ class ApupptEbookFolder extends Model
         'folder_name',
         'deskripsi',
         'slug',
+        'is_active',
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
     ];
 
     protected static function boot()

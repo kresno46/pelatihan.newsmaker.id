@@ -166,6 +166,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 Route::post('/store', [ApupptEbookFolderController::class, 'store'])->name('ebookfolder.store');
                 Route::get('/{slug}/edit', [ApupptEbookFolderController::class, 'edit'])->name('ebookfolder.edit');
                 Route::put('/{id}', [ApupptEbookFolderController::class, 'update'])->name('ebookfolder.update');
+                Route::post('/{id}/toggle', [ApupptEbookFolderController::class, 'toggle'])->name('ebookfolder.toggle');
                 Route::delete('/{id}', [ApupptEbookFolderController::class, 'destroy'])->name('ebookfolder.destroy');
             });
 

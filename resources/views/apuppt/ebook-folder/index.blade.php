@@ -17,11 +17,22 @@
         @forelse ($folders as $folder)
             <div class="shadow-lg rounded-2xl bg-zinc-50 dark:bg-zinc-700 p-6 space-y-4 border">
                 <h1 class="text-xl font-semibold">{{ $folder->folder_name }}</h1>
+                <p class="text-sm">
+                    Status:
+                    <span class="font-semibold {{ $folder->is_active ? 'text-green-600' : 'text-red-600' }}">
+                        {{ $folder->is_active ? 'Aktif' : 'Nonaktif' }}
+                    </span>
+                </p>
                 <p class="text-sm">{{ $folder->deskripsi ?? 'Tidak ada deskripsi.' }}</p>
                 <p class="text-sm">{{ $folder->ebooks_count }} Ebook APUPPT</p>
                 <div class="flex items-stretch gap-2">
                     <a href="{{ route('apuppt.ebook.index', $folder->slug) }}" class="w-full px-4 py-1 bg-blue-500 text-white rounded-lg text-sm text-center">Lihat</a>
                     <a href="{{ route('apuppt.ebookfolder.edit', $folder->slug) }}" class="w-full px-4 py-1 bg-yellow-500 text-white rounded-lg text-sm text-center">Edit</a>
+                    <form action="{{ route('apuppt.ebookfolder.toggle', $folder->id) }}" method="POST" class="w-full">@csrf
+                        <button type="submit" class="w-full px-4 py-1 {{ $folder->is_active ? 'bg-orange-500' : 'bg-green-500' }} text-white rounded-lg text-sm text-center">
+                            {{ $folder->is_active ? 'Nonaktifkan' : 'Aktifkan' }}
+                        </button>
+                    </form>
                     <form action="{{ route('apuppt.ebookfolder.destroy', $folder->id) }}" method="POST" class="w-full">@csrf @method('DELETE')
                         <button type="submit" onclick="return confirm('Yakin hapus folder ini?')" class="w-full px-4 py-1 bg-red-500 text-white rounded-lg text-sm text-center">Hapus</button>
                     </form>

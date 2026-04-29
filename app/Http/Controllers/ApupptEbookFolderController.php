@@ -37,6 +37,7 @@ class ApupptEbookFolderController extends Controller
         ApupptEbookFolder::create([
             'folder_name' => $request->folder_name,
             'deskripsi' => $request->deskripsi,
+            'is_active' => true,
         ]);
 
         return redirect()->route('apuppt.ebookfolder.index')->with('success', 'Folder Ebook APUPPT berhasil dibuat.');
@@ -71,5 +72,14 @@ class ApupptEbookFolderController extends Controller
         $folder->delete();
 
         return redirect()->route('apuppt.ebookfolder.index')->with('success', 'Folder Ebook APUPPT berhasil dihapus.');
+    }
+
+    public function toggle($id)
+    {
+        $folder = ApupptEbookFolder::findOrFail($id);
+        $folder->is_active = ! $folder->is_active;
+        $folder->save();
+
+        return back()->with('success', 'Status folder berhasil diperbarui.');
     }
 }
