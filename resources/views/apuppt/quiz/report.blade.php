@@ -177,14 +177,11 @@
 
     {{-- Tombol Hapus Semua Tidak Lulus --}}
     <div class="mb-4">
-        <form action="{{ route('apuppt.posttest.report.deleteAllFailed', ['session' => $session->slug]) }}" method="POST"
-            onsubmit="return confirm('Yakin ingin menghapus semua hasil post test yang tidak lulus-');">
-            @csrf
-            @method('DELETE')
-            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded">
-                Hapus Semua Tidak Lulus
-            </button>
-        </form>
+        <button type="button"
+            onclick="showDeleteModal('{{ route('apuppt.posttest.report.deleteAllFailed', ['session' => $session->slug]) }}')"
+            class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded">
+            Hapus Semua Tidak Lulus
+        </button>
     </div>
 
     {{-- Tabel Hasil --}}
@@ -257,15 +254,11 @@
                                 </td>
                                 <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
                                     @if ($r->score < 60)
-                                        <form
-                                            action="{{ route('apuppt.posttest.report.delete', ['session' => $session->slug, 'result' => $r->id]) }}"
-                                            method="POST"
-                                            onsubmit="return confirm('Yakin ingin menghapus hasil post test user ini-');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit"
-                                                class="text-red-600 hover:text-red-800 font-semibold">Hapus</button>
-                                        </form>
+                                        <button type="button"
+                                            onclick="showDeleteModal('{{ route('apuppt.posttest.report.delete', ['session' => $session->slug, 'result' => $r->id]) }}')"
+                                            class="text-red-600 hover:text-red-800 font-semibold">
+                                            Hapus
+                                        </button>
                                     @endif
                                 </td>
                                 <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
@@ -283,10 +276,47 @@
             </div>
         @endif
     </div>
+
+    <div id="deleteModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center px-4">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md">
+            <div class="px-6 py-5">
+                <h3 class="text-xl font-bold text-red-500">
+                    <i class="fa-solid fa-triangle-exclamation mr-2"></i>Konfirmasi Hapus
+                </h3>
+            </div>
+            <div class="px-6 py-4 border-t border-b dark:border-gray-700">
+                <p class="text-gray-700 dark:text-gray-300">
+                    Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.
+                </p>
+            </div>
+            <div class="flex justify-end gap-3 px-6 py-4">
+                <button onclick="closeDeleteModal()"
+                    class="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded-md dark:bg-gray-600 dark:text-white">
+                    Batal
+                </button>
+                <form id="deleteForm" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md">
+                        Hapus
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('scripts')
     <script>
+        function showDeleteModal(action) {
+            document.getElementById('deleteForm').action = action;
+            document.getElementById('deleteModal').classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.add('hidden');
+        }
+
         @php
             $kantorCabang = [
                 'PT Solid Gold Berjangka' => [

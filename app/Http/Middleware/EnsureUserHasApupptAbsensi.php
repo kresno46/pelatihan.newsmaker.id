@@ -24,6 +24,11 @@ class EnsureUserHasApupptAbsensi
             return redirect()->route('apuppt.test.index')->with('error', 'Post test APUPPT ini saat ini tidak tersedia.');
         }
 
+        // Sesi yang terhubung ke ebook tidak wajib absensi.
+        if (! is_null($session->ebook_id)) {
+            return $next($request);
+        }
+
         if ($session->jadwalAbsensis->isEmpty()) {
             return redirect()->route('apuppt.test.index')->with('error', 'Post test APUPPT ini belum memiliki jadwal absensi.');
         }
