@@ -6,6 +6,7 @@
         <div class="flex items-center justify-between">
             <a href="{{ route('apuppt.ebook.index', $folder->slug) }}" class="bg-gray-200 px-4 py-2 rounded-lg text-sm">Kembali</a>
             <div class="flex gap-2">
+                <a href="{{ route('apuppt.ebook.quiz', [$folder->slug, $ebook->slug]) }}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm">Kelola Soal</a>
                 <a href="{{ route('apuppt.ebook.edit', [$folder->slug, $ebook->slug]) }}" class="bg-yellow-500 text-white px-4 py-2 rounded-lg text-sm">Edit</a>
                 <form action="{{ route('apuppt.ebook.destroy', [$folder->slug, $ebook->slug]) }}" method="POST" onsubmit="return confirm('Hapus ebook ini?')">@csrf @method('DELETE')<button class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm">Hapus</button></form>
             </div>
@@ -17,6 +18,11 @@
                 <div><label class="text-gray-700">Judul:</label><div class="bg-gray-200 w-full rounded-lg p-3">{{ $ebook->title }}</div></div>
                 <div><label class="text-gray-700">Deskripsi:</label><div class="bg-gray-200 w-full rounded-lg p-3">{{ $ebook->deskripsi }}</div></div>
                 <a href="{{ asset($ebook->file) }}" target="_blank" class="bg-blue-500 hover:bg-blue-600 py-3 w-full text-center text-white rounded-lg block"><i class="fa-solid fa-download me-2"></i> Download File</a>
+                @if ($ebook->postTestSession)
+                    <a href="{{ route('apuppt.posttest.edit', $ebook->postTestSession) }}" class="bg-indigo-600 hover:bg-indigo-700 py-3 w-full text-center text-white rounded-lg block">
+                        <i class="fa-solid fa-clipboard-question me-2"></i> Lihat Soal Ebook
+                    </a>
+                @endif
             </div>
         </div>
     </div>

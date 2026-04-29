@@ -175,6 +175,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 Route::get('/{folderSlug}/create', [ApupptEbookController::class, 'create'])->name('ebook.create');
                 Route::post('/{folderSlug}/store', [ApupptEbookController::class, 'store'])->name('ebook.store');
                 Route::get('/{folderSlug}/{ebookSlug}', [ApupptEbookController::class, 'show'])->name('ebook.show');
+                Route::get('/{folderSlug}/{ebookSlug}/quiz', [ApupptEbookController::class, 'manageQuiz'])->name('ebook.quiz');
                 Route::get('/{folderSlug}/{ebookSlug}/edit', [ApupptEbookController::class, 'edit'])->name('ebook.edit');
                 Route::put('/{folderSlug}/{ebookSlug}', [ApupptEbookController::class, 'update'])->name('ebook.update');
                 Route::delete('/{folderSlug}/{ebookSlug}', [ApupptEbookController::class, 'destroy'])->name('ebook.destroy');

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use App\Models\ApupptPostTestSession;
 
 class ApupptEbook extends Model
 {
@@ -55,5 +56,10 @@ class ApupptEbook extends Model
     public function folder()
     {
         return $this->belongsTo(ApupptEbookFolder::class, 'folder_id');
+    }
+
+    public function postTestSession()
+    {
+        return $this->hasOne(ApupptPostTestSession::class, 'ebook_id');
     }
 }

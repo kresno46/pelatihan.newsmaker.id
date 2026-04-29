@@ -18,6 +18,7 @@ class ApupptPostTestSession extends Model
         'duration',
         'tipe',
         'status',
+        'ebook_id',
     ];
 
     protected static function booted()
@@ -47,5 +48,10 @@ class ApupptPostTestSession extends Model
     public function jadwalAbsensis()
     {
         return $this->hasMany(ApupptJadwalAbsensi::class, 'apuppt_post_test_session_id');
+    }
+
+    public function ebook()
+    {
+        return $this->belongsTo(ApupptEbook::class, 'ebook_id');
     }
 }

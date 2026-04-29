@@ -18,6 +18,11 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             @forelse ($ebooks as $ebook)
+                @php
+                    $session = $ebook->postTestSession;
+                    $result = $session ? ($resultsBySession[$session->id] ?? null) : null;
+                    $isPassed = $result && $result->score >= 60;
+                @endphp
                 <div class="rounded-2xl border border-gray-200 bg-white overflow-hidden shadow-sm hover:shadow-md transition flex flex-col h-full">
                     <div class="aspect-[4/3] bg-gray-200">
                         @if (!empty($ebook->cover))
@@ -39,6 +44,14 @@
                                 </a>
                             @else
                                 <span class="text-xs text-gray-500">File belum tersedia</span>
+                            @endif
+
+                            @if ($session && $session->status)
+                                <a href="{{ $result ? route('apuppt.test.result', $result->id) : route('apuppt.test.show', $session->slug) }}"
+                                    class="inline-flex w-full mt-2 items-center justify-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg {{ $isPassed ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-indigo-600 hover:bg-indigo-700' }} text-white transition">
+                                    <i class="fa-solid {{ $result ? 'fa-eye' : 'fa-clipboard-question' }}"></i>
+                                    {{ $result ? 'Lihat Hasil Soal' : 'Kerjakan Soal' }}
+                                </a>
                             @endif
                         </div>
                     </div>

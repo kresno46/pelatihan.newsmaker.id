@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ApupptEbook;
 use App\Models\ApupptEbookFolder;
+use App\Models\ApupptPostTestSession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Validation\Rule;
@@ -82,7 +83,7 @@ class ApupptEbookController extends Controller
     public function show($folderSlug, $ebookSlug)
     {
         $folder = ApupptEbookFolder::where('slug', $folderSlug)->firstOrFail();
-        $ebook = ApupptEbook::where('folder_id', $folder->id)->where('slug', $ebookSlug)->firstOrFail();
+        $ebook = ApupptEbook::with('postTestSession')->where('folder_id', $folder->id)->where('slug', $ebookSlug)->firstOrFail();
 
         return view('apuppt.ebook.show', compact('ebook', 'folder'));
     }
@@ -157,5 +158,25 @@ class ApupptEbookController extends Controller
         $ebook->delete();
 
         return redirect()->route('apuppt.ebook.index', $folderSlug)->with('success', 'Ebook APUPPT berhasil dihapus!');
+    }
+
+    public function manageQuiz($folderSlug, $ebookSlug)
+    {
+        $folder = ApupptEbookFolder::where('slug', $folderSlug)->firstOrFail();
+        $ebook = ApupptEbook::where('folder_id', $folder->id)->where('slug', $ebookSlug)->firstOrFail();
+
+        $session = ApupptPostTestSession::firstOrCreate(
+            ['ebook_id' => $ebook->id],
+            [
+                'title' => 'Soal Ebook APUPPT - '.$ebook->title,
+                'duration' => 30,
+                'status' => true,
+                'tipe' => 'APUPPT',
+            ]
+        );
+
+        return redirect()
+            ->route('apuppt.posttest.edit', $session)
+            ->with('success', 'Silakan kelola soal untuk ebook ini.');
     }
 }
