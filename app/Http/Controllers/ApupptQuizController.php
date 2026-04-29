@@ -10,9 +10,9 @@ class ApupptQuizController extends Controller
 {
     public function index(Request $request)
     {
-        $jenis = $request->get('jenis', 'all');
-        if (! in_array($jenis, ['all', 'posttest', 'ebook'], true)) {
-            $jenis = 'all';
+        $jenis = $request->get('jenis', 'posttest');
+        if (! in_array($jenis, ['posttest', 'ebook'], true)) {
+            $jenis = 'posttest';
         }
 
         $sessions = ApupptPostTestSession::withCount('questions')

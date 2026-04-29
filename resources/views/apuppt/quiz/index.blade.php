@@ -39,11 +39,7 @@
     </header>
 
     <div class="mb-4 bg-white dark:bg-gray-800 p-2 rounded-lg border border-gray-100 dark:border-gray-700">
-        <div class="grid grid-cols-3 gap-2">
-            <a href="{{ route('apuppt.posttest.index', ['jenis' => 'all']) }}"
-                class="text-center py-2 px-3 text-sm font-semibold rounded {{ $jenis === 'all' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-200' }}">
-                Semua
-            </a>
+        <div class="grid grid-cols-2 gap-2">
             <a href="{{ route('apuppt.posttest.index', ['jenis' => 'posttest']) }}"
                 class="text-center py-2 px-3 text-sm font-semibold rounded {{ $jenis === 'posttest' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-200' }}">
                 Soal Post Test
@@ -81,21 +77,24 @@
                             <div class="w-full grid grid-cols-3 gap-2">
                                 {{-- Laporan / Show --}}
                                 <a href="{{ route('apuppt.posttest.report', $item->slug) }}"
+                                    title="Laporan"
                                     class="bg-green-500 px-3 py-2 text-xs sm:text-sm hover:bg-green-600 text-white rounded transition-all text-center">
-                                    {{ __('Laporan') }}
+                                    <i class="fa-solid fa-chart-line"></i>
                                 </a>
 
                                 {{-- Edit --}}
                                 <a href="{{ route('apuppt.posttest.edit', $item->slug) }}"
+                                    title="Edit"
                                     class="bg-yellow-500 px-3 py-2 text-xs sm:text-sm hover:bg-yellow-600 text-white rounded transition-all text-center">
-                                    {{ __('Edit') }}
+                                    <i class="fa-solid fa-pen-to-square"></i>
                                 </a>
 
                                 {{-- Hapus (DELETE) --}}
                                 <button type="button"
                                     onclick="showDeleteModal('{{ route('apuppt.posttest.destroy', $item->slug) }}')"
+                                    title="Hapus"
                                     class="w-full bg-red-500 px-3 py-2 text-xs sm:text-sm hover:bg-red-600 text-white rounded transition-all text-center">
-                                    {{ __('Hapus') }}
+                                    <i class="fa-solid fa-trash-can"></i>
                                 </button>
                             </div>
 

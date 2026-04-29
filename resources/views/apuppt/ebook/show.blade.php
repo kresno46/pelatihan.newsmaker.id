@@ -6,10 +6,10 @@
         <div class="flex items-center justify-between">
             <a href="{{ route('apuppt.ebook.index', $folder->slug) }}" class="bg-gray-200 px-4 py-2 rounded-lg text-sm">Kembali</a>
             <div class="flex gap-2">
-                <a href="{{ route('apuppt.ebook.quiz', [$folder->slug, $ebook->slug]) }}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm">Kelola Soal</a>
-                <a href="{{ route('apuppt.ebook.edit', [$folder->slug, $ebook->slug]) }}" class="bg-yellow-500 text-white px-4 py-2 rounded-lg text-sm">Edit</a>
-                <button type="button" class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm"
-                    onclick="showDeleteModal('{{ route('apuppt.ebook.destroy', [$folder->slug, $ebook->slug]) }}')">Hapus</button>
+                <a href="{{ route('apuppt.ebook.quiz', [$folder->slug, $ebook->slug]) }}" title="Kelola Soal" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm"><i class="fa-solid fa-clipboard-question"></i></a>
+                <a href="{{ route('apuppt.ebook.edit', [$folder->slug, $ebook->slug]) }}" title="Edit" class="bg-yellow-500 text-white px-4 py-2 rounded-lg text-sm"><i class="fa-solid fa-pen-to-square"></i></a>
+                <button type="button" title="Hapus" class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm"
+                    onclick="showDeleteModal('{{ route('apuppt.ebook.destroy', [$folder->slug, $ebook->slug]) }}')"><i class="fa-solid fa-trash-can"></i></button>
             </div>
         </div>
 

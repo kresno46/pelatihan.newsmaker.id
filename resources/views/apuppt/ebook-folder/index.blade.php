@@ -26,15 +26,18 @@
                 <p class="text-sm">{{ $folder->deskripsi ?? 'Tidak ada deskripsi.' }}</p>
                 <p class="text-sm">{{ $folder->ebooks_count }} Ebook APUPPT</p>
                 <div class="flex items-stretch gap-2">
-                    <a href="{{ route('apuppt.ebook.index', $folder->slug) }}" class="w-full px-4 py-1 bg-blue-500 text-white rounded-lg text-sm text-center">Lihat</a>
-                    <a href="{{ route('apuppt.ebookfolder.edit', $folder->slug) }}" class="w-full px-4 py-1 bg-yellow-500 text-white rounded-lg text-sm text-center">Edit</a>
+                    <a href="{{ route('apuppt.ebook.index', $folder->slug) }}" title="Lihat"
+                        class="w-full px-4 py-1 bg-blue-500 text-white rounded-lg text-sm text-center"><i class="fa-solid fa-eye"></i></a>
+                    <a href="{{ route('apuppt.ebookfolder.edit', $folder->slug) }}" title="Edit"
+                        class="w-full px-4 py-1 bg-yellow-500 text-white rounded-lg text-sm text-center"><i class="fa-solid fa-pen-to-square"></i></a>
                     <form action="{{ route('apuppt.ebookfolder.toggle', $folder->id) }}" method="POST" class="w-full">@csrf
-                        <button type="submit" class="w-full px-4 py-1 {{ $folder->is_active ? 'bg-orange-500' : 'bg-green-500' }} text-white rounded-lg text-sm text-center">
-                            {{ $folder->is_active ? 'Nonaktifkan' : 'Aktifkan' }}
+                        <button type="submit" title="{{ $folder->is_active ? 'Nonaktifkan' : 'Aktifkan' }}"
+                            class="w-full px-4 py-1 {{ $folder->is_active ? 'bg-orange-500' : 'bg-green-500' }} text-white rounded-lg text-sm text-center">
+                            <i class="fa-solid {{ $folder->is_active ? 'fa-toggle-on' : 'fa-toggle-off' }}"></i>
                         </button>
                     </form>
-                    <button type="button" class="w-full px-4 py-1 bg-red-500 text-white rounded-lg text-sm text-center"
-                        onclick="showDeleteModal('{{ route('apuppt.ebookfolder.destroy', $folder->id) }}')">Hapus</button>
+                    <button type="button" title="Hapus" class="w-full px-4 py-1 bg-red-500 text-white rounded-lg text-sm text-center"
+                        onclick="showDeleteModal('{{ route('apuppt.ebookfolder.destroy', $folder->id) }}')"><i class="fa-solid fa-trash-can"></i></button>
                 </div>
             </div>
         @empty
