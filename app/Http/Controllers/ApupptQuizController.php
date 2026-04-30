@@ -4,18 +4,23 @@ namespace App\Http\Controllers;
 
 use App\Models\ApupptPostTestResult;
 use App\Models\ApupptPostTestSession;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ApupptQuizController extends Controller
 {
     public function index(Request $request)
     {
+        $authUser = auth()->user();
+        $forcedRole = $authUser && $authUser->isApupptAdmin() ? $authUser->apuppt_pt_scope : null;
         $jenis = $request->get('jenis', 'posttest');
         if (! in_array($jenis, ['posttest', 'ebook'], true)) {
             $jenis = 'posttest';
         }
 
         $sessions = ApupptPostTestSession::withCount('questions')
+            ->when($forcedRole, fn ($q) => $q->where('apuppt_pt_scope', $forcedRole))
             ->when($jenis === 'posttest', fn ($q) => $q->whereNull('ebook_id'))
             ->when($jenis === 'ebook', fn ($q) => $q->whereNotNull('ebook_id'))
             ->latest()
@@ -27,7 +32,11 @@ class ApupptQuizController extends Controller
 
     public function create()
     {
-        return view('apuppt.quiz.create');
+        $authUser = auth()->user();
+        $forcedRole = $authUser && $authUser->isApupptAdmin() ? $authUser->apuppt_pt_scope : null;
+        $ptOptions = User::APUPPT_PT_ROLES;
+
+        return view('apuppt.quiz.create', compact('forcedRole', 'ptOptions'));
     }
 
     public function store(Request $request)
@@ -37,7 +46,14 @@ class ApupptQuizController extends Controller
             'duration' => 'required|integer|min:1|max:1440',
             'status' => 'required|in:1,0',
             'tipe' => 'required|in:PATD,PATL,APUPPT',
+            'apuppt_pt_scope' => ['nullable', Rule::in(User::APUPPT_PT_ROLES)],
         ]);
+        $authUser = auth()->user();
+        $forcedRole = $authUser && $authUser->isApupptAdmin() ? $authUser->apuppt_pt_scope : null;
+        $data['apuppt_pt_scope'] = $forcedRole ?: ($data['apuppt_pt_scope'] ?? null);
+        if (! $data['apuppt_pt_scope']) {
+            return back()->withErrors(['apuppt_pt_scope' => 'PT scope wajib dipilih.'])->withInput();
+        }
 
         $session = ApupptPostTestSession::create($data);
 
@@ -48,9 +64,15 @@ class ApupptQuizController extends Controller
 
     public function edit(ApupptPostTestSession $session)
     {
+        $authUser = auth()->user();
+        $forcedRole = $authUser && $authUser->isApupptAdmin() ? $authUser->apuppt_pt_scope : null;
+        if ($forcedRole && $session->apuppt_pt_scope !== $forcedRole) {
+            abort(403);
+        }
         $session->load(['questions' => fn ($q) => $q->orderBy('created_at')]);
+        $ptOptions = User::APUPPT_PT_ROLES;
 
-        return view('apuppt.quiz.edit', compact('session'));
+        return view('apuppt.quiz.edit', compact('session', 'forcedRole', 'ptOptions'));
     }
 
     public function update(Request $request, ApupptPostTestSession $session)
@@ -60,7 +82,17 @@ class ApupptQuizController extends Controller
             'duration' => 'required|integer|min:1|max:1440',
             'status' => 'required|in:1,0',
             'tipe' => 'required|in:PATD,PATL,APUPPT',
+            'apuppt_pt_scope' => ['nullable', Rule::in(User::APUPPT_PT_ROLES)],
         ]);
+        $authUser = auth()->user();
+        $forcedRole = $authUser && $authUser->isApupptAdmin() ? $authUser->apuppt_pt_scope : null;
+        if ($forcedRole && $session->apuppt_pt_scope !== $forcedRole) {
+            abort(403);
+        }
+        $data['apuppt_pt_scope'] = $forcedRole ?: ($data['apuppt_pt_scope'] ?? $session->apuppt_pt_scope);
+        if (! $data['apuppt_pt_scope']) {
+            return back()->withErrors(['apuppt_pt_scope' => 'PT scope wajib dipilih.'])->withInput();
+        }
 
         $session->update($data);
 
@@ -69,6 +101,11 @@ class ApupptQuizController extends Controller
 
     public function destroy(ApupptPostTestSession $session)
     {
+        $authUser = auth()->user();
+        $forcedRole = $authUser && $authUser->isApupptAdmin() ? $authUser->apuppt_pt_scope : null;
+        if ($forcedRole && $session->apuppt_pt_scope !== $forcedRole) {
+            abort(403);
+        }
         $session->delete();
 
         return redirect()->route('apuppt.posttest.index')->with('success', 'Sesi berhasil dihapus.');
@@ -76,6 +113,15 @@ class ApupptQuizController extends Controller
 
     public function report(Request $request, ApupptPostTestSession $session)
     {
+        $authUser = auth()->user();
+        $forcedRole = $authUser && $authUser->isApupptAdmin() ? $authUser->apuppt_pt_scope : null;
+        if ($authUser && $authUser->isApupptAdmin() && ! $forcedRole) {
+            abort(403, 'PT scope untuk Admin APUPPT belum diatur.');
+        }
+        if ($forcedRole && $session->apuppt_pt_scope !== $forcedRole) {
+            abort(403);
+        }
+
         $roleToCompany = [
             'Trainer (RFB)' => 'PT Rifan Financindo Berjangka',
             'Trainer (SGB)' => 'PT Solid Gold Berjangka',
@@ -91,11 +137,12 @@ class ApupptQuizController extends Controller
         $cabang = trim((string) $request->input('cabang', ''));
         $cabang = str_replace(["\u{2013}", "\u{2014}", "\u{2212}"], '-', $cabang);
 
-        $roleFilter = array_search($company, $roleToCompany, true) ?: null;
+        $roleFilter = $forcedRole ?: (array_search($company, $roleToCompany, true) ?: null);
 
         $results = $session->results()
             ->with(['user:id,name,email,role,cabang,jabatan'])
             ->leftJoin('users', 'apuppt_post_test_results.user_id', '=', 'users.id')
+            ->when($forcedRole, fn ($qr) => $qr->where('users.role', $forcedRole))
             ->when($q !== '', function ($qr) use ($q) {
                 $qr->where(function ($w) use ($q) {
                     $w->where('users.name', 'like', "%{$q}%")
@@ -118,6 +165,7 @@ class ApupptQuizController extends Controller
 
         $aggregates = $session->results()
             ->leftJoin('users', 'apuppt_post_test_results.user_id', '=', 'users.id')
+            ->when($forcedRole, fn ($qr) => $qr->where('users.role', $forcedRole))
             ->when($roleFilter, fn ($qr) => $qr->where('users.role', $roleFilter))
             ->when($cabang !== '', fn ($qr) => $qr->where('users.cabang', $cabang))
             ->selectRaw('COUNT(*) AS total, AVG(apuppt_post_test_results.score) AS avg_score, MAX(apuppt_post_test_results.score) AS max_score, MIN(apuppt_post_test_results.score) AS min_score')
@@ -125,6 +173,7 @@ class ApupptQuizController extends Controller
 
         $rawRoleCounts = $session->results()
             ->leftJoin('users', 'users.id', '=', 'apuppt_post_test_results.user_id')
+            ->when($forcedRole, fn ($qr) => $qr->where('users.role', $forcedRole))
             ->when($q !== '', function ($qr) use ($q) {
                 $qr->where(function ($w) use ($q) {
                     $w->where('users.name', 'like', "%{$q}%")
@@ -135,7 +184,7 @@ class ApupptQuizController extends Controller
             ->groupBy('role_key')
             ->pluck('total', 'role_key');
 
-        $companies = array_values($roleToCompany);
+        $companies = $forcedRole ? [$roleToCompany[$forcedRole] ?? $forcedRole] : array_values($roleToCompany);
         $byCompany = collect($roleToCompany)->mapWithKeys(function ($companyName, $roleKey) use ($rawRoleCounts) {
             return [$companyName => (int) ($rawRoleCounts[$roleKey] ?? 0)];
         });
@@ -143,6 +192,7 @@ class ApupptQuizController extends Controller
 
         $branches = $session->results()
             ->leftJoin('users', 'apuppt_post_test_results.user_id', '=', 'users.id')
+            ->when($forcedRole, fn ($qr) => $qr->where('users.role', $forcedRole))
             ->when($roleFilter, fn ($qr) => $qr->where('users.role', $roleFilter))
             ->when($cabang !== '', fn ($qr) => $qr->where('users.cabang', $cabang))
             ->whereNotNull('users.cabang')
@@ -171,8 +221,16 @@ class ApupptQuizController extends Controller
 
     public function deleteResult(ApupptPostTestSession $session, ApupptPostTestResult $result)
     {
+        $authUser = auth()->user();
+        $forcedRole = $authUser && $authUser->isApupptAdmin() ? $authUser->apuppt_pt_scope : null;
+        if ($forcedRole && $session->apuppt_pt_scope !== $forcedRole) {
+            abort(403);
+        }
         if ($result->session_id !== $session->id) {
             abort(404);
+        }
+        if ($forcedRole && optional($result->user)->role !== $forcedRole) {
+            abort(403);
         }
 
         if ($result->score >= 60) {
@@ -186,13 +244,31 @@ class ApupptQuizController extends Controller
 
     public function deleteAllFailed(ApupptPostTestSession $session)
     {
-        $deletedCount = $session->results()->where('score', '<', 60)->delete();
+        $authUser = auth()->user();
+        $forcedRole = $authUser && $authUser->isApupptAdmin() ? $authUser->apuppt_pt_scope : null;
+        if ($forcedRole && $session->apuppt_pt_scope !== $forcedRole) {
+            abort(403);
+        }
+        $query = $session->results()->where('score', '<', 60);
+        if ($forcedRole) {
+            $query->whereHas('user', fn ($q) => $q->where('role', $forcedRole));
+        }
+        $deletedCount = $query->delete();
 
         return back()->with('success', "Berhasil menghapus {$deletedCount} hasil post test yang tidak lulus.");
     }
 
     public function reportExport(Request $request, ApupptPostTestSession $session)
     {
+        $authUser = auth()->user();
+        $forcedRole = $authUser && $authUser->isApupptAdmin() ? $authUser->apuppt_pt_scope : null;
+        if ($authUser && $authUser->isApupptAdmin() && ! $forcedRole) {
+            abort(403, 'PT scope untuk Admin APUPPT belum diatur.');
+        }
+        if ($forcedRole && $session->apuppt_pt_scope !== $forcedRole) {
+            abort(403);
+        }
+
         $filename = 'apuppt-posttest-report-' . $session->slug . '-' . now()->format('Ymd_His') . '.csv';
 
         $q = trim($request->input('q', ''));
@@ -201,17 +277,18 @@ class ApupptQuizController extends Controller
         $cabang = trim((string) $request->input('cabang', ''));
         $cabang = str_replace(["\u{2013}", "\u{2014}", "\u{2212}"], '-', $cabang);
 
-        $roleFilter = array_search($company, [
+        $roleFilter = $forcedRole ?: (array_search($company, [
             'Trainer (RFB)' => 'PT Rifan Financindo Berjangka',
             'Trainer (SGB)' => 'PT Solid Gold Berjangka',
             'Trainer (KPF)' => 'PT Kontak Perkasa Futures',
             'Trainer (BPF)' => 'PT Best Profit Futures',
             'Trainer (EWF)' => 'PT Equity World Futures',
-        ], true) ?: null;
+        ], true) ?: null);
 
         $rows = $session->results()
             ->with(['user:id,name,email,role,cabang,jabatan'])
             ->leftJoin('users', 'apuppt_post_test_results.user_id', '=', 'users.id')
+            ->when($forcedRole, fn ($qr) => $qr->where('users.role', $forcedRole))
             ->when($q !== '', function ($qr) use ($q) {
                 $qr->where(function ($w) use ($q) {
                     $w->where('users.name', 'like', "%{$q}%")

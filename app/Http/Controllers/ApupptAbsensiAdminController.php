@@ -16,10 +16,23 @@ class ApupptAbsensiAdminController extends Controller
     public function indexAdmin($idJadwal, Request $request)
     {
         $jadwal = ApupptJadwalAbsensi::findOrFail($idJadwal);
+        $user = auth()->user();
+        $forcedRole = $user && $user->isApupptAdmin() ? $user->apuppt_pt_scope : null;
+        if ($user && $user->isApupptAdmin() && ! $forcedRole) {
+            abort(403, 'PT scope untuk Admin APUPPT belum diatur.');
+        }
+        if ($forcedRole && optional($jadwal->postTestSession)->apuppt_pt_scope !== $forcedRole) {
+            abort(403);
+        }
 
-        $rolesPT = ['Trainer (RFB)', 'Trainer (SGB)', 'Trainer (KPF)', 'Trainer (BPF)', 'Trainer (EWF)'];
+        $rolesPT = $forcedRole
+            ? [$forcedRole]
+            : ['Trainer (RFB)', 'Trainer (SGB)', 'Trainer (KPF)', 'Trainer (BPF)', 'Trainer (EWF)'];
 
         $query = ApupptAbsensi::with('user')->where('jadwal_id', $idJadwal);
+        if ($forcedRole) {
+            $query->whereHas('user', fn ($q) => $q->where('role', $forcedRole));
+        }
 
         if ($request->filled('q')) {
             $query->whereHas('user', function ($q) use ($request) {
@@ -70,14 +83,22 @@ class ApupptAbsensiAdminController extends Controller
         $perPage = $request->get('per_page', 20);
         $absensiList = $query->paginate($perPage);
 
-        $aggregates = ApupptAbsensi::where('jadwal_id', $idJadwal)->selectRaw('COUNT(*) as total')->first();
+        $aggregates = ApupptAbsensi::where('jadwal_id', $idJadwal)
+            ->when($forcedRole, fn ($q) => $q->whereHas('user', fn ($u) => $u->where('role', $forcedRole)))
+            ->selectRaw('COUNT(*) as total')
+            ->first();
 
         return view('apuppt.AbsensiAdmin.index', compact('jadwal', 'rolesPT', 'absensiList', 'aggregates'));
     }
 
     public function delete($idJadwal, $idAbsensi)
     {
+        $user = auth()->user();
+        $forcedRole = $user && $user->isApupptAdmin() ? $user->apuppt_pt_scope : null;
         $absensi = ApupptAbsensi::findOrFail($idAbsensi);
+        if ($forcedRole && optional($absensi->user)->role !== $forcedRole) {
+            abort(403);
+        }
         $absensi->delete();
 
         return redirect()->back()->with('Alert', ($absensi->user->nama ?? $absensi->user->name) . ' berhasil dihapus!');
@@ -85,7 +106,11 @@ class ApupptAbsensiAdminController extends Controller
 
     public function downloadExcel($idJadwal)
     {
-        $absensiList = ApupptAbsensi::with('user')->where('jadwal_id', $idJadwal)->get();
+        $user = auth()->user();
+        $forcedRole = $user && $user->isApupptAdmin() ? $user->apuppt_pt_scope : null;
+        $absensiList = ApupptAbsensi::with('user')->where('jadwal_id', $idJadwal)
+            ->when($forcedRole, fn ($q) => $q->whereHas('user', fn ($u) => $u->where('role', $forcedRole)))
+            ->get();
         $jadwal = ApupptJadwalAbsensi::findOrFail($idJadwal);
 
         $judul = Str::slug($jadwal->title, '_');
@@ -98,7 +123,11 @@ class ApupptAbsensiAdminController extends Controller
     public function downloadPdf($idJadwal)
     {
         $jadwal = ApupptJadwalAbsensi::findOrFail($idJadwal);
-        $absensiList = ApupptAbsensi::with('user')->where('jadwal_id', $idJadwal)->get();
+        $user = auth()->user();
+        $forcedRole = $user && $user->isApupptAdmin() ? $user->apuppt_pt_scope : null;
+        $absensiList = ApupptAbsensi::with('user')->where('jadwal_id', $idJadwal)
+            ->when($forcedRole, fn ($q) => $q->whereHas('user', fn ($u) => $u->where('role', $forcedRole)))
+            ->get();
 
         $judul = Str::slug($jadwal->title, '_');
         $tanggal = Carbon::now()->format('Ymd_His');
@@ -112,8 +141,13 @@ class ApupptAbsensiAdminController extends Controller
     public function downloadExcelPerCabang($idJadwal, Request $request)
     {
         $jadwal = ApupptJadwalAbsensi::findOrFail($idJadwal);
+        $user = auth()->user();
+        $forcedRole = $user && $user->isApupptAdmin() ? $user->apuppt_pt_scope : null;
 
         $query = ApupptAbsensi::with('user')->where('jadwal_id', $idJadwal);
+        if ($forcedRole) {
+            $query->whereHas('user', fn ($q) => $q->where('role', $forcedRole));
+        }
 
         if ($request->filled('q')) {
             $query->whereHas('user', function ($q) use ($request) {
@@ -146,8 +180,13 @@ class ApupptAbsensiAdminController extends Controller
     public function downloadPdfPerCabang($idJadwal, Request $request)
     {
         $jadwal = ApupptJadwalAbsensi::findOrFail($idJadwal);
+        $user = auth()->user();
+        $forcedRole = $user && $user->isApupptAdmin() ? $user->apuppt_pt_scope : null;
 
         $query = ApupptAbsensi::with('user')->where('jadwal_id', $idJadwal);
+        if ($forcedRole) {
+            $query->whereHas('user', fn ($q) => $q->where('role', $forcedRole));
+        }
 
         if ($request->filled('q')) {
             $query->whereHas('user', function ($q) use ($request) {

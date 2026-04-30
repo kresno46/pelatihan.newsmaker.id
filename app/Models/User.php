@@ -11,6 +11,14 @@ class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, Notifiable;
 
+    public const APUPPT_PT_ROLES = [
+        'Trainer (RFB)',
+        'Trainer (SGB)',
+        'Trainer (KPF)',
+        'Trainer (BPF)',
+        'Trainer (EWF)',
+    ];
+
     /**
      * Atribut yang dapat diisi secara massal.
      *
@@ -27,6 +35,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'jabatan',
         'password',
         'role',
+        'apuppt_pt_scope',
         'cabang',
         'email_verified_at',
         'last_login_at',
@@ -113,5 +122,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function absensis()
     {
         return $this->hasMany(Absensi::class);
+    }
+
+    public function isApupptAdmin(): bool
+    {
+        return $this->role === 'Admin APUPPT';
     }
 }

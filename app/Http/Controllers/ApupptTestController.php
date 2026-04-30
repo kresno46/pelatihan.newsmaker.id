@@ -13,8 +13,12 @@ class ApupptTestController extends Controller
     public function index()
     {
         $userId = auth()->id();
+        $userRole = auth()->user()->role;
 
-        $tests = ApupptPostTestSession::where('tipe', 'APUPPT')->get()->map(function ($test) use ($userId) {
+        $tests = ApupptPostTestSession::where('tipe', 'APUPPT')
+            ->where('apuppt_pt_scope', $userRole)
+            ->get()
+            ->map(function ($test) use ($userId) {
             $result = ApupptPostTestResult::where('user_id', $userId)
                 ->where('session_id', $test->id)
                 ->latest()
@@ -47,6 +51,9 @@ class ApupptTestController extends Controller
     public function showQuiz($slug)
     {
         $session = ApupptPostTestSession::where('slug', $slug)->firstOrFail();
+        if ($session->apuppt_pt_scope !== auth()->user()->role) {
+            abort(403);
+        }
 
         if ($session->tipe !== 'APUPPT') {
             return redirect()->route('apuppt.test.index')->with('error', 'Tes ini bukan kategori APUPPT.');
@@ -72,6 +79,9 @@ class ApupptTestController extends Controller
     public function showQuestion($slug, $number)
     {
         $session = ApupptPostTestSession::where('slug', $slug)->with('questions')->firstOrFail();
+        if ($session->apuppt_pt_scope !== auth()->user()->role) {
+            abort(403);
+        }
 
         if ($session->tipe !== 'APUPPT') {
             return redirect()->route('apuppt.test.index')->with('error', 'Tes ini bukan kategori APUPPT.');
@@ -136,6 +146,9 @@ class ApupptTestController extends Controller
     public function submitQuiz(Request $request, $slug)
     {
         $session = ApupptPostTestSession::where('slug', $slug)->with('questions')->firstOrFail();
+        if ($session->apuppt_pt_scope !== auth()->user()->role) {
+            abort(403);
+        }
 
         if ($session->tipe !== 'APUPPT') {
             return redirect()->route('apuppt.test.index')->with('error', 'Tes ini bukan kategori APUPPT.');

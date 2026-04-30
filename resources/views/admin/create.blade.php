@@ -30,6 +30,17 @@
                 </select>
             </div>
 
+            <div class="mb-4 {{ old('role') === 'Admin APUPPT' ? '' : 'hidden' }}" id="ptScopeWrapper">
+                <label for="apuppt_pt_scope" class="block text-sm font-medium text-gray-700 dark:text-white">PT Scope APUPPT</label>
+                <select name="apuppt_pt_scope" id="apuppt_pt_scope"
+                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    <option value="">Pilih PT</option>
+                    @foreach ($ptOptions as $pt)
+                        <option value="{{ $pt }}" {{ old('apuppt_pt_scope') === $pt ? 'selected' : '' }}>{{ $pt }}</option>
+                    @endforeach
+                </select>
+            </div>
+
             <div class="mb-4">
                 <label for="password" class="block text-sm font-medium text-gray-700 dark:text-white">Password</label>
                 <input type="password" name="password" id="password" required
@@ -123,4 +134,22 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const roleSelect = document.getElementById('role');
+        const ptScopeWrapper = document.getElementById('ptScopeWrapper');
+        const ptScopeSelect = document.getElementById('apuppt_pt_scope');
+
+        function togglePtScope() {
+            const isApupptAdmin = roleSelect.value === 'Admin APUPPT';
+            ptScopeWrapper.classList.toggle('hidden', !isApupptAdmin);
+            ptScopeSelect.required = isApupptAdmin;
+            if (!isApupptAdmin) {
+                ptScopeSelect.value = '';
+            }
+        }
+
+        roleSelect.addEventListener('change', togglePtScope);
+        togglePtScope();
+    </script>
 @endsection

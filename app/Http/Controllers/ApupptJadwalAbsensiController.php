@@ -8,26 +8,43 @@ use Illuminate\Http\Request;
 
 class ApupptJadwalAbsensiController extends Controller
 {
+    private function forcedRole(): ?string
+    {
+        $user = auth()->user();
+
+        return $user && $user->isApupptAdmin() ? $user->apuppt_pt_scope : null;
+    }
+
+    private function scopedSessionsQuery()
+    {
+        $forcedRole = $this->forcedRole();
+
+        return ApupptPostTestSession::query()
+            ->when($forcedRole, fn ($q) => $q->where('apuppt_pt_scope', $forcedRole));
+    }
+
     public function index(Request $request)
     {
         $search = $request->get('search');
+        $forcedRole = $this->forcedRole();
         $jadwals = ApupptJadwalAbsensi::with(['postTestSession' => function ($query) {
             $query->withCount('questions');
         }])
+            ->when($forcedRole, fn ($q) => $q->whereHas('postTestSession', fn ($s) => $s->where('apuppt_pt_scope', $forcedRole)))
             ->when($search, function ($query) use ($search) {
                 $query->where('title', 'like', '%' . $search . '%');
             })
             ->orderBy('tanggal', 'desc')
             ->get();
 
-        $postTestSessions = ApupptPostTestSession::all();
+        $postTestSessions = $this->scopedSessionsQuery()->get();
 
         return view('apuppt.jadwal.index', compact('jadwals', 'postTestSessions', 'search'));
     }
 
     public function create()
     {
-        $postTestSessions = ApupptPostTestSession::all();
+        $postTestSessions = $this->scopedSessionsQuery()->get();
 
         return view('apuppt.jadwal.create', compact('postTestSessions'));
     }
@@ -39,6 +56,10 @@ class ApupptJadwalAbsensiController extends Controller
             'tanggal' => 'required|date',
             'post_test_session_id' => 'required|exists:apuppt_post_test_sessions,id',
         ]);
+        $session = $this->scopedSessionsQuery()->where('id', $request->post_test_session_id)->first();
+        if (! $session) {
+            abort(403);
+        }
 
         ApupptJadwalAbsensi::create([
             'title' => $request->title,
@@ -52,21 +73,29 @@ class ApupptJadwalAbsensiController extends Controller
 
     public function edit($id)
     {
-        $jadwal = ApupptJadwalAbsensi::findOrFail($id);
-        $postTestSessions = ApupptPostTestSession::all();
+        $forcedRole = $this->forcedRole();
+        $jadwal = ApupptJadwalAbsensi::when($forcedRole, fn ($q) => $q->whereHas('postTestSession', fn ($s) => $s->where('apuppt_pt_scope', $forcedRole)))
+            ->findOrFail($id);
+        $postTestSessions = $this->scopedSessionsQuery()->get();
 
         return view('apuppt.jadwal.edit', compact('jadwal', 'postTestSessions'));
     }
 
     public function update(Request $request, $id)
     {
-        $jadwal = ApupptJadwalAbsensi::findOrFail($id);
+        $forcedRole = $this->forcedRole();
+        $jadwal = ApupptJadwalAbsensi::when($forcedRole, fn ($q) => $q->whereHas('postTestSession', fn ($s) => $s->where('apuppt_pt_scope', $forcedRole)))
+            ->findOrFail($id);
 
         $request->validate([
             'title' => 'required|string|max:100',
             'tanggal' => 'required|date',
             'post_test_session_id' => 'required|exists:apuppt_post_test_sessions,id',
         ]);
+        $session = $this->scopedSessionsQuery()->where('id', $request->post_test_session_id)->first();
+        if (! $session) {
+            abort(403);
+        }
 
         $jadwal->update([
             'title' => $request->title,
@@ -79,7 +108,9 @@ class ApupptJadwalAbsensiController extends Controller
 
     public function destroy($id)
     {
-        $jadwal = ApupptJadwalAbsensi::findOrFail($id);
+        $forcedRole = $this->forcedRole();
+        $jadwal = ApupptJadwalAbsensi::when($forcedRole, fn ($q) => $q->whereHas('postTestSession', fn ($s) => $s->where('apuppt_pt_scope', $forcedRole)))
+            ->findOrFail($id);
         $jadwal->delete();
 
         return back()->with('Alert', 'Jadwal ' . $jadwal->title . ' berhasil dihapus.');
@@ -87,7 +118,9 @@ class ApupptJadwalAbsensiController extends Controller
 
     public function toggle($id)
     {
-        $jadwal = ApupptJadwalAbsensi::findOrFail($id);
+        $forcedRole = $this->forcedRole();
+        $jadwal = ApupptJadwalAbsensi::when($forcedRole, fn ($q) => $q->whereHas('postTestSession', fn ($s) => $s->where('apuppt_pt_scope', $forcedRole)))
+            ->findOrFail($id);
         $jadwal->is_open = ! $jadwal->is_open;
         $jadwal->save();
 

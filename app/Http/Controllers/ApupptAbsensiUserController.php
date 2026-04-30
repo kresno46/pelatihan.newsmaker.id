@@ -10,7 +10,11 @@ class ApupptAbsensiUserController extends Controller
 {
     public function index()
     {
-        $jadwals = ApupptJadwalAbsensi::where('is_open', true)->orderBy('tanggal', 'desc')->get();
+        $user = auth()->user();
+        $jadwals = ApupptJadwalAbsensi::where('is_open', true)
+            ->whereHas('postTestSession', fn ($q) => $q->where('apuppt_pt_scope', $user->role))
+            ->orderBy('tanggal', 'desc')
+            ->get();
         $userId = auth()->id();
 
         $absensiUser = ApupptAbsensi::where('user_id', $userId)->pluck('jadwal_id')->toArray();
@@ -20,13 +24,19 @@ class ApupptAbsensiUserController extends Controller
 
     public function store(Request $request)
     {
+        $user = auth()->user();
         $request->validate([
             'user_id' => 'required|exists:users,id',
             'jadwal_id' => 'required|exists:apuppt_jadwal_absensis,id',
         ]);
+        if ((int) $request->user_id !== (int) $user->id) {
+            abort(403);
+        }
+        $jadwal = ApupptJadwalAbsensi::whereHas('postTestSession', fn ($q) => $q->where('apuppt_pt_scope', $user->role))
+            ->findOrFail($request->jadwal_id);
 
         $sudahAbsen = ApupptAbsensi::where('user_id', $request->user_id)
-            ->where('jadwal_id', $request->jadwal_id)
+            ->where('jadwal_id', $jadwal->id)
             ->exists();
 
         if ($sudahAbsen) {
@@ -35,7 +45,7 @@ class ApupptAbsensiUserController extends Controller
 
         ApupptAbsensi::create([
             'user_id' => $request->user_id,
-            'jadwal_id' => $request->jadwal_id,
+            'jadwal_id' => $jadwal->id,
             'waktu_absen' => now(),
         ]);
 

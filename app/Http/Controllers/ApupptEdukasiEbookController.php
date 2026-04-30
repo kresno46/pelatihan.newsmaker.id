@@ -10,8 +10,10 @@ class ApupptEdukasiEbookController extends Controller
 {
     public function index()
     {
+        $user = auth()->user();
         $folders = ApupptEbookFolder::withCount('ebooks')
             ->where('is_active', true)
+            ->where('apuppt_pt_scope', $user->role)
             ->latest()
             ->get();
 
@@ -20,8 +22,10 @@ class ApupptEdukasiEbookController extends Controller
 
     public function show(string $folderSlug)
     {
+        $user = auth()->user();
         $folder = ApupptEbookFolder::where('slug', $folderSlug)
             ->where('is_active', true)
+            ->where('apuppt_pt_scope', $user->role)
             ->firstOrFail();
         $ebooks = ApupptEbook::with('postTestSession')
             ->where('folder_id', $folder->id)

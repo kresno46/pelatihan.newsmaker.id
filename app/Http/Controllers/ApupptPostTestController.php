@@ -10,8 +10,18 @@ use Mews\Purifier\Facades\Purifier;
 
 class ApupptPostTestController extends Controller
 {
+    private function authorizeScopedSession(ApupptPostTestSession $session): void
+    {
+        $authUser = auth()->user();
+        $forcedRole = $authUser && $authUser->isApupptAdmin() ? $authUser->apuppt_pt_scope : null;
+        if ($forcedRole && $session->apuppt_pt_scope !== $forcedRole) {
+            abort(403);
+        }
+    }
+
     public function questionStore(Request $request, ApupptPostTestSession $session)
     {
+        $this->authorizeScopedSession($session);
         $v = Validator::make($request->all(), [
             'question_text' => ['required', 'string', 'max:10000'],
             'option_a' => ['required', 'string', 'max:1000'],
@@ -38,6 +48,7 @@ class ApupptPostTestController extends Controller
 
     public function questionUpdate(Request $request, ApupptPostTestQuestion $question)
     {
+        $this->authorizeScopedSession($question->session);
         $v = Validator::make($request->all(), [
             'question_text' => ['required', 'string', 'max:10000'],
             'option_a' => ['required', 'string', 'max:1000'],
@@ -64,6 +75,7 @@ class ApupptPostTestController extends Controller
 
     public function questionDestroy(ApupptPostTestQuestion $question)
     {
+        $this->authorizeScopedSession($question->session);
         $question->delete();
 
         return back()->with('success', 'Soal berhasil dihapus.');
@@ -72,6 +84,7 @@ class ApupptPostTestController extends Controller
     public function toggleStatus($slug)
     {
         $postTest = ApupptPostTestSession::where('slug', $slug)->firstOrFail();
+        $this->authorizeScopedSession($postTest);
         $postTest->status = ! $postTest->status;
         $postTest->save();
 

@@ -12,8 +12,17 @@ class ApupptLaporanSertifikatController extends Controller
 {
     public function index(Request $request)
     {
+        $user = auth()->user();
+        $forcedRole = $user && $user->isApupptAdmin() ? $user->apuppt_pt_scope : null;
+        if ($user && $user->isApupptAdmin() && ! $forcedRole) {
+            abort(403, 'PT scope untuk Admin APUPPT belum diatur.');
+        }
+
         $query = ApupptCertificateAward::with(['user', 'postTestResult.session']);
         $showNameOnly = false;
+        if ($forcedRole) {
+            $query->whereHas('user', fn ($q) => $q->where('role', $forcedRole));
+        }
 
         if ($request->filled('q')) {
             $query->whereHas('user', function ($q) use ($request) {
@@ -84,14 +93,21 @@ class ApupptLaporanSertifikatController extends Controller
         $perPage = $request->get('per_page', 20);
         $sertifikats = $query->paginate($perPage);
 
-        $aggregates = ApupptCertificateAward::selectRaw('COUNT(*) as total, AVG(average_score) as avg_score, MAX(average_score) as max_score, MIN(average_score) as min_score')->first();
+        $aggregates = ApupptCertificateAward::when($forcedRole, fn ($q) => $q->whereHas('user', fn ($u) => $u->where('role', $forcedRole)))
+            ->selectRaw('COUNT(*) as total, AVG(average_score) as avg_score, MAX(average_score) as max_score, MIN(average_score) as min_score')
+            ->first();
 
         return view('apuppt.LaporanSertifikat.index', compact('sertifikats', 'aggregates', 'showNameOnly'));
     }
 
     public function destroy($id)
     {
+        $user = auth()->user();
+        $forcedRole = $user && $user->isApupptAdmin() ? $user->apuppt_pt_scope : null;
         $sertifikat = ApupptCertificateAward::findOrFail($id);
+        if ($forcedRole && optional($sertifikat->user)->role !== $forcedRole) {
+            abort(403);
+        }
         $sertifikat->delete();
 
         return redirect()->back()->with('Alert', 'Sertifikat berhasil dihapus.');
@@ -99,7 +115,12 @@ class ApupptLaporanSertifikatController extends Controller
 
     public function export(Request $request)
     {
+        $user = auth()->user();
+        $forcedRole = $user && $user->isApupptAdmin() ? $user->apuppt_pt_scope : null;
         $query = ApupptCertificateAward::with(['user', 'postTestResult.session']);
+        if ($forcedRole) {
+            $query->whereHas('user', fn ($q) => $q->where('role', $forcedRole));
+        }
 
         if ($request->filled('q')) {
             $query->whereHas('user', function ($q) use ($request) {
@@ -126,6 +147,8 @@ class ApupptLaporanSertifikatController extends Controller
 
     public function exportPerCabang(Request $request)
     {
+        $user = auth()->user();
+        $forcedRole = $user && $user->isApupptAdmin() ? $user->apuppt_pt_scope : null;
         $cabang = $request->get('cabang');
         if (! $cabang) {
             return redirect()->back()->with('error', 'Cabang harus dipilih untuk export per cabang.');
@@ -135,6 +158,9 @@ class ApupptLaporanSertifikatController extends Controller
             ->whereHas('user', function ($q) use ($cabang) {
                 $q->where('cabang', $cabang);
             });
+        if ($forcedRole) {
+            $query->whereHas('user', fn ($q) => $q->where('role', $forcedRole));
+        }
 
         $filename = 'apuppt_laporan_sertifikat_' . str_replace(' ', '_', $cabang) . '_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
 

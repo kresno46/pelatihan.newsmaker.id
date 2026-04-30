@@ -64,6 +64,23 @@
                 </div>
 
                 <div class="w-full flex flex-col gap-2">
+                    <label for="apuppt_pt_scope" class="block font-medium text-gray-900 dark:text-gray-100">PT Scope APUPPT</label>
+                    <select name="apuppt_pt_scope" id="apuppt_pt_scope" {{ $forcedRole ? 'disabled' : '' }}
+                        class="w-full border rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-400 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('apuppt_pt_scope') border-red-500 dark:border-red-400 @enderror">
+                        <option value="">Pilih PT</option>
+                        @foreach ($ptOptions as $pt)
+                            <option value="{{ $pt }}" {{ old('apuppt_pt_scope', $forcedRole) === $pt ? 'selected' : '' }}>{{ $pt }}</option>
+                        @endforeach
+                    </select>
+                    @if ($forcedRole)
+                        <input type="hidden" name="apuppt_pt_scope" value="{{ $forcedRole }}">
+                    @endif
+                    @error('apuppt_pt_scope')
+                        <p class="text-red-600 dark:text-red-400 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="w-full flex flex-col gap-2">
                     <label for="tipe" class="block font-medium text-gray-900 dark:text-gray-100">Tipe Soal</label>
                     <select name="tipe" id="tipe"
                         class="w-full border rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-400 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 @error('tipe') border-red-500 dark:border-red-400 @enderror">

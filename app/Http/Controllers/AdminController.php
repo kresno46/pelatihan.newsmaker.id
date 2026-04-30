@@ -24,7 +24,9 @@ class AdminController extends Controller
      */
     public function create()
     {
-        return view('admin.create');
+        $ptOptions = User::APUPPT_PT_ROLES;
+
+        return view('admin.create', compact('ptOptions'));
     }
 
     /**
@@ -38,6 +40,11 @@ class AdminController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6|confirmed',
             'role' => 'required|string|in:Admin,Admin APUPPT',
+            'apuppt_pt_scope' => [
+                'nullable',
+                Rule::in(User::APUPPT_PT_ROLES),
+                'required_if:role,Admin APUPPT',
+            ],
         ]);
 
         // Simpan admin baru
@@ -46,6 +53,7 @@ class AdminController extends Controller
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'role' => $validated['role'],
+            'apuppt_pt_scope' => $validated['role'] === 'Admin APUPPT' ? $validated['apuppt_pt_scope'] : null,
         ]);
 
         // Redirect ke halaman index dengan pesan sukses
@@ -58,8 +66,9 @@ class AdminController extends Controller
     public function edit(string $id)
     {
         $admin = User::find($id);
+        $ptOptions = User::APUPPT_PT_ROLES;
 
-        return view('admin.edit', compact('admin'));
+        return view('admin.edit', compact('admin', 'ptOptions'));
     }
 
     /**
@@ -79,6 +88,11 @@ class AdminController extends Controller
             ],
             'password' => 'nullable|string|min:6|confirmed',
             'role' => 'required|string|in:Admin,Admin APUPPT',
+            'apuppt_pt_scope' => [
+                'nullable',
+                Rule::in(User::APUPPT_PT_ROLES),
+                'required_if:role,Admin APUPPT',
+            ],
         ]);
 
         // Update admin
@@ -87,6 +101,7 @@ class AdminController extends Controller
             'email' => $validated['email'],
             'password' => $validated['password'] ? Hash::make($validated['password']) : $admin->password,
             'role' => $validated['role'],
+            'apuppt_pt_scope' => $validated['role'] === 'Admin APUPPT' ? $validated['apuppt_pt_scope'] : null,
         ]);
 
         // Redirect ke halaman index dengan pesan sukses

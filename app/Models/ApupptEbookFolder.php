@@ -17,6 +17,7 @@ class ApupptEbookFolder extends Model
         'deskripsi',
         'slug',
         'is_active',
+        'apuppt_pt_scope',
     ];
 
     protected $casts = [

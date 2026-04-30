@@ -50,6 +50,22 @@
                 @enderror
             </div>
 
+            <div class="mb-4 {{ old('role', $admin->role) === 'Admin APUPPT' ? '' : 'hidden' }}" id="ptScopeWrapper">
+                <label for="apuppt_pt_scope" class="block text-sm font-medium text-gray-700 dark:text-white">PT Scope APUPPT</label>
+                <select name="apuppt_pt_scope" id="apuppt_pt_scope"
+                    class="mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500
+                    dark:bg-gray-700 dark:border-gray-600 dark:text-white
+                    {{ $errors->has('apuppt_pt_scope') ? 'border-red-500' : 'border-gray-300' }}">
+                    <option value="">Pilih PT</option>
+                    @foreach ($ptOptions as $pt)
+                        <option value="{{ $pt }}" {{ old('apuppt_pt_scope', $admin->apuppt_pt_scope) === $pt ? 'selected' : '' }}>{{ $pt }}</option>
+                    @endforeach
+                </select>
+                @error('apuppt_pt_scope')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
             <!-- Password (Opsional) -->
             <div class="mb-4">
                 <label for="password" class="block text-sm font-medium text-gray-700 dark:text-white">Password
@@ -150,4 +166,22 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const roleSelect = document.getElementById('role');
+        const ptScopeWrapper = document.getElementById('ptScopeWrapper');
+        const ptScopeSelect = document.getElementById('apuppt_pt_scope');
+
+        function togglePtScope() {
+            const isApupptAdmin = roleSelect.value === 'Admin APUPPT';
+            ptScopeWrapper.classList.toggle('hidden', !isApupptAdmin);
+            ptScopeSelect.required = isApupptAdmin;
+            if (!isApupptAdmin) {
+                ptScopeSelect.value = '';
+            }
+        }
+
+        roleSelect.addEventListener('change', togglePtScope);
+        togglePtScope();
+    </script>
 @endsection

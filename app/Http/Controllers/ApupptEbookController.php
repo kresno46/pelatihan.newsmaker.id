@@ -11,9 +11,19 @@ use Illuminate\Validation\Rule;
 
 class ApupptEbookController extends Controller
 {
+    private function findScopedFolder(string $folderSlug): ApupptEbookFolder
+    {
+        $user = auth()->user();
+        $forcedRole = $user && $user->isApupptAdmin() ? $user->apuppt_pt_scope : null;
+
+        return ApupptEbookFolder::where('slug', $folderSlug)
+            ->when($forcedRole, fn ($q) => $q->where('apuppt_pt_scope', $forcedRole))
+            ->firstOrFail();
+    }
+
     public function index(Request $request, $folderSlug)
     {
-        $folder = ApupptEbookFolder::where('slug', $folderSlug)->firstOrFail();
+        $folder = $this->findScopedFolder($folderSlug);
         $query = ApupptEbook::where('folder_id', $folder->id);
 
         if ($request->filled('search')) {
@@ -38,14 +48,14 @@ class ApupptEbookController extends Controller
 
     public function create($folderSlug)
     {
-        $folder = ApupptEbookFolder::where('slug', $folderSlug)->firstOrFail();
+        $folder = $this->findScopedFolder($folderSlug);
 
         return view('apuppt.ebook.create', compact('folder'));
     }
 
     public function store(Request $request, $folderSlug)
     {
-        $folder = ApupptEbookFolder::where('slug', $folderSlug)->firstOrFail();
+        $folder = $this->findScopedFolder($folderSlug);
 
         $request->validate([
             'title' => [
@@ -82,7 +92,7 @@ class ApupptEbookController extends Controller
 
     public function show($folderSlug, $ebookSlug)
     {
-        $folder = ApupptEbookFolder::where('slug', $folderSlug)->firstOrFail();
+        $folder = $this->findScopedFolder($folderSlug);
         $ebook = ApupptEbook::with('postTestSession')->where('folder_id', $folder->id)->where('slug', $ebookSlug)->firstOrFail();
 
         return view('apuppt.ebook.show', compact('ebook', 'folder'));
@@ -90,7 +100,7 @@ class ApupptEbookController extends Controller
 
     public function edit($folderSlug, $ebookSlug)
     {
-        $folder = ApupptEbookFolder::where('slug', $folderSlug)->firstOrFail();
+        $folder = $this->findScopedFolder($folderSlug);
         $ebook = ApupptEbook::where('folder_id', $folder->id)->where('slug', $ebookSlug)->firstOrFail();
 
         return view('apuppt.ebook.edit', compact('ebook', 'folder'));
@@ -98,7 +108,7 @@ class ApupptEbookController extends Controller
 
     public function update(Request $request, $folderSlug, $ebookSlug)
     {
-        $folder = ApupptEbookFolder::where('slug', $folderSlug)->firstOrFail();
+        $folder = $this->findScopedFolder($folderSlug);
         $ebook = ApupptEbook::where('folder_id', $folder->id)->where('slug', $ebookSlug)->firstOrFail();
 
         $request->validate([
@@ -145,7 +155,7 @@ class ApupptEbookController extends Controller
 
     public function destroy($folderSlug, $ebookSlug)
     {
-        $folder = ApupptEbookFolder::where('slug', $folderSlug)->firstOrFail();
+        $folder = $this->findScopedFolder($folderSlug);
         $ebook = ApupptEbook::where('folder_id', $folder->id)->where('slug', $ebookSlug)->firstOrFail();
 
         if ($ebook->cover && file_exists(public_path($ebook->cover))) {
@@ -162,7 +172,7 @@ class ApupptEbookController extends Controller
 
     public function manageQuiz($folderSlug, $ebookSlug)
     {
-        $folder = ApupptEbookFolder::where('slug', $folderSlug)->firstOrFail();
+        $folder = $this->findScopedFolder($folderSlug);
         $ebook = ApupptEbook::where('folder_id', $folder->id)->where('slug', $ebookSlug)->firstOrFail();
 
         $session = ApupptPostTestSession::firstOrCreate(
@@ -172,6 +182,7 @@ class ApupptEbookController extends Controller
                 'duration' => 30,
                 'status' => true,
                 'tipe' => 'APUPPT',
+                'apuppt_pt_scope' => $folder->apuppt_pt_scope,
             ]
         );
 

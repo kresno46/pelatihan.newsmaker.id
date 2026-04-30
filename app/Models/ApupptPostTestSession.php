@@ -19,6 +19,7 @@ class ApupptPostTestSession extends Model
         'tipe',
         'status',
         'ebook_id',
+        'apuppt_pt_scope',
     ];
 
     protected static function booted()
