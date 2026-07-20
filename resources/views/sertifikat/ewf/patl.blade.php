@@ -104,7 +104,7 @@
                 <div class="content">
                     <p class="header">DIBERIKAN KEPADA:</p>
                     <p class="name">{{ ucwords(strtolower($name)) }}</p>
-                    <p class="description">Telah mengikuti:</p>
+                    <p class="description">Telah Mengikuti:</p>
                     <p class="level-title">{{ $levelTitle }}</p>
                 </div>
             </td>
