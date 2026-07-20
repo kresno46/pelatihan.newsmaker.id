@@ -116,7 +116,7 @@
                     <img class="stamp" src="{{ public_path('sertifikat-stamp/EWF/STAMP EWF.png') }}" alt="Stamp">
                     <p class="ttd">FADLY KHAIRUZZADHI, M.H.</p>
                     <hr class="signature-line">
-                    <p class="title">Direktur Kepatuhan</p>
+                    <p class="title">Direktur Utama</p>
                     <div class="cert-id">ID Sertifikat: {{ $uuid }}</div>
                 </div>
             </td>
