@@ -272,6 +272,16 @@
                                             <span>{{ __('Sertifikat') }}</span>
                                         </a>
                                     </li>
+                                    <li>
+                                        <a href="{{ route('apuppt.user.index') }}"
+                                            class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('apuppt.user.*')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                            <i class="fa-solid fa-users"></i>
+                                            <span>{{ __('Daftar User') }}</span>
+                                        </a>
+                                    </li>
                                 </ul>
                             </nav>
                             <form action="{{ route('apuppt.feature.toggle') }}" method="POST" class="mt-3">
@@ -702,6 +712,16 @@
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
                                             <i class="fa-solid fa-certificate"></i>
                                             <span>{{ __('Sertifikat') }}</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('apuppt.user.index') }}"
+                                            class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('apuppt.user.*')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                            <i class="fa-solid fa-users"></i>
+                                            <span>{{ __('Daftar User') }}</span>
                                         </a>
                                     </li>
                                 </ul>

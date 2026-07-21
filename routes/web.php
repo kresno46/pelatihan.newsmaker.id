@@ -15,6 +15,7 @@ use App\Http\Controllers\ApupptPostTestController;
 use App\Http\Controllers\ApupptQuizController;
 use App\Http\Controllers\ApupptSertifikatController;
 use App\Http\Controllers\ApupptTestController;
+use App\Http\Controllers\ApupptUserController;
 use App\Http\Controllers\EdukasiEbookController;
 use App\Http\Controllers\EdukasiOutlookController;
 use App\Http\Controllers\HomeController;
@@ -223,6 +224,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 Route::get('/export', [ApupptLaporanSertifikatController::class, 'export'])->name('sertifikat.export');
                 Route::get('/export-per-cabang', [ApupptLaporanSertifikatController::class, 'exportPerCabang'])->name('sertifikat.exportPerCabang');
                 Route::delete('/{id}/delete', [ApupptLaporanSertifikatController::class, 'destroy'])->name('sertifikat.destroy');
+            });
+
+            Route::prefix('user')->group(function () {
+                Route::get('/', [ApupptUserController::class, 'index'])->name('user.index');
             });
         });
 
