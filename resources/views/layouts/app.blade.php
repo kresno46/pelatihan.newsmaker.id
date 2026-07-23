@@ -182,6 +182,16 @@
                                                 <span>{{ __('APUPPT Sertifikat') }}</span>
                                             </a>
                                         </li>
+                                        <li>
+                                            <a href="{{ route('apuppt.feedbackUser.create') }}"
+                                                class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                        {{ request()->routeIs('apuppt.feedbackUser.*')
+                            ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                                <i class="fa-solid fa-comment-dots"></i>
+                                                <span>{{ __('APUPPT Kuesioner') }}</span>
+                                            </a>
+                                        </li>
                                     </ul>
                                 </nav>
                             @endif
@@ -280,6 +290,16 @@
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
                                             <i class="fa-solid fa-users"></i>
                                             <span>{{ __('Daftar User') }}</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('apuppt.feedback.edit') }}"
+                                            class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('apuppt.feedback.*')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                            <i class="fa-solid fa-comment-dots"></i>
+                                            <span>{{ __('Kuesioner') }}</span>
                                         </a>
                                     </li>
                                 </ul>
@@ -625,6 +645,16 @@
                                             <span>{{ __('APUPPT Sertifikat') }}</span>
                                         </a>
                                     </li>
+                                    <li>
+                                        <a href="{{ route('apuppt.feedbackUser.create') }}"
+                                            class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                        {{ request()->routeIs('apuppt.feedbackUser.*')
+                            ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                            <i class="fa-solid fa-comment-dots"></i>
+                                            <span>{{ __('APUPPT Kuesioner') }}</span>
+                                        </a>
+                                    </li>
                                 </ul>
                             </nav>
                         @endif
@@ -722,6 +752,16 @@
                                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
                                             <i class="fa-solid fa-users"></i>
                                             <span>{{ __('Daftar User') }}</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('apuppt.feedback.edit') }}"
+                                            class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
+                            {{ request()->routeIs('apuppt.feedback.*')
+                                ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                                            <i class="fa-solid fa-comment-dots"></i>
+                                            <span>{{ __('Kuesioner') }}</span>
                                         </a>
                                     </li>
                                 </ul>

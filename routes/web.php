@@ -9,6 +9,8 @@ use App\Http\Controllers\ApupptEbookController;
 use App\Http\Controllers\ApupptEbookFolderController;
 use App\Http\Controllers\ApupptEdukasiEbookController;
 use App\Http\Controllers\ApupptFeatureController;
+use App\Http\Controllers\ApupptFeedbackController;
+use App\Http\Controllers\ApupptFeedbackUserController;
 use App\Http\Controllers\ApupptJadwalAbsensiController;
 use App\Http\Controllers\ApupptLaporanSertifikatController;
 use App\Http\Controllers\ApupptPostTestController;
@@ -89,7 +91,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/result/{result}', [TestController::class, 'showResult'])->name('result');
     });
 
-    Route::prefix('apuppt-training')->middleware(['profile.complete', 'apuppt.enabled'])->group(function () {
+    Route::prefix('apuppt-training')->middleware(['profile.complete', 'apuppt.enabled', 'apuppt_feedback'])->group(function () {
         Route::prefix('ebook')->name('apuppt.edukasi.ebook.')->group(function () {
             Route::get('/', [ApupptEdukasiEbookController::class, 'index'])->name('index');
             Route::get('/{folderSlug}', [ApupptEdukasiEbookController::class, 'show'])->name('show');
@@ -113,6 +115,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::prefix('sertifikat')->name('apuppt.sertifikatUser.')->group(function () {
             Route::get('/', [ApupptSertifikatController::class, 'index'])->name('index');
             Route::get('/{id}/download', [ApupptSertifikatController::class, 'generateCertificate'])->name('download');
+        });
+
+        Route::prefix('feedback')->name('apuppt.feedbackUser.')->group(function () {
+            Route::get('/', [ApupptFeedbackUserController::class, 'create'])->name('create');
+            Route::post('/{form}', [ApupptFeedbackUserController::class, 'store'])->name('store');
         });
     });
 
@@ -228,6 +235,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
             Route::prefix('user')->group(function () {
                 Route::get('/', [ApupptUserController::class, 'index'])->name('user.index');
+            });
+
+            Route::prefix('feedback')->group(function () {
+                Route::get('/', [ApupptFeedbackController::class, 'edit'])->name('feedback.edit');
+                Route::put('/{form}', [ApupptFeedbackController::class, 'update'])->name('feedback.update');
+                Route::post('/{form}/question', [ApupptFeedbackController::class, 'questionStore'])->name('feedback.question.store');
+                Route::put('/{form}/question/{question}', [ApupptFeedbackController::class, 'questionUpdate'])->name('feedback.question.update');
+                Route::delete('/{form}/question/{question}', [ApupptFeedbackController::class, 'questionDestroy'])->name('feedback.question.destroy');
+                Route::post('/{form}/question/{question}/move', [ApupptFeedbackController::class, 'questionMove'])->name('feedback.question.move');
+                Route::get('/{form}/report', [ApupptFeedbackController::class, 'report'])->name('feedback.report');
+                Route::get('/{form}/report/export', [ApupptFeedbackController::class, 'reportExport'])->name('feedback.report.export');
             });
         });
 

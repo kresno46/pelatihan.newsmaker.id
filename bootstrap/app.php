@@ -3,6 +3,7 @@
 use App\Http\Middleware\BearerTokenMiddleware;
 use App\Http\Middleware\CheckPATLAccess;
 use App\Http\Middleware\EnsureApupptFeatureEnabled;
+use App\Http\Middleware\EnsureApupptFeedbackFilled;
 use App\Http\Middleware\EnsureUserHasApupptAbsensi;
 use App\Http\Middleware\EnsureProfileIsComplete;
 use App\Http\Middleware\EnsureUserHasAbsensi;
@@ -25,6 +26,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'absensi' => EnsureUserHasAbsensi::class,
             'apuppt_absensi' => EnsureUserHasApupptAbsensi::class,
             'apuppt.enabled' => EnsureApupptFeatureEnabled::class,
+            'apuppt_feedback' => EnsureApupptFeedbackFilled::class,
             'CheckPATLAccess' => CheckPATLAccess::class,
             'bearer.token' => BearerTokenMiddleware::class,
         ]);
