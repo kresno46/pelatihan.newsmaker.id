@@ -182,7 +182,7 @@
                                                 <span>{{ __('APUPPT Sertifikat') }}</span>
                                             </a>
                                         </li>
-                                        <li>
+                                        {{-- <li>
                                             <a href="{{ route('apuppt.feedbackUser.create') }}"
                                                 class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                         {{ request()->routeIs('apuppt.feedbackUser.*')
@@ -191,7 +191,7 @@
                                                 <i class="fa-solid fa-comment-dots"></i>
                                                 <span>{{ __('APUPPT Kuesioner') }}</span>
                                             </a>
-                                        </li>
+                                        </li> --}}
                                     </ul>
                                 </nav>
                             @endif
@@ -292,7 +292,7 @@
                                             <span>{{ __('Daftar User') }}</span>
                                         </a>
                                     </li>
-                                    <li>
+                                    {{-- <li>
                                         <a href="{{ route('apuppt.feedback.edit') }}"
                                             class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                             {{ request()->routeIs('apuppt.feedback.*')
@@ -301,7 +301,7 @@
                                             <i class="fa-solid fa-comment-dots"></i>
                                             <span>{{ __('Kuesioner') }}</span>
                                         </a>
-                                    </li>
+                                    </li> --}}
                                 </ul>
                             </nav>
                             <form action="{{ route('apuppt.feature.toggle') }}" method="POST" class="mt-3">
@@ -645,7 +645,7 @@
                                             <span>{{ __('APUPPT Sertifikat') }}</span>
                                         </a>
                                     </li>
-                                    <li>
+                                    {{-- <li>
                                         <a href="{{ route('apuppt.feedbackUser.create') }}"
                                             class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                         {{ request()->routeIs('apuppt.feedbackUser.*')
@@ -654,7 +654,7 @@
                                             <i class="fa-solid fa-comment-dots"></i>
                                             <span>{{ __('APUPPT Kuesioner') }}</span>
                                         </a>
-                                    </li>
+                                    </li> --}}
                                 </ul>
                             </nav>
                         @endif
@@ -754,7 +754,7 @@
                                             <span>{{ __('Daftar User') }}</span>
                                         </a>
                                     </li>
-                                    <li>
+                                    {{-- <li>
                                         <a href="{{ route('apuppt.feedback.edit') }}"
                                             class="flex items-center space-x-4 px-3 py-2 rounded transition duration-200
                             {{ request()->routeIs('apuppt.feedback.*')
@@ -763,7 +763,7 @@
                                             <i class="fa-solid fa-comment-dots"></i>
                                             <span>{{ __('Kuesioner') }}</span>
                                         </a>
-                                    </li>
+                                    </li> --}}
                                 </ul>
                             </nav>
                             <form action="{{ route('apuppt.feature.toggle') }}" method="POST" class="mt-3">
