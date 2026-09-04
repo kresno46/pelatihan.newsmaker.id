@@ -12,6 +12,7 @@
         body {
             margin: 0;
             padding: 0;
+            position: relative;
             font-family: 'Times New Roman', Times, serif;
             background-image: url('{{ public_path('sertifikat-stamp/SGB/SGB.png') }}');
             background-size: cover;
@@ -63,9 +64,12 @@
         }
 
         .date-sign {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 8mm;
             font-size: 14px;
             text-align: center;
-            padding-bottom: 30px;
         }
 
         .date {
@@ -114,19 +118,16 @@
                 </div>
             </td>
         </tr>
-        <tr>
-            <td>
-                <div class="date-sign">
-                    <p class="date">Jakarta, {{ $date }}</p>
-                    <img class="stamp" src="{{ public_path('sertifikat-stamp/SGB/STAMP-SGB.png') }}" alt="Stamp">
-                    <p class="ttd">IRIAWAN WIDADI</p>
-                    <hr class="signature-line">
-                    <p class="title">Direktur Utama</p>
-                    <div class="cert-id">ID Sertifikat: {{ $uuid }}</div>
-                </div>
-            </td>
-        </tr>
     </table>
+
+    <div class="date-sign">
+        <p class="date">Jakarta, {{ $date }}</p>
+        <img class="stamp" src="{{ public_path('sertifikat-stamp/SGB/STAMP-SGB.png') }}" alt="Stamp">
+        <p class="ttd">IRIAWAN WIDADI</p>
+        <hr class="signature-line">
+        <p class="title">Direktur Utama</p>
+        <div class="cert-id">ID Sertifikat: {{ $uuid }}</div>
+    </div>
 
 </body>
 
