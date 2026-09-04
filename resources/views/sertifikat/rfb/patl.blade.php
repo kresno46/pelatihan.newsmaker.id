@@ -24,7 +24,6 @@
 
         table.layout {
             width: 100%;
-            height: 210mm;
             border-collapse: collapse;
             page-break-inside: avoid;
         }
