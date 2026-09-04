@@ -16,22 +16,30 @@
             background-image: url('{{ public_path('sertifikat-stamp/EWF/EWF-PATL.png') }}');
             background-size: cover;
             background-position: center;
+            background-repeat: no-repeat;
+            width: 297mm;
+            height: 210mm;
+            overflow: hidden;
         }
 
-        table.layout {
-            width: 100%;
-            height: 100vh;
-            border-collapse: collapse;
+        .certificate-page {
+            position: relative;
+            width: 297mm;
+            height: 210mm;
+            overflow: hidden;
         }
 
-        td {
-            vertical-align: top;
-            text-align: center;
-            padding: 0 60px;
+        p {
+            margin: 0;
         }
 
         .content {
-            padding-top: 260px;
+            position: absolute;
+            top: 72mm;
+            left: 0;
+            right: 0;
+            text-align: center;
+            padding: 0 60px;
         }
 
         .content .header {
@@ -58,9 +66,12 @@
         }
 
         .date-sign {
+            position: absolute;
+            bottom: 10mm;
+            left: 0;
+            right: 0;
             font-size: 14px;
             text-align: center;
-            padding-bottom: 40px;
         }
 
         .date {
@@ -98,30 +109,23 @@
 
 <body>
 
-    <table class="layout">
-        <tr>
-            <td>
-                <div class="content">
-                    <p class="header">DIBERIKAN KEPADA:</p>
-                    <p class="name">{{ ucwords(strtolower($name)) }}</p>
-                    <p class="description">Telah Mengikuti:</p>
-                    <p class="level-title">{{ $levelTitle }}</p>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="date-sign">
-                    <p class="date">Jakarta, {{ $date }}</p>
-                    <img class="stamp" src="{{ public_path('sertifikat-stamp/EWF/STAMP EWF.png') }}" alt="Stamp">
-                    <p class="ttd">FADLY KHAIRUZZADHI, M.H.</p>
-                    <hr class="signature-line">
-                    <p class="title">Direktur Utama</p>
-                    <div class="cert-id">ID Sertifikat: {{ $uuid }}</div>
-                </div>
-            </td>
-        </tr>
-    </table>
+    <div class="certificate-page">
+        <div class="content">
+            <p class="header">DIBERIKAN KEPADA:</p>
+            <p class="name">{{ ucwords(strtolower($name)) }}</p>
+            <p class="description">Telah Mengikuti:</p>
+            <p class="level-title">{{ $levelTitle }}</p>
+        </div>
+
+        <div class="date-sign">
+            <p class="date">Jakarta, {{ $date }}</p>
+            <img class="stamp" src="{{ public_path('sertifikat-stamp/EWF/STAMP EWF.png') }}" alt="Stamp">
+            <p class="ttd">FADLY KHAIRUZZADHI, M.H.</p>
+            <hr class="signature-line">
+            <p class="title">Direktur Utama</p>
+            <div class="cert-id">ID Sertifikat: {{ $uuid }}</div>
+        </div>
+    </div>
 
 </body>
 

@@ -16,12 +16,17 @@
             background-image: url('{{ public_path('sertifikat-stamp/RFB/RFB.png') }}');
             background-size: cover;
             background-position: center;
+            background-repeat: no-repeat;
+            width: 297mm;
+            height: 210mm;
+            overflow: hidden;
         }
 
         table.layout {
             width: 100%;
-            height: 100vh;
+            height: 210mm;
             border-collapse: collapse;
+            page-break-inside: avoid;
         }
 
         td {
